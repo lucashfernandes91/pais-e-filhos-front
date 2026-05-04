@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base App Theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_blue_dark</item>
+        <item name="colorSecondary">@color/secondary_green</item>
+        <item name="colorSecondaryVariant">@color/secondary_green_light</item>
+        <item name="android:colorBackground">@color/bg_primary</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- Theme for ChatApp -->
+    <style name="Theme.ChatApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_blue_dark</item>
+        <item name="colorSecondary">@color/secondary_green</item>
+        <item name="colorSecondaryVariant">@color/secondary_green_light</item>
+        <item name="android:colorBackground">@color/bg_primary</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- Text Styles -->
+    <style name="TextStyle">
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextStyle.Display1">
+        <item name="android:textSize">@dimen/text_size_xxxl</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextStyle.Display2">
+        <item name="android:textSize">@dimen/text_size_xxl</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextStyle.Headline">
+        <item name="android:textSize">@dimen/text_size_xl</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextStyle.Title">
+        <item name="android:textSize">@dimen/text_size_l</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextStyle.Subtitle">
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_800</item>
+    </style>
+
+    <style name="TextStyle.Body">
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextStyle.BodySmall">
+        <item name="android:textSize">@dimen/text_size_s</item>
+        <item name="android:textColor">@color/gray_700</item>
+    </style>
+
+    <style name="TextStyle.Caption">
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="android:textColor">@color/gray_600</item>
+    </style>
+
+    <style name="TextStyle.Label">
+        <item name="android:textSize">@dimen/text_size_s</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_800</item>
+    </style>
+
+    <!-- Button Styles -->
+    <style name="ButtonStyle.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:padding">@dimen/spacing_m</item>
+        <item name="android:minHeight">@dimen/height_button</item>
+        <item name="backgroundTint">@color/primary_blue</item>
+        <item name="cornerRadius">@dimen/corner_radius_l</item>
+    </style>
+
+    <style name="ButtonStyle.Secondary" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:minHeight">@dimen/height_button</item>
+        <item name="cornerRadius">@dimen/corner_radius_l</item>
+    </style>
+
+    <style name="ButtonStyle.Tertiary" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:minHeight">@dimen/height_button</item>
+    </style>
+
+    <!-- Card Styles -->
+    <style name="CardStyle.Base" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">@dimen/corner_radius_l</item>
+        <item name="cardElevation">@dimen/elevation_low</item>
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="android:layout_margin">@dimen/spacing_m</item>
+    </style>
+
+    <style name="CardStyle.Elevated" parent="CardStyle.Base">
+        <item name="cardElevation">@dimen/elevation_high</item>
+    </style>
+
+    <style name="CardStyle.Outlined" parent="CardStyle.Base">
+        <item name="cardElevation">@dimen/elevation_none</item>
+        <item name="strokeColor">@color/divider</item>
+        <item name="strokeWidth">@dimen/stroke_width_thin</item>
+    </style>
+
+    <!-- Input Styles -->
+    <style name="InputStyle.Base" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textColor">@color/gray_900</item>
+        <item name="android:minHeight">@dimen/height_input</item>
+        <item name="android:padding">@dimen/spacing_m</item>
+    </style>
+
+    <!-- Divider Styles -->
+    <style name="Divider">
+        <item name="android:layout_height">@dimen/stroke_width_thin</item>
+        <item name="android:background">@color/divider</item>
+    </style>
+
+    <!-- Navigation Styles -->
+    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="backgroundColor">@color/white</item>
+        <item name="elevation">@dimen/elevation_high</item>
+        <item name="itemIconTint">@color/gray_600</item>
+        <item name="itemTextColor">@color/gray_600</item>
+    </style>
+
+    <!-- FAB Styles -->
+    <style name="FABStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/primary_blue</item>
+        <item name="elevation">@dimen/elevation_high</item>
+    </style>
+
+    <!-- Dialog Styles -->
+    <style name="DialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/ButtonStyle.Primary</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ButtonStyle.Tertiary</item>
+    </style>
+
+    <!-- Custom Badge Style -->
+    <style name="BadgeStyle">
+        <item name="android:background">@color/secondary_green</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="android:padding">@dimen/spacing_xs</item>
+    </style>
+
+    <!-- Avatar Style -->
+    <style name="AvatarStyle">
+        <item name="android:layout_width">@dimen/avatar_size_m</item>
+        <item name="android:layout_height">@dimen/avatar_size_m</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_l</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <!-- Bottom Sheet Dialog Theme -->
+    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="BottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">@style/BottomSheetShapeAppearance</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="BottomSheetShapeAppearance" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerSizeTopRight">20dp</item>
+    </style>
+
+</resources>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.chatapp.ui.HomeFragment"
+        android:label="Início">
+        <action
+            android:id="@+id/action_home_to_notifications"
+            app:destination="@id/notificationsFragment" />
+        <deepLink
+            android:id="@+id/deepLinkHome"
+            app:uri="coparent://home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.chatapp.ui.ChatFragment"
+        android:label="Mensagens">
+        <deepLink
+            android:id="@+id/deepLinkChat"
+            app:uri="coparent://chat" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/agendaFragment"
+        android:name="com.example.chatapp.ui.AgendaFragment"
+        android:label="Agenda">
+        <deepLink
+            android:id="@+id/deepLinkAgenda"
+            app:uri="coparent://agenda" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/timelineFragment"
+        android:name="com.example.chatapp.ui.TimelineFragment"
+        android:label="Linha do tempo">
+        <deepLink
+            android:id="@+id/deepLinkTimeline"
+            app:uri="coparent://timeline" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.chatapp.ui.ProfileFragment"
+        android:label="Perfil">
+        <deepLink
+            android:id="@+id/deepLinkProfile"
+            app:uri="coparent://profile" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.chatapp.SettingsFragment"
+        android:label="Configurações" />
+
+    <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="com.example.chatapp.ui.NotificationsFragment"
+        android:label="Notificações">
+        <deepLink
+            android:id="@+id/deepLinkNotifications"
+            app:uri="coparent://notifications" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/notificationSettingsFragment"
+        android:name="com.example.chatapp.ui.NotificationSettingsFragment"
+        android:label="Configurações de notificação" />
+</navigation>

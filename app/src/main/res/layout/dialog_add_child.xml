@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <EditText
+        android:id="@+id/etChildName"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Nome do filho(a)"
+        android:textSize="15sp"
+        android:textColor="@color/gray_900"
+        android:textColorHint="@color/gray_400"
+        android:background="@drawable/bg_input_outlined"
+        android:paddingHorizontal="14dp"
+        android:inputType="textPersonName"
+        android:singleLine="true" />
+
+    <EditText
+        android:id="@+id/etChildBirthDate"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:hint="Data de nascimento (opcional)"
+        android:textSize="15sp"
+        android:textColor="@color/gray_900"
+        android:textColorHint="@color/gray_400"
+        android:background="@drawable/bg_input_outlined"
+        android:paddingHorizontal="14dp"
+        android:inputType="date"
+        android:focusable="false"
+        android:clickable="true"
+        android:singleLine="true" />
+</LinearLayout>
