@@ -3,10 +3,6 @@ package com.example.chatapp
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-/**
- * Request para criar um novo filho
- * Fortemente tipado para evitar problemas com Retrofit/Gson
- */
 data class CreateChildRequest(
     @SerializedName("name")
     val name: String,
@@ -15,7 +11,16 @@ data class CreateChildRequest(
     val conversationId: Int,
 
     @SerializedName("birth_date")
-    val birthDate: String? = null
+    val birthDate: String? = null,
+
+    @SerializedName("cpf")
+    val cpf: String? = null,
+
+    @SerializedName("rg")
+    val rg: String? = null,
+
+    @SerializedName("has_custody")
+    val hasCustody: Boolean = false
 ) : Serializable {
     init {
         require(name.isNotBlank()) { "Nome do filho não pode estar vazio" }
@@ -28,16 +33,21 @@ data class CreateChildRequest(
     }
 }
 
-/**
- * Request para atualizar um filho (PATCH)
- * Todos os campos são opcionais
- */
 data class UpdateChildRequest(
     @SerializedName("name")
     val name: String? = null,
 
     @SerializedName("birth_date")
-    val birthDate: String? = null
+    val birthDate: String? = null,
+
+    @SerializedName("cpf")
+    val cpf: String? = null,
+
+    @SerializedName("rg")
+    val rg: String? = null,
+
+    @SerializedName("has_custody")
+    val hasCustody: Boolean? = null
 ) : Serializable {
     init {
         name?.let {

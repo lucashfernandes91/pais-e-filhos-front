@@ -2,6 +2,7 @@ package com.example.chatapp.ui
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -43,9 +44,11 @@ class AgendaFragment : Fragment() {
     private var apiService: ApiService? = null
     private var conversationId: Int = 1
     private var token: String = ""
+    private var currentUsername: String = ""
+
     // All events (for calendar markers)
     private var allEvents = mutableListOf<Event>()
-    // Filtered events (today + future, for the list)
+    // Filtered events (for the list — depends on displayed month)
     private var events = mutableListOf<Event>()
     private var eventsAdapter: EventsAdapter? = null
 
@@ -54,11 +57,23 @@ class AgendaFragment : Fragment() {
     private var tvCalendarMonth: TextView? = null
     private var tvCurrentMonth: TextView? = null
     private var displayedCalendar = Calendar.getInstance()
-    private var eventDays = mutableSetOf<Int>() // days in current month that have events
+
+    // Calendar data maps — day -> custody owner
+    private enum class CustodyOwner { MOTHER, FATHER, NONE }
+
+    private var custodyDays = mutableMapOf<Int, CustodyOwner>()
+    private var genericEventDays = mutableSetOf<Int>()
 
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale("pt", "BR"))
     private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
     private val displayTimeFormat = SimpleDateFormat("HH:mm", Locale("pt", "BR"))
+
+    private val dateFormats = listOf(
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault()),
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()),
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault()),
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,6 +87,7 @@ class AgendaFragment : Fragment() {
         try {
             apiService = RetrofitClient.api
             token = PrefsHelper.getAuthToken(requireContext())
+            currentUsername = PrefsHelper.getUsername(requireContext())
             conversationId = arguments?.getInt("conversationId")
                 ?: PrefsHelper.getConversationId(requireContext())
 
@@ -113,13 +129,131 @@ class AgendaFragment : Fragment() {
     private fun setupCalendarNavigation(view: View) {
         view.findViewById<ImageButton>(R.id.btnPrevMonth)?.setOnClickListener {
             displayedCalendar.add(Calendar.MONTH, -1)
+            updateCalendarData()
             renderCalendar()
+            filterEventsForDisplayedMonth()
         }
         view.findViewById<ImageButton>(R.id.btnNextMonth)?.setOnClickListener {
             displayedCalendar.add(Calendar.MONTH, 1)
+            updateCalendarData()
             renderCalendar()
+            filterEventsForDisplayedMonth()
         }
         renderCalendar()
+    }
+
+    // ── Event List Filtering ────────────────────────────────
+
+    private fun filterEventsForDisplayedMonth() {
+        val today = Calendar.getInstance()
+        val isCurrentMonth = today.get(Calendar.YEAR) == displayedCalendar.get(Calendar.YEAR) &&
+                today.get(Calendar.MONTH) == displayedCalendar.get(Calendar.MONTH)
+
+        events.clear()
+
+        if (isCurrentMonth) {
+            val todayStart = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.time
+
+            events.addAll(
+                allEvents.filter {
+                    val d = parseEventDate(it.event_date)
+                    d != null && !d.before(todayStart)
+                }.sortedBy { it.event_date }
+            )
+        } else {
+            val displayedYear = displayedCalendar.get(Calendar.YEAR)
+            val displayedMonth = displayedCalendar.get(Calendar.MONTH)
+
+            events.addAll(
+                allEvents.filter { event ->
+                    val d = parseEventDate(event.event_date) ?: return@filter false
+                    val evtCal = Calendar.getInstance().apply { time = d }
+
+                    if (event.event_type.uppercase() == "CUSTODY" && !event.event_date_end.isNullOrEmpty()) {
+                        val endDate = parseEventDate(event.event_date_end) ?: d
+                        val startCal = Calendar.getInstance().apply { time = d }
+                        val endCal = Calendar.getInstance().apply { time = endDate }
+
+                        val monthStart = Calendar.getInstance().apply {
+                            set(displayedYear, displayedMonth, 1, 0, 0, 0)
+                            set(Calendar.MILLISECOND, 0)
+                        }
+                        val monthEnd = Calendar.getInstance().apply {
+                            set(displayedYear, displayedMonth, getActualMaximum(Calendar.DAY_OF_MONTH), 23, 59, 59)
+                        }
+
+                        startCal.before(monthEnd) && endCal.after(monthStart)
+                    } else {
+                        evtCal.get(Calendar.YEAR) == displayedYear &&
+                                evtCal.get(Calendar.MONTH) == displayedMonth
+                    }
+                }.sortedBy { it.event_date }
+            )
+        }
+
+        eventsAdapter?.notifyDataSetChanged()
+        updateEmptyState()
+    }
+
+    // ── Calendar Data Processing ────────────────────────────
+
+    private fun updateCalendarData() {
+        custodyDays.clear()
+        genericEventDays.clear()
+
+        val currentYear = displayedCalendar.get(Calendar.YEAR)
+        val currentMonth = displayedCalendar.get(Calendar.MONTH)
+
+        for (event in allEvents) {
+            val isCustody = event.event_type.uppercase() == "CUSTODY"
+            if (isCustody) {
+                processCustodyEvent(event, currentYear, currentMonth)
+            } else {
+                processGenericEvent(event, currentYear, currentMonth)
+            }
+        }
+    }
+
+    private fun processCustodyEvent(event: Event, year: Int, month: Int) {
+        val startDate = parseEventDate(event.event_date) ?: return
+        val endDate = if (!event.event_date_end.isNullOrEmpty()) {
+            parseEventDate(event.event_date_end)
+        } else {
+            null
+        }
+
+        val isCurrentUser = event.created_by_name == currentUsername
+        val owner = if (isCurrentUser) CustodyOwner.FATHER else CustodyOwner.MOTHER
+
+        val startCal = Calendar.getInstance().apply { time = startDate }
+        val endCal = if (endDate != null) {
+            Calendar.getInstance().apply { time = endDate }
+        } else {
+            Calendar.getInstance().apply { time = startDate }
+        }
+
+        val iterCal = startCal.clone() as Calendar
+        while (!iterCal.after(endCal)) {
+            if (iterCal.get(Calendar.YEAR) == year && iterCal.get(Calendar.MONTH) == month) {
+                val day = iterCal.get(Calendar.DAY_OF_MONTH)
+                custodyDays[day] = owner
+            }
+            iterCal.add(Calendar.DAY_OF_MONTH, 1)
+        }
+    }
+
+    private fun processGenericEvent(event: Event, year: Int, month: Int) {
+        val date = parseEventDate(event.event_date) ?: return
+        val eventCal = Calendar.getInstance().apply { time = date }
+
+        if (eventCal.get(Calendar.YEAR) == year && eventCal.get(Calendar.MONTH) == month) {
+            genericEventDays.add(eventCal.get(Calendar.DAY_OF_MONTH))
+        }
     }
 
     // ── Calendar Rendering ──────────────────────────────────
@@ -136,7 +270,7 @@ class AgendaFragment : Fragment() {
 
         val cal = displayedCalendar.clone() as Calendar
         cal.set(Calendar.DAY_OF_MONTH, 1)
-        val firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK) // 1=Sun, 7=Sat
+        val firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
         val daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
 
         val today = Calendar.getInstance()
@@ -145,17 +279,23 @@ class AgendaFragment : Fragment() {
         val todayDay = today.get(Calendar.DAY_OF_MONTH)
 
         val ctx = requireContext()
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val density = ctx.resources.displayMetrics.density
+        val dp = { value: Int -> (value * density).toInt() }
 
         var dayCounter = 1
         val totalCells = firstDayOfWeek - 1 + daysInMonth
         val totalRows = (totalCells + 6) / 7
 
+        // Tamanhos dos círculos — menores para que o dot laranja fique abaixo deles
+        val circleSizeDp = 30   // era 36dp — reduzido para dar espaço ao dot embaixo
+        val dotSizeDp    = 5
+        val dotBottomMarginDp = 6  // margem do dot em relação à borda inferior da célula
+
         for (row in 0 until totalRows) {
             val rowLayout = LinearLayout(ctx).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    dp(44)
+                    dp(48)
                 )
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER
@@ -163,52 +303,120 @@ class AgendaFragment : Fragment() {
 
             for (col in 0 until 7) {
                 val cellIndex = row * 7 + col
+
+                // Célula: ocupa 1/7 da largura, altura total da row (48dp)
                 val frame = FrameLayout(ctx).apply {
-                    layoutParams = LinearLayout.LayoutParams(0, dp(40), 1f)
+                    layoutParams = LinearLayout.LayoutParams(0, dp(48), 1f)
                 }
 
                 if (cellIndex >= firstDayOfWeek - 1 && dayCounter <= daysInMonth) {
                     val day = dayCounter
                     val isToday = isCurrentMonth && day == todayDay
-                    val hasEvent = eventDays.contains(day)
+                    val custodyOwner = custodyDays[day] ?: CustodyOwner.NONE
+                    val hasGenericEvent = genericEventDays.contains(day)
+                    val hasCustody = custodyOwner != CustodyOwner.NONE
 
+                    if (hasGenericEvent || hasCustody) {
+                        frame.isClickable = true
+                        frame.isFocusable = true
+                        frame.setOnClickListener {
+                            val clickedCal = displayedCalendar.clone() as Calendar
+                            clickedCal.set(Calendar.DAY_OF_MONTH, day)
+                            showDayEventsSheet(day, clickedCal)
+                        }
+                    }
+
+                    // ── Fundo de custódia (retângulo arredondado) ──────────
+                    // Fica na metade superior da célula para não colidir com o dot
+                    if (custodyOwner != CustodyOwner.NONE && !isToday) {
+                        val bgColor = when (custodyOwner) {
+                            CustodyOwner.MOTHER -> R.color.custody_mother_bg
+                            CustodyOwner.FATHER -> R.color.custody_father_bg
+                            else -> 0
+                        }
+                        if (bgColor != 0) {
+                            val bgView = View(ctx).apply {
+                                layoutParams = FrameLayout.LayoutParams(
+                                    dp(circleSizeDp),
+                                    dp(circleSizeDp)
+                                ).apply {
+                                    // Centralizado horizontalmente, alinhado ao topo da célula
+                                    // com uma margem para não ficar colado na borda
+                                    gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+                                    topMargin = dp(4)
+                                }
+                                background = GradientDrawable().apply {
+                                    shape = GradientDrawable.RECTANGLE
+                                    cornerRadius = dp(8).toFloat()
+                                    setColor(ContextCompat.getColor(ctx, bgColor))
+                                }
+                            }
+                            frame.addView(bgView)
+                        }
+                    }
+
+                    // ── Círculo azul "hoje" ────────────────────────────────
+                    // Mesmo posicionamento: topo + margem, para manter simetria com custódia
                     if (isToday) {
                         val circle = View(ctx).apply {
-                            layoutParams = FrameLayout.LayoutParams(dp(36), dp(36)).apply {
-                                gravity = Gravity.CENTER
+                            layoutParams = FrameLayout.LayoutParams(
+                                dp(circleSizeDp),
+                                dp(circleSizeDp)
+                            ).apply {
+                                gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+                                topMargin = dp(4)
                             }
                             background = ContextCompat.getDrawable(ctx, R.drawable.bg_today_circle)
                         }
                         frame.addView(circle)
-                    } else if (hasEvent) {
-                        val circle = View(ctx).apply {
-                            layoutParams = FrameLayout.LayoutParams(dp(36), dp(36)).apply {
-                                gravity = Gravity.CENTER
-                            }
-                            background = ContextCompat.getDrawable(ctx, R.drawable.bg_event_circle_blue)
-                        }
-                        frame.addView(circle)
+                    }
+
+                    // ── Número do dia ──────────────────────────────────────
+                    // Alinhado ao topo junto com o círculo, centralizado horizontalmente
+                    val textColor = when {
+                        isToday -> R.color.white
+                        custodyOwner == CustodyOwner.MOTHER -> R.color.custody_mother
+                        custodyOwner == CustodyOwner.FATHER -> R.color.custody_father
+                        else -> R.color.gray_700
                     }
 
                     val tv = TextView(ctx).apply {
                         layoutParams = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.MATCH_PARENT
-                        )
+                            dp(circleSizeDp),
+                            dp(circleSizeDp)
+                        ).apply {
+                            gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+                            topMargin = dp(4)
+                        }
                         text = day.toString()
                         gravity = Gravity.CENTER
-                        textSize = 14f
-                        setTextColor(
-                            ContextCompat.getColor(
-                                ctx,
-                                if (isToday) R.color.white
-                                else if (hasEvent) R.color.primary_blue
-                                else R.color.gray_700
-                            )
-                        )
-                        if (isToday) setTypeface(typeface, android.graphics.Typeface.BOLD)
+                        textSize = 13f
+                        setTextColor(ContextCompat.getColor(ctx, textColor))
+                        if (isToday || custodyOwner != CustodyOwner.NONE) {
+                            setTypeface(typeface, android.graphics.Typeface.BOLD)
+                        }
                     }
                     frame.addView(tv)
+
+                    // ── Ponto laranja de evento ────────────────────────────
+                    // Fixado na borda inferior da célula — sempre abaixo do círculo
+                    if (hasGenericEvent) {
+                        val dot = View(ctx).apply {
+                            layoutParams = FrameLayout.LayoutParams(
+                                dp(dotSizeDp),
+                                dp(dotSizeDp)
+                            ).apply {
+                                gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
+                                bottomMargin = dp(dotBottomMarginDp)
+                            }
+                            background = GradientDrawable().apply {
+                                shape = GradientDrawable.OVAL
+                                setColor(ContextCompat.getColor(ctx, R.color.event_dot))
+                            }
+                        }
+                        frame.addView(dot)
+                    }
+
                     dayCounter++
                 }
 
@@ -219,42 +427,143 @@ class AgendaFragment : Fragment() {
         }
     }
 
-    private fun updateEventDays() {
-        eventDays.clear()
-        val currentYear = displayedCalendar.get(Calendar.YEAR)
-        val currentMonth = displayedCalendar.get(Calendar.MONTH)
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val dateFormatAlt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    // ── Day Events Bottom Sheet ────────────────────────────
 
-        for (event in allEvents) {
-            try {
-                val date = try {
-                    dateFormat.parse(event.event_date)
-                } catch (e: Exception) {
-                    dateFormatAlt.parse(event.event_date)
-                }
-                if (date != null) {
-                    val eventCal = Calendar.getInstance().apply { time = date }
-                    if (eventCal.get(Calendar.YEAR) == currentYear &&
-                        eventCal.get(Calendar.MONTH) == currentMonth
-                    ) {
-                        eventDays.add(eventCal.get(Calendar.DAY_OF_MONTH))
-                    }
-                }
-            } catch (_: Exception) {}
+    private fun showDayEventsSheet(day: Int, dayCal: Calendar) {
+        val ctx = requireContext()
+        val dialog = BottomSheetDialog(ctx, R.style.BottomSheetDialogTheme)
+        val sheetView = LayoutInflater.from(ctx).inflate(R.layout.bottom_sheet_day_events, null)
+        dialog.setContentView(sheetView)
+
+        val dayNameFmt = SimpleDateFormat("EEEE", Locale("pt", "BR"))
+        val dateFmt = SimpleDateFormat("d 'de' MMMM", Locale("pt", "BR"))
+        sheetView.findViewById<TextView>(R.id.tvDaySheetDayName).text =
+            dayNameFmt.format(dayCal.time).replaceFirstChar { it.uppercase() }
+        sheetView.findViewById<TextView>(R.id.tvDaySheetDate).text =
+            dateFmt.format(dayCal.time).replaceFirstChar { it.uppercase() }
+
+        val currentYear = dayCal.get(Calendar.YEAR)
+        val currentMonth = dayCal.get(Calendar.MONTH)
+
+        val dayEvents = allEvents.filter { event ->
+            val start = parseEventDate(event.event_date) ?: return@filter false
+            val isCustody = event.event_type.uppercase() == "CUSTODY"
+
+            if (isCustody) {
+                val end = if (!event.event_date_end.isNullOrEmpty())
+                    parseEventDate(event.event_date_end) else start
+                val startCal = Calendar.getInstance().apply { time = start }
+                val endCal = Calendar.getInstance().apply { time = end ?: start }
+                val dayCopy = dayCal.clone() as Calendar
+                dayCopy.set(Calendar.HOUR_OF_DAY, 12)
+                !dayCopy.before(startCal) && !dayCopy.after(endCal)
+            } else {
+                val evtCal = Calendar.getInstance().apply { time = start }
+                evtCal.get(Calendar.DAY_OF_MONTH) == day &&
+                evtCal.get(Calendar.MONTH) == currentMonth &&
+                evtCal.get(Calendar.YEAR) == currentYear
+            }
         }
+
+        val count = dayEvents.size
+        sheetView.findViewById<TextView>(R.id.tvDaySheetCount).text =
+            if (count == 1) "1 evento" else "$count eventos"
+
+        val container = sheetView.findViewById<LinearLayout>(R.id.llDayEventsContainer)
+        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+
+        for (event in dayEvents) {
+            val iconRes = when (event.event_type.uppercase()) {
+                "SCHOOL"  -> R.drawable.ic_school
+                "MEDICAL" -> R.drawable.ic_health
+                "CUSTODY" -> R.drawable.ic_custody
+                else      -> R.drawable.ic_other
+            }
+            val typeLabel = when (event.event_type.uppercase()) {
+                "SCHOOL"  -> "Escola"
+                "MEDICAL" -> "Sa\u00fade"
+                "CUSTODY" -> "Conviv\u00eancia"
+                else      -> "Outro"
+            }
+
+            val timeFmt = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val startDate = parseEventDate(event.event_date)
+            val endDate = if (!event.event_date_end.isNullOrEmpty()) parseEventDate(event.event_date_end) else null
+            val timeStr = when {
+                event.event_type.uppercase() == "CUSTODY" && endDate != null -> {
+                    val endDayFmt = SimpleDateFormat("d MMM", Locale("pt", "BR"))
+                    "At\u00e9 ${endDayFmt.format(endDate)}"
+                }
+                startDate != null -> timeFmt.format(startDate)
+                else -> ""
+            }
+
+            val cardRow = LinearLayout(ctx).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(12) }
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = dp(14).toFloat()
+                    setColor(ContextCompat.getColor(ctx, R.color.gray_50))
+                }
+                setPadding(dp(14), dp(12), dp(14), dp(12))
+            }
+
+            val iconSize = dp(38)
+            val iconFrame = FrameLayout(ctx).apply {
+                layoutParams = LinearLayout.LayoutParams(iconSize, iconSize).apply {
+                    marginEnd = dp(12)
+                }
+                background = ContextCompat.getDrawable(ctx, R.drawable.bg_icon_circle_blue)
+            }
+            val icon = android.widget.ImageView(ctx).apply {
+                val size = dp(18)
+                layoutParams = FrameLayout.LayoutParams(size, size).apply {
+                    gravity = android.view.Gravity.CENTER
+                }
+                setImageResource(iconRes)
+                setColorFilter(ContextCompat.getColor(ctx, R.color.primary_blue))
+            }
+            iconFrame.addView(icon)
+            cardRow.addView(iconFrame)
+
+            val textBlock = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            }
+            textBlock.addView(TextView(ctx).apply {
+                text = event.title
+                textSize = 14f
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setTextColor(ContextCompat.getColor(ctx, R.color.gray_900))
+            })
+            textBlock.addView(TextView(ctx).apply {
+                text = if (timeStr.isNotEmpty()) "$typeLabel \u00b7 $timeStr" else typeLabel
+                textSize = 12f
+                setTextColor(ContextCompat.getColor(ctx, R.color.gray_500))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(2) }
+            })
+            cardRow.addView(textBlock)
+            container.addView(cardRow)
+        }
+
+        dialog.show()
     }
 
-    // ── Data Loading ────────────────────────────────────────
+    // ── Date Parsing ────────────────────────────────────────
 
     private fun parseEventDate(dateStr: String): Date? {
-        val formats = listOf(
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        )
-        for (fmt in formats) {
+        for (fmt in dateFormats) {
             try {
                 val result = fmt.parse(dateStr)
                 if (result != null) return result
@@ -263,39 +572,21 @@ class AgendaFragment : Fragment() {
         return null
     }
 
+    // ── Data Loading ────────────────────────────────────────
+
     private fun loadEvents() {
         lifecycleScope.launch {
             try {
                 if (token.isEmpty() || apiService == null) return@launch
                 val eventList = apiService!!.getEvents("Bearer $token", conversationId)
 
-                // All events for calendar markers
                 allEvents.clear()
                 allEvents.addAll(eventList)
 
-                // Filter: only today and future for the list
-                val todayCal = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }
-                val todayStart = todayCal.time
-
-                events.clear()
-                events.addAll(
-                    eventList.filter {
-                        val d = parseEventDate(it.event_date)
-                        d != null && !d.before(todayStart)
-                    }.sortedBy { it.event_date }
-                )
-                eventsAdapter?.notifyDataSetChanged()
-
-                // Calendar uses ALL events (past included)
-                updateEventDays()
+                updateCalendarData()
                 renderCalendar()
+                filterEventsForDisplayedMonth()
 
-                updateEmptyState()
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Erro ao carregar eventos: ${e.message}", Toast.LENGTH_SHORT).show()
             } finally {
@@ -314,7 +605,7 @@ class AgendaFragment : Fragment() {
         }
     }
 
-    // ── Delete with confirmation (Item 26 bonus) ────────────
+    // ── Delete with confirmation ────────────────────────────
 
     private fun confirmDeleteEvent(event: Event) {
         MaterialAlertDialogBuilder(requireContext())
@@ -368,6 +659,11 @@ class AgendaFragment : Fragment() {
                 layoutDateTimeSingle?.visibility = View.GONE
                 layoutDateTimeStart?.visibility = View.VISIBLE
                 layoutDateTimeEnd?.visibility = View.VISIBLE
+                val bottomSheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+                bottomSheet?.let {
+                    val behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(it)
+                    behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+                }
             } else {
                 layoutDateTimeSingle?.visibility = View.VISIBLE
                 layoutDateTimeStart?.visibility = View.GONE

@@ -57,7 +57,7 @@
                 android:id="@+id/btnNotifications"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
-                android:background="@drawable/avatar_circle"
+                android:background="@drawable/bg_notification_button"
                 android:foreground="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true">
@@ -69,7 +69,7 @@
                     android:src="@drawable/ic_notification_bell"
                     android:contentDescription="Notificações" />
 
-                <!-- Badge -->
+                <!-- Badge com contador (visível apenas quando houver notificações) -->
                 <TextView
                     android:id="@+id/tvNotificationBadge"
                     android:layout_width="20dp"
@@ -183,13 +183,15 @@
                     android:layout_marginTop="4dp">
 
                     <TextView
-                        android:id="@+id/tvNextSwapDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Sem troca agendada"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/white" />
+                    android:id="@+id/tvNextSwapDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sem troca agendada"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -251,7 +253,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Registrada por\npadrão"
+                        android:text="Registro oficial"
                         android:textSize="13sp"
                         android:textColor="@color/gray_500"
                         android:lineSpacingExtra="2dp" />
@@ -280,11 +282,11 @@
                     android:padding="20dp"
                     android:gravity="start">
 
-                    <!-- Ícone de calendário em verde -->
+                    <!-- Ícone de calendário em azul -->
                     <FrameLayout
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:background="@drawable/bg_icon_circle_green"
+                        android:background="@drawable/bg_icon_circle_blue"
                         android:layout_marginBottom="12dp">
 
                         <ImageView
@@ -292,7 +294,7 @@
                             android:layout_height="24dp"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_calendar_add_outline"
-                            app:tint="@color/secondary_green"
+                            app:tint="@color/primary_blue_light"
                             android:contentDescription="Evento" />
                     </FrameLayout>
 
@@ -308,10 +310,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Em poucos\ntoques"
-                        android:textSize="13sp"
+                        android:lineSpacingExtra="2dp"
+                        android:text="Agenda compartilhada"
                         android:textColor="@color/gray_500"
-                        android:lineSpacingExtra="2dp" />
+                        android:textSize="13sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -358,85 +360,6 @@
             android:id="@+id/skeletonHome"
             layout="@layout/skeleton_list"
             android:visibility="visible" />
-
-        <!-- Messages Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardMessages"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?selectableItemBackground"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/gray_200"
-            app:strokeWidth="1dp"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:gravity="center_vertical">
-
-                <FrameLayout
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_icon_circle_blue"
-                    android:layout_marginEnd="14dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_chat"
-                        app:tint="@color/primary_blue"
-                        android:contentDescription="Mensagens" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvMessagesTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Mensagens"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/gray_900" />
-
-                    <TextView
-                        android:id="@+id/tvMessagesPreview"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nenhuma mensagem recente"
-                        android:textSize="13sp"
-                        android:textColor="@color/gray_500"
-                        android:maxLines="1"
-                        android:ellipsize="end" />
-                </LinearLayout>
-
-                <!-- Unread badge -->
-                <TextView
-                    android:id="@+id/tvUnreadBadge"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:background="@drawable/bg_badge_red"
-                    android:gravity="center"
-                    android:textSize="11sp"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
 
         <!-- Footer Info -->
         <com.google.android.material.card.MaterialCardView

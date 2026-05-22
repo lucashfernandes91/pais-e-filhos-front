@@ -135,8 +135,9 @@
     <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="backgroundColor">@color/white</item>
         <item name="elevation">@dimen/elevation_high</item>
-        <item name="itemIconTint">@color/gray_600</item>
-        <item name="itemTextColor">@color/gray_600</item>
+        <item name="itemIconTint">@color/bottom_nav_color</item>
+        <item name="itemTextColor">@color/bottom_nav_color</item>
+        <item name="itemActiveIndicatorStyle">@null</item>
     </style>
 
     <!-- FAB Styles -->

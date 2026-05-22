@@ -87,7 +87,7 @@ class TimelineAdapter(
         private val eventType: TextView = itemView.findViewById(R.id.eventType)
         private val eventCreator: TextView = itemView.findViewById(R.id.eventCreator)
         private val eventNotes: TextView = itemView.findViewById(R.id.eventNotes)
-        private val eventIcon: ImageView = itemView.findViewById(R.id.eventIcon)
+        private val timelineDotIcon: ImageView = itemView.findViewById(R.id.timelineDotIcon)
 
         fun bind(item: TimelineItem.EventItem) {
             val event = item.event
@@ -102,14 +102,14 @@ class TimelineAdapter(
                 eventDate.text = event.event_date
             }
 
-            // Ícone por tipo de evento
+            // Ícone na timeline conforme tipo de evento
             val iconRes = when (event.event_type.uppercase()) {
                 "SCHOOL" -> R.drawable.ic_school
                 "MEDICAL" -> R.drawable.ic_health
                 "CUSTODY" -> R.drawable.ic_custody
                 else -> R.drawable.ic_other
             }
-            eventIcon.setImageResource(iconRes)
+            timelineDotIcon.setImageResource(iconRes)
 
             eventType.visibility = View.GONE
             eventCreator.visibility = View.GONE

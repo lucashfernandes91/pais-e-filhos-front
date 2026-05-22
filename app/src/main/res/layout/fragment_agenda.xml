@@ -84,6 +84,83 @@
                     android:orientation="vertical"
                     android:padding="12dp">
 
+                    <!-- Legend Row -->
+                    <LinearLayout
+                        android:id="@+id/legendRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:paddingBottom="8dp">
+
+                        <!-- Mãe -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingEnd="16dp">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@drawable/bg_dot_pink"
+                                android:layout_marginEnd="4dp" />
+
+                            <TextView
+                                android:id="@+id/tvLegendMother"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Mãe"
+                                android:textSize="12sp"
+                                android:textColor="@color/gray_500" />
+                        </LinearLayout>
+
+                        <!-- Pai -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingEnd="16dp">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@drawable/bg_dot_blue"
+                                android:layout_marginEnd="4dp" />
+
+                            <TextView
+                                android:id="@+id/tvLegendFather"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pai"
+                                android:textSize="12sp"
+                                android:textColor="@color/gray_500" />
+                        </LinearLayout>
+
+                        <!-- Evento -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@drawable/bg_event_dot"
+                                android:layout_marginEnd="4dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Evento"
+                                android:textSize="12sp"
+                                android:textColor="@color/gray_500" />
+                        </LinearLayout>
+                    </LinearLayout>
+
                     <!-- Month Navigation -->
                     <LinearLayout
                         android:layout_width="match_parent"

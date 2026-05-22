@@ -136,13 +136,12 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // ─── Chat badge: unread messages ───
             try {
-                // Contar mensagens do outro pai (assumir todas como não lidas já que read_by não vem no getMessages)
                 val messages = RetrofitClient.api.getMessages("Bearer $token", conversationId)
-                val unreadCount = messages.count { msg -> msg.sender != currentUser }
-                
-                // TODO: Idealmente usar /messages/detail/ para cada msg para ter read_by completo
-                // Por enquanto: contar quantas mensagens o outro pai enviou = todas são "potencialmente" não lidas
-                // Se necessário validar lidas, usar endpoint específico no futuro
+                val unreadCount = messages.count { msg ->
+                    msg.sender != currentUser &&
+                    msg.read_by?.any { it.reader_name == currentUser } != true
+                }
+
                 val chatBadge = bottomNav.getOrCreateBadge(R.id.chatFragment)
                 if (unreadCount > 0) {
                     chatBadge.isVisible = true
@@ -156,33 +155,6 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e(TAG, "Chat badge error: ${e.message}")
                 bottomNav.removeBadge(R.id.chatFragment)
-            }
-
-            // ─── Agenda badge: events today ───
-            try {
-                val events = RetrofitClient.api.getEvents("Bearer $token", conversationId)
-                val todayStr = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
-                val todayCount = events.count { event ->
-                    try {
-                        // event_date é DateTime (2024-04-30T10:00:00Z), extrair apenas data
-                        event.event_date.substring(0, 10) == todayStr
-                    } catch (e: Exception) {
-                        false
-                    }
-                }
-                val agendaBadge = bottomNav.getOrCreateBadge(R.id.agendaFragment)
-                if (todayCount > 0) {
-                    agendaBadge.isVisible = true
-                    agendaBadge.number = todayCount
-                    agendaBadge.backgroundColor = ContextCompat.getColor(this@MainActivity, R.color.primary_blue)
-                    Log.d(TAG, "Agenda badge: $todayCount events today")
-                } else {
-                    bottomNav.removeBadge(R.id.agendaFragment)
-                    Log.d(TAG, "Agenda badge: removed (no events today)")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Agenda badge error: ${e.message}")
-                bottomNav.removeBadge(R.id.agendaFragment)
             }
         }
     }

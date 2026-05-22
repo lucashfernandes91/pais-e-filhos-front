@@ -21,10 +21,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.ChatViewModel
 import com.example.chatapp.ChatViewModelFactory
+import com.example.chatapp.RetrofitClient
 import com.example.chatapp.Message
 import com.example.chatapp.MessageAdapter
 import com.example.chatapp.PrefsHelper
@@ -297,6 +300,9 @@ class ChatFragment : Fragment() {
             messageAdapter = MessageAdapter(messages, currentUsername)
             messagesRecyclerView.adapter = messageAdapter
 
+            // Marcar mensagens não lidas como lidas
+            markUnreadMessagesAsRead(messages)
+
             // Empty state
             val emptyState = view?.findViewById<View>(R.id.emptyStateChat)
             if (messages.isEmpty()) {
@@ -386,6 +392,26 @@ class ChatFragment : Fragment() {
     private fun showSnackbar(message: String) {
         view?.let {
             Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun markUnreadMessagesAsRead(messages: List<Message>) {
+        val token = PrefsHelper.getAuthToken(requireContext())
+        if (token.isEmpty()) return
+
+        val unread = messages.filter { msg ->
+            msg.sender != currentUsername &&
+            msg.read_by?.any { it.reader_name == currentUsername } != true
+        }
+
+        if (unread.isEmpty()) return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            unread.forEach { msg ->
+                try {
+                    RetrofitClient.api.markMessageAsRead("Bearer $token", msg.id)
+                } catch (_: Exception) {}
+            }
         }
     }
 }

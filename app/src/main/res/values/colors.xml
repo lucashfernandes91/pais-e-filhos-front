@@ -36,9 +36,19 @@
     <color name="message_received_bg">#F3F4F6</color>
     <color name="message_received_text">#111827</color>
 
-    <!-- Custody Colors -->
+    <!-- Custody Colors (Calendar) -->
+    <color name="custody_mother">#EC4899</color>
+    <color name="custody_mother_light">#FDF2F8</color>
+    <color name="custody_mother_bg">#FBCFE8</color>
+    <color name="custody_father">#3B82F6</color>
+    <color name="custody_father_light">#EFF6FF</color>
+    <color name="custody_father_bg">#BFDBFE</color>
     <color name="custody_parent_a">#60A5FA</color>
     <color name="custody_parent_b">#34D399</color>
+
+    <!-- Event dot color -->
+    <color name="event_dot">#F59E0B</color>
+    <color name="event_dot_custody">#8B5CF6</color>
 
     <!-- Secondary -->
     <color name="secondary_green">#16A34A</color>
@@ -56,10 +66,10 @@
     <color name="avatar_pink">#FCE7F3</color>
 
     <!-- Event Type Colors -->
-    <color name="event_mother">#60A5FA</color>
-    <color name="event_mother_light">#DBEAFE</color>
-    <color name="event_father">#34D399</color>
-    <color name="event_father_light">#D1FAE5</color>
+    <color name="event_mother">#EC4899</color>
+    <color name="event_mother_light">#FDF2F8</color>
+    <color name="event_father">#3B82F6</color>
+    <color name="event_father_light">#EFF6FF</color>
     <color name="event_general">#2563EB</color>
     <color name="event_general_light">#DBEAFE</color>
 </resources>

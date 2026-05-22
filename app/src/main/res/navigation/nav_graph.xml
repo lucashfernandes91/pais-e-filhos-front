@@ -70,4 +70,9 @@
         android:id="@+id/notificationSettingsFragment"
         android:name="com.example.chatapp.ui.NotificationSettingsFragment"
         android:label="Configurações de notificação" />
+
+    <fragment
+        android:id="@+id/childDetailFragment"
+        android:name="com.example.chatapp.ui.ChildDetailFragment"
+        android:label="Detalhes do filho" />
 </navigation>

@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.use
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -34,12 +35,21 @@ import java.util.Locale
 class ProfileFragment : Fragment() {
 
     private var childrenContainer: LinearLayout? = null
+    private var childPhotoCallback: ((Uri) -> Unit)? = null
 
     private val photoPickerLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
             saveProfilePhoto(uri)
+        }
+    }
+
+    private val childPhotoPickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            childPhotoCallback?.invoke(uri)
         }
     }
 
@@ -209,6 +219,15 @@ class ProfileFragment : Fragment() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
+            // Click na row inteira abre a tela de detalhes
+            isClickable = true
+            isFocusable = true
+            background = ctx.obtainStyledAttributes(
+                intArrayOf(android.R.attr.selectableItemBackground)
+            ).use { it.getDrawable(0) }
+            setOnClickListener {
+                openChildDetail(child)
+            }
         }
 
         // Avatar
@@ -258,6 +277,16 @@ class ProfileFragment : Fragment() {
             textContainer.addView(tvBirth)
         }
 
+        if (child.has_custody) {
+            val tvCustody = TextView(ctx).apply {
+                text = "✓ Guarda"
+                textSize = 12f
+                setTextColor(ContextCompat.getColor(ctx, R.color.secondary_green))
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+            }
+            textContainer.addView(tvCustody)
+        }
+
         row.addView(textContainer)
 
         // Delete button (X)
@@ -293,8 +322,49 @@ class ProfileFragment : Fragment() {
 
         val etName = dialogView.findViewById<EditText>(R.id.etChildName)
         val etBirthDate = dialogView.findViewById<EditText>(R.id.etChildBirthDate)
+        val etCpf = dialogView.findViewById<EditText>(R.id.etChildCpf)
+        val etRg = dialogView.findViewById<EditText>(R.id.etChildRg)
+        val cbHasCustody = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.cbHasCustody)
+        val btnChildPhoto = dialogView.findViewById<View>(R.id.btnChildPhoto)
+        val ivChildPhoto = dialogView.findViewById<ImageView>(R.id.ivChildPhoto)
+        val ivCameraIcon = dialogView.findViewById<ImageView>(R.id.ivCameraIcon)
+        val tvPhotoLabel = dialogView.findViewById<android.widget.TextView>(R.id.tvPhotoLabel)
 
         var selectedDate: String? = null
+        var selectedPhotoUri: Uri? = null
+
+        // Máscara simples de CPF
+        etCpf.addTextChangedListener(object : android.text.TextWatcher {
+            private var isUpdating = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (isUpdating) return
+                isUpdating = true
+                val digits = s.toString().replace(Regex("[^0-9]"), "")
+                val formatted = when {
+                    digits.length > 9 -> "${digits.substring(0,3)}.${digits.substring(3,6)}.${digits.substring(6,9)}-${digits.substring(9, minOf(digits.length, 11))}"
+                    digits.length > 6 -> "${digits.substring(0,3)}.${digits.substring(3,6)}.${digits.substring(6)}"
+                    digits.length > 3 -> "${digits.substring(0,3)}.${digits.substring(3)}"
+                    else -> digits
+                }
+                etCpf.setText(formatted)
+                etCpf.setSelection(formatted.length)
+                isUpdating = false
+            }
+        })
+
+        // Foto picker
+        btnChildPhoto.setOnClickListener {
+            childPhotoCallback = { uri ->
+                selectedPhotoUri = uri
+                ivChildPhoto.setImageURI(uri)
+                ivChildPhoto.visibility = View.VISIBLE
+                ivCameraIcon.visibility = View.GONE
+                tvPhotoLabel.visibility = View.GONE
+            }
+            childPhotoPickerLauncher.launch("image/*")
+        }
 
         etBirthDate.setOnClickListener {
             val cal = Calendar.getInstance()
@@ -319,13 +389,16 @@ class ProfileFragment : Fragment() {
                     Toast.makeText(requireContext(), "Nome é obrigatório", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
-                createChild(name, selectedDate)
+                val cpf = etCpf.text.toString().trim().ifEmpty { null }
+                val rg = etRg.text.toString().trim().ifEmpty { null }
+                val hasCustody = cbHasCustody.isChecked
+                createChild(name, selectedDate, cpf, rg, hasCustody)
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-    private fun createChild(name: String, birthDate: String?) {
+    private fun createChild(name: String, birthDate: String?, cpf: String?, rg: String?, hasCustody: Boolean) {
         val token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty()) return
 
@@ -347,11 +420,14 @@ class ProfileFragment : Fragment() {
                 val request = CreateChildRequest(
                     name = name.trim(),
                     conversationId = conversationId,
-                    birthDate = birthDate?.trim()
+                    birthDate = birthDate?.trim(),
+                    cpf = cpf,
+                    rg = rg,
+                    hasCustody = hasCustody
                 )
 
                 android.util.Log.d("ProfileFragment", "createChild: convId=$conversationId, name=$name, birthDate=$birthDate")
-                val result = RetrofitClient.api.createChild("Bearer $token", conversationId, request)
+                val result = RetrofitClient.api.createChild("Bearer $token", request)
                 android.util.Log.d("ProfileFragment", "createChild success: ${result.id} ${result.name}")
                 Toast.makeText(requireContext(), "Filho(a) adicionado(a)", Toast.LENGTH_SHORT).show()
                 
@@ -382,6 +458,24 @@ class ProfileFragment : Fragment() {
             .show()
     }
 
+    /**
+     * Abre a tela de detalhes do filho passando o objeto via Bundle (Serializable).
+     */
+    private fun openChildDetail(child: Child) {
+        try {
+            val bundle = Bundle().apply {
+                putSerializable(ChildDetailFragment.ARG_CHILD, child)
+            }
+            findNavController().navigate(R.id.childDetailFragment, bundle)
+        } catch (e: Exception) {
+            Toast.makeText(
+                requireContext(),
+                "Erro ao abrir detalhes: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     private fun deleteChild(childId: Int) {
         val token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty()) return
@@ -389,7 +483,7 @@ class ProfileFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val conversationId = PrefsHelper.getConversationId(requireContext())
-                RetrofitClient.api.deleteChild("Bearer $token", conversationId, childId)
+                RetrofitClient.api.deleteChild("Bearer $token", childId)
                 Toast.makeText(requireContext(), "Removido", Toast.LENGTH_SHORT).show()
                 loadChildren()
             } catch (e: Exception) {

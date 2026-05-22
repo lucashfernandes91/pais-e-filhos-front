@@ -1,36 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/etChildName"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Nome do filho(a)"
-        android:textSize="15sp"
-        android:textColor="@color/gray_900"
-        android:textColorHint="@color/gray_400"
-        android:background="@drawable/bg_input_outlined"
-        android:paddingHorizontal="14dp"
-        android:inputType="textPersonName"
-        android:singleLine="true" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <EditText
-        android:id="@+id/etChildBirthDate"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="12dp"
-        android:hint="Data de nascimento (opcional)"
-        android:textSize="15sp"
-        android:textColor="@color/gray_900"
-        android:textColorHint="@color/gray_400"
-        android:background="@drawable/bg_input_outlined"
-        android:paddingHorizontal="14dp"
-        android:inputType="date"
-        android:focusable="false"
-        android:clickable="true"
-        android:singleLine="true" />
-</LinearLayout>
+        <!-- Foto da criança -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/btnChildPhoto"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_avatar_child"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/ivChildPhoto"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/ivCameraIcon"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_camera"
+                    app:tint="@color/gray_400"
+                    android:contentDescription="Adicionar foto" />
+
+                <TextView
+                    android:id="@+id/tvPhotoLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Foto"
+                    android:textSize="11sp"
+                    android:textColor="@color/gray_400"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Nome -->
+        <EditText
+            android:id="@+id/etChildName"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Nome do filho(a)"
+            android:textSize="15sp"
+            android:textColor="@color/gray_900"
+            android:textColorHint="@color/gray_400"
+            android:background="@drawable/bg_input_outlined"
+            android:paddingHorizontal="14dp"
+            android:inputType="textPersonName"
+            android:singleLine="true" />
+
+        <!-- Data de nascimento -->
+        <EditText
+            android:id="@+id/etChildBirthDate"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:hint="Data de nascimento (opcional)"
+            android:textSize="15sp"
+            android:textColor="@color/gray_900"
+            android:textColorHint="@color/gray_400"
+            android:background="@drawable/bg_input_outlined"
+            android:paddingHorizontal="14dp"
+            android:inputType="date"
+            android:focusable="false"
+            android:clickable="true"
+            android:singleLine="true" />
+
+        <!-- CPF -->
+        <EditText
+            android:id="@+id/etChildCpf"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:hint="CPF (opcional)"
+            android:textSize="15sp"
+            android:textColor="@color/gray_900"
+            android:textColorHint="@color/gray_400"
+            android:background="@drawable/bg_input_outlined"
+            android:paddingHorizontal="14dp"
+            android:inputType="number"
+            android:maxLength="14"
+            android:singleLine="true" />
+
+        <!-- RG -->
+        <EditText
+            android:id="@+id/etChildRg"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:hint="RG (opcional)"
+            android:textSize="15sp"
+            android:textColor="@color/gray_900"
+            android:textColorHint="@color/gray_400"
+            android:background="@drawable/bg_input_outlined"
+            android:paddingHorizontal="14dp"
+            android:inputType="text"
+            android:maxLength="20"
+            android:singleLine="true" />
+
+        <!-- Checkbox guarda -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbHasCustody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Possuo a guarda desta criança"
+            android:textSize="15sp"
+            android:textColor="@color/gray_700"
+            app:buttonTint="@color/primary_blue" />
+
+    </LinearLayout>
+</ScrollView>

@@ -26,7 +26,7 @@ class TimelineViewModel(private val token: String, private val conversationId: I
                 timelineItems.addAll(messages.map { TimelineItem.MessageItem(it) })
                 timelineItems.addAll(events.map { TimelineItem.EventItem(it) })
 
-                timelineItems.sortBy { it.getDate() }
+                timelineItems.sortByDescending { it.getDate() }
 
                 items.postValue(timelineItems)
             } catch (e: Exception) {

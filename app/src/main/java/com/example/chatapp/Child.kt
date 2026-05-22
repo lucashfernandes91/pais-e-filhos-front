@@ -3,10 +3,6 @@ package com.example.chatapp
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-/**
- * Modelo de Filho com anotações para serialização Gson
- * Usado em operações CRUD via API
- */
 data class Child(
     @SerializedName("id")
     val id: Int,
@@ -16,6 +12,18 @@ data class Child(
 
     @SerializedName("birth_date")
     val birth_date: String?,
+
+    @SerializedName("cpf")
+    val cpf: String? = null,
+
+    @SerializedName("rg")
+    val rg: String? = null,
+
+    @SerializedName("photo_url")
+    val photo_url: String? = null,
+
+    @SerializedName("has_custody")
+    val has_custody: Boolean = false,
 
     @SerializedName("conversation")
     val conversation: Int,

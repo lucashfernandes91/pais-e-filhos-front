@@ -38,7 +38,7 @@ class HomeFragment : Fragment() {
         return try {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
             val inputFormatAlt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val dayMonthFormat = SimpleDateFormat("dd 'de' MMM.", Locale("pt", "BR"))
+            val dayMonthFormat = SimpleDateFormat("dd 'de' MMMM", Locale("pt", "BR"))
             val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
             val date = try { inputFormat.parse(eventDate) } catch (e: Exception) { inputFormatAlt.parse(eventDate) }
@@ -100,10 +100,16 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val view = view ?: return
+        val token = PrefsHelper.getAuthToken(requireContext())
+        if (token.isNotEmpty()) loadAllData(view, token)
+    }
+
     private fun loadAllData(view: View, token: String) {
         loadUpcomingEvents(view, token)
         loadUnreadNotificationsCount(view, token)
-        loadMessagesPreview(view, token)
     }
 
     private fun loadUpcomingEvents(view: View, token: String) {
@@ -155,62 +161,6 @@ class HomeFragment : Fragment() {
                     SkeletonAnimator.stopShimmer(it)
                     it.visibility = View.GONE
                 }
-            }
-        }
-    }
-
-    // ── Messages preview card ─────────────────────
-
-    private fun loadMessagesPreview(view: View, token: String) {
-        val cardMessages = view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardMessages) ?: return
-        val tvTitle = view.findViewById<TextView>(R.id.tvMessagesTitle)
-        val tvPreview = view.findViewById<TextView>(R.id.tvMessagesPreview)
-        val tvUnreadBadge = view.findViewById<TextView>(R.id.tvUnreadBadge)
-
-        lifecycleScope.launch {
-            try {
-                val conversationId = PrefsHelper.getConversationId(requireContext())
-                val messages = RetrofitClient.api.getMessages("Bearer $token", conversationId)
-                val currentUser = PrefsHelper.getUsername(requireContext())
-
-                if (messages.isEmpty()) {
-                    cardMessages.visibility = View.GONE
-                    return@launch
-                }
-
-                cardMessages.visibility = View.VISIBLE
-
-                // Last message preview
-                val lastMsg = messages.last()
-                val senderName = if (lastMsg.sender == currentUser) "Voc\u00ea" else lastMsg.sender.replaceFirstChar { it.uppercase() }
-                val previewText = if (lastMsg.content.isNotBlank()) {
-                    "$senderName: ${lastMsg.content}"
-                } else {
-                    "$senderName: [Anexo]"
-                }
-                tvPreview?.text = previewText
-
-                // Count unread (messages from other that I haven't read)
-                val unreadCount = messages.count { msg ->
-                    msg.sender != currentUser &&
-                    msg.read_by?.any { it.reader_name == currentUser } != true
-                }
-
-                if (unreadCount > 0) {
-                    tvTitle?.text = "Mensagens ($unreadCount novas)"
-                    tvUnreadBadge?.text = unreadCount.toString()
-                    tvUnreadBadge?.visibility = View.VISIBLE
-                } else {
-                    tvTitle?.text = "Mensagens"
-                    tvUnreadBadge?.visibility = View.GONE
-                }
-
-                // Click to go to chat
-                cardMessages.setOnClickListener {
-                    try { findNavController().navigate(R.id.chatFragment) } catch (_: Exception) {}
-                }
-            } catch (_: Exception) {
-                cardMessages.visibility = View.GONE
             }
         }
     }
@@ -286,7 +236,7 @@ class HomeFragment : Fragment() {
             .minByOrNull { it.second }
 
         if (nextCustody != null) {
-            val dateFormat = SimpleDateFormat("EEEE, dd 'de' MMM.", Locale("pt", "BR"))
+            val dateFormat = SimpleDateFormat("EEEE, dd 'de' MMMM", Locale("pt", "BR"))
             tvNextSwapDate?.text = dateFormat.format(nextCustody.second)
                 .replaceFirstChar { it.uppercase() }
         } else {
