@@ -2,26 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/homeFragment"
-        android:icon="@drawable/ic_home"
-        android:title="Início" />
+        android:icon="@drawable/ic_nav_home"
+        android:title="@string/ui_inicio" />
 
     <item
         android:id="@+id/chatFragment"
-        android:icon="@drawable/ic_chat"
-        android:title="Mensagens" />
+        android:icon="@drawable/ic_nav_messages"
+        android:title="@string/ui_mensagens" />
 
     <item
         android:id="@+id/agendaFragment"
-        android:icon="@drawable/ic_calendar"
-        android:title="Agenda" />
+        android:icon="@drawable/ic_nav_agenda"
+        android:title="@string/ui_agenda" />
 
     <item
         android:id="@+id/timelineFragment"
-        android:icon="@drawable/ic_schedule"
-        android:title="Linha" />
+        android:icon="@drawable/ic_nav_timeline"
+        android:title="@string/ui_linha" />
 
     <item
         android:id="@+id/profileFragment"
-        android:icon="@drawable/ic_person"
-        android:title="Perfil" />
+        android:icon="@drawable/ic_nav_profile"
+        android:title="@string/ui_perfil" />
 </menu>

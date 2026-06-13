@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.CoParent.Sheet.Content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/white"
     android:paddingBottom="32dp">
 
     <!-- Handle bar -->
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
-        android:text="Exportar conversa"
+        android:text="@string/ui_exportar_conversa"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/gray_900" />
@@ -33,21 +33,19 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="4dp"
-        android:text="Gera um PDF com registro oficial de todas as mensagens e eventos."
+        android:text="@string/ui_gera_um_pdf_com_registro_oficial_de_todas"
         android:textSize="13sp"
         android:textColor="@color/gray_500"
         android:lineSpacingExtra="2dp" />
 
     <!-- Info card -->
     <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.CoParent.Card.Info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="20dp"
-        app:cardBackgroundColor="#F0F5FF"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="0dp">
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -69,13 +67,13 @@
                     android:src="@drawable/ic_chat"
                     app:tint="@color/primary_blue"
                     android:layout_marginEnd="10dp"
-                    android:contentDescription="Mensagens" />
+                    android:contentDescription="@string/ui_mensagens" />
 
                 <TextView
                     android:id="@+id/tvMessageCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 mensagens"
+                    android:text="@string/ui_0_mensagens"
                     android:textSize="13sp"
                     android:textColor="@color/gray_700" />
             </LinearLayout>
@@ -92,12 +90,12 @@
                     android:layout_height="16dp"
                     android:src="@drawable/ic_shield"
                     android:layout_marginEnd="10dp"
-                    android:contentDescription="Registro" />
+                    android:contentDescription="@string/ui_registro" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Válido para fins legais"
+                    android:text="@string/ui_valido_para_fins_legais"
                     android:textSize="13sp"
                     android:textColor="@color/gray_700" />
             </LinearLayout>
@@ -107,37 +105,27 @@
     <!-- Download button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDownloadPdf"
+        style="@style/Widget.CoParent.Button.Primary"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="20dp"
-        android:text="Baixar PDF"
-        android:textSize="16sp"
-        android:textAllCaps="false"
-        android:textStyle="bold"
-        app:cornerRadius="12dp"
-        app:backgroundTint="@color/primary_blue"
+        android:text="@string/ui_baixar_pdf"
         app:icon="@drawable/ic_download"
         app:iconGravity="textStart"
-        app:iconTint="@color/white"
+        app:iconTint="@color/on_primary"
         app:iconSize="20dp"
         app:iconPadding="8dp" />
 
     <!-- Share button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSharePdf"
+        style="@style/Widget.CoParent.Button.Outlined"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="8dp"
-        android:text="Compartilhar"
-        android:textSize="16sp"
-        android:textAllCaps="false"
-        android:textColor="@color/primary_blue"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        app:cornerRadius="12dp"
-        app:strokeColor="@color/primary_blue"
-        app:strokeWidth="1.5dp"
+        android:text="@string/ui_compartilhar"
         app:icon="@drawable/ic_export"
         app:iconGravity="textStart"
         app:iconTint="@color/primary_blue"
@@ -147,9 +135,9 @@
     <!-- Progress -->
     <LinearLayout
         android:id="@+id/progressContainer"
+        style="@style/Widget.CoParent.Feedback.Container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center"
         android:layout_marginTop="16dp"
         android:visibility="gone">
@@ -167,7 +155,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="Gerando PDF..."
+            android:text="@string/ui_gerando_pdf"
             android:textSize="13sp"
             android:textColor="@color/gray_500" />
     </LinearLayout>

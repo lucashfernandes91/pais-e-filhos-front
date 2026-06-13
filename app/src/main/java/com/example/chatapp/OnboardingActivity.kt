@@ -3,86 +3,129 @@ package com.example.chatapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 
 class OnboardingActivity : AppCompatActivity() {
 
-    private lateinit var viewPager: ViewPager2
+    private lateinit var icon: ImageView
+    private lateinit var title: TextView
+    private lateinit var description: TextView
     private lateinit var dotsContainer: LinearLayout
     private lateinit var btnNext: MaterialButton
     private lateinit var btnSkip: TextView
+    private lateinit var btnBack: ImageButton
+    private lateinit var bottomActions: LinearLayout
+    private var currentPage = 0
 
     data class OnboardingPage(
-        val iconRes: Int,
-        val title: String,
-        val description: String
+        @param:DrawableRes val iconRes: Int,
+        @param:StringRes val titleRes: Int,
+        @param:StringRes val descriptionRes: Int,
+        @param:StringRes val secondaryActionRes: Int
     )
 
     private val pages = listOf(
         OnboardingPage(
-            R.drawable.ic_shield,
-            "Comunicação segura",
-            "Todas as mensagens são registro oficial e não podem ser editadas ou apagadas. Válido para fins legais."
+            R.drawable.ic_onboarding_organization,
+            R.string.onboarding_organization_title,
+            R.string.onboarding_organization_description,
+            R.string.ui_pular_introducao
         ),
         OnboardingPage(
-            R.drawable.ic_calendar,
-            "Agenda compartilhada",
-            "Organize consultas, escola e convivência em um só lugar. Sem confusão, sem esquecimento."
-        ),
-        OnboardingPage(
-            R.drawable.ic_chat,
-            "Simples como WhatsApp",
-            "Interface familiar e fácil de usar. Tudo em 1-2 toques. Sem complicação."
+            R.drawable.ic_onboarding_security,
+            R.string.onboarding_security_title,
+            R.string.onboarding_security_description,
+            R.string.onboarding_have_account
         )
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Verificar se já completou onboarding
-        val prefs = getSharedPreferences("coparent", MODE_PRIVATE)
-        if (prefs.getBoolean("onboarding_complete", false)) {
+        if (PrefsHelper.isOnboardingComplete(this)) {
             goToLogin()
             return
         }
 
         setContentView(R.layout.activity_onboarding)
 
-        viewPager = findViewById(R.id.viewPager)
+        icon = findViewById(R.id.ivIcon)
+        title = findViewById(R.id.tvTitle)
+        description = findViewById(R.id.tvDescription)
         dotsContainer = findViewById(R.id.dotsContainer)
         btnNext = findViewById(R.id.btnNext)
         btnSkip = findViewById(R.id.btnSkip)
+        btnBack = findViewById(R.id.btnBack)
+        bottomActions = findViewById(R.id.bottomActions)
 
-        viewPager.adapter = OnboardingAdapter(pages)
+        bottomActions.bringToFront()
+        btnNext.bringToFront()
+        btnSkip.bringToFront()
 
         setupDots()
-
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                updateDots(position)
-                btnNext.text = if (position == pages.size - 1) "Começar" else "Continuar"
-            }
-        })
+        setupSystemInsets()
+        updatePage(0)
 
         btnNext.setOnClickListener {
-            if (viewPager.currentItem < pages.size - 1) {
-                viewPager.currentItem += 1
-            } else {
-                completeOnboarding()
-            }
+            goForwardOrComplete()
         }
 
         btnSkip.setOnClickListener {
             completeOnboarding()
+        }
+
+        btnBack.setOnClickListener {
+            updatePage((currentPage - 1).coerceAtLeast(0))
+        }
+    }
+
+    private fun goForwardOrComplete() {
+        if (currentPage < pages.lastIndex) {
+            updatePage(currentPage + 1)
+        } else {
+            completeOnboarding()
+        }
+    }
+
+    private fun updatePage(position: Int) {
+        currentPage = position.coerceIn(0, pages.lastIndex)
+        val page = pages[currentPage]
+        icon.setImageResource(page.iconRes)
+        title.setText(page.titleRes)
+        description.setText(page.descriptionRes)
+        updateDots(currentPage)
+        btnNext.setText(
+            if (currentPage == pages.lastIndex) {
+                R.string.onboarding_start
+            } else {
+                R.string.ui_continuar
+            }
+        )
+        btnSkip.setText(page.secondaryActionRes)
+        btnBack.visibility = if (currentPage == 0) View.GONE else View.VISIBLE
+    }
+
+    private fun setupSystemInsets() {
+        val originalBottomPadding = bottomActions.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(bottomActions) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                view.paddingLeft,
+                view.paddingTop,
+                view.paddingRight,
+                originalBottomPadding + systemBars.bottom
+            )
+            insets
         }
     }
 
@@ -114,8 +157,7 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun completeOnboarding() {
-        getSharedPreferences("coparent", MODE_PRIVATE)
-            .edit().putBoolean("onboarding_complete", true).apply()
+        PrefsHelper.setOnboardingComplete(this, true)
         goToLogin()
     }
 
@@ -124,30 +166,4 @@ class OnboardingActivity : AppCompatActivity() {
         finish()
     }
 
-    // Adapter
-    inner class OnboardingAdapter(
-        private val pages: List<OnboardingPage>
-    ) : RecyclerView.Adapter<OnboardingAdapter.PageViewHolder>() {
-
-        inner class PageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val icon: ImageView = view.findViewById(R.id.ivIcon)
-            val title: TextView = view.findViewById(R.id.tvTitle)
-            val description: TextView = view.findViewById(R.id.tvDescription)
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_onboarding_page, parent, false)
-            return PageViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
-            val page = pages[position]
-            holder.icon.setImageResource(page.iconRes)
-            holder.title.text = page.title
-            holder.description.text = page.description
-        }
-
-        override fun getItemCount() = pages.size
-    }
 }

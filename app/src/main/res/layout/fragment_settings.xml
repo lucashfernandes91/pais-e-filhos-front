@@ -16,14 +16,18 @@
             style="@style/TextStyle.Display2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Configurações" />
+            android:text="@string/ui_configuracoes" />
+
+        <View
+            style="@style/Widget.CoParent.Header.Divider"
+            android:layout_marginTop="@dimen/spacing_m" />
 
         <!-- Outro Responsável Section -->
         <TextView
             style="@style/TextStyle.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="OUTRO RESPONSÁVEL"
+            android:text="@string/ui_outro_responsavel"
             android:textSize="11sp"
             android:letterSpacing="0.05"
             android:textColor="@color/gray_500"
@@ -61,7 +65,7 @@
                         android:id="@+id/tvOtherParentInitial"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="L"
+                        android:text="@string/ui_l"
                         android:gravity="center"
                         android:textColor="@color/gray_700"
                         android:textStyle="bold"
@@ -80,7 +84,7 @@
                         style="@style/TextStyle.Body"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lucas"
+                        android:text="@string/ui_lucas"
                         android:textStyle="bold" />
 
                     <TextView
@@ -88,7 +92,7 @@
                         style="@style/TextStyle.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pai \u00B7 Conectado"
+                        android:text="@string/ui_pai_conectado"
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
 
@@ -111,7 +115,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ativo"
+                        android:text="@string/ui_ativo"
                         android:textSize="11sp"
                         android:textColor="@color/secondary_green"
                         android:textStyle="bold" />
@@ -149,7 +153,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_person"
                         app:tint="@color/secondary_green"
-                        android:contentDescription="Convidar" />
+                        android:contentDescription="@string/ui_convidar_2" />
                 </FrameLayout>
 
                 <TextView
@@ -157,14 +161,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Convidar outro responsável" />
+                    android:text="@string/ui_convidar_outro_responsavel" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=">"
-                    android:textSize="18sp"
-                    android:textColor="@color/gray_400" />
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="@color/gray_400"
+                    android:contentDescription="@string/ui_convidar_2" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -173,7 +177,7 @@
             style="@style/TextStyle.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Notificações"
+            android:text="@string/ui_notificacoes"
             android:layout_marginTop="@dimen/spacing_l"
             android:layout_marginBottom="@dimen/spacing_m" />
 
@@ -206,18 +210,19 @@
                             style="@style/TextStyle.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Notificações Push" />
+                            android:text="@string/ui_notificacoes_push_2" />
 
                         <TextView
                             style="@style/TextStyle.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Mensagens em tempo real"
+                            android:text="@string/ui_mensagens_em_tempo_real"
                             android:layout_marginTop="@dimen/spacing_xs" />
                     </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchPushNotifications"
+                        style="@style/Widget.CoParent.Switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true" />
@@ -247,18 +252,19 @@
                             style="@style/TextStyle.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Notificações por Email" />
+                            android:text="@string/ui_notificacoes_por_email" />
 
                         <TextView
                             style="@style/TextStyle.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Resumo diário"
+                            android:text="@string/ui_resumo_diario"
                             android:layout_marginTop="@dimen/spacing_xs" />
                     </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchEmailNotifications"
+                        style="@style/Widget.CoParent.Switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="false" />
@@ -271,7 +277,7 @@
             style="@style/TextStyle.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PRIVACIDADE &amp; DADOS"
+            android:text="@string/ui_privacidade_e_dados"
             android:textSize="11sp"
             android:letterSpacing="0.05"
             android:textColor="@color/gray_500"
@@ -313,7 +319,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_download"
                             app:tint="@color/primary_blue"
-                            android:contentDescription="Exportar" />
+                            android:contentDescription="@string/ui_exportar" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -326,23 +332,23 @@
                             style="@style/TextStyle.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Exportar todos os dados"
+                            android:text="@string/ui_exportar_todos_os_dados"
                             android:textStyle="bold" />
 
                         <TextView
                             style="@style/TextStyle.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="PDF com mensagens e eventos"
+                            android:text="@string/ui_pdf_com_mensagens_e_eventos"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=">"
-                        android:textSize="18sp"
-                        android:textColor="@color/gray_400" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/gray_400"
+                        android:contentDescription="@string/ui_ir_para" />
                 </LinearLayout>
 
                 <View
@@ -375,7 +381,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_lock"
                             app:tint="@color/primary_blue"
-                            android:contentDescription="Privacidade" />
+                            android:contentDescription="@string/ui_privacidade" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -388,23 +394,23 @@
                             style="@style/TextStyle.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Privacidade"
+                            android:text="@string/ui_privacidade"
                             android:textStyle="bold" />
 
                         <TextView
                             style="@style/TextStyle.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Como tratamos seus dados"
+                            android:text="@string/ui_como_tratamos_seus_dados"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=">"
-                        android:textSize="18sp"
-                        android:textColor="@color/gray_400" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/gray_400"
+                        android:contentDescription="@string/ui_privacidade" />
                 </LinearLayout>
 
                 <View
@@ -437,7 +443,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_shield"
                             app:tint="@color/primary_blue"
-                            android:contentDescription="Validade" />
+                            android:contentDescription="@string/ui_validade" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -450,23 +456,23 @@
                             style="@style/TextStyle.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Validade jurídica"
+                            android:text="@string/ui_validade_juridica"
                             android:textStyle="bold" />
 
                         <TextView
                             style="@style/TextStyle.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Como funciona o registro oficial"
+                            android:text="@string/ui_como_funciona_o_registro_oficial"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=">"
-                        android:textSize="18sp"
-                        android:textColor="@color/gray_400" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/gray_400"
+                        android:contentDescription="@string/ui_validade" />
                 </LinearLayout>
 
                 <View
@@ -499,7 +505,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_info_circle"
                             app:tint="@color/primary_blue"
-                            android:contentDescription="Ajuda" />
+                            android:contentDescription="@string/ui_ajuda" />
                     </FrameLayout>
 
                     <TextView
@@ -507,15 +513,15 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Ajuda &amp; Suporte"
+                        android:text="@string/ui_ajuda_e_suporte"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=">"
-                        android:textSize="18sp"
-                        android:textColor="@color/gray_400" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/gray_400"
+                        android:contentDescription="@string/ui_ajuda" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -538,12 +544,12 @@
                 android:src="@drawable/ic_logout"
                 app:tint="@color/gray_600"
                 android:layout_marginEnd="8dp"
-                android:contentDescription="Sair" />
+                android:contentDescription="@string/ui_sair" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sair da conta"
+                android:text="@string/ui_sair_da_conta"
                 android:textSize="14sp"
                 android:textColor="@color/gray_600" />
         </LinearLayout>
@@ -552,7 +558,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="CoParent Lite \u00B7 v1.0"
+            android:text="@string/ui_coparent_lite_v1_0_2"
             android:textSize="12sp"
             android:textColor="@color/gray_400"
             android:gravity="center"

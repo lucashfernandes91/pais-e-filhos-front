@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Material Icons: send (Outlined) — avião de papel com contorno apenas
-    Fonte: https://fonts.google.com/icons?selected=Material+Icons+Outlined:send
-    Efeito outline: dois sub-paths com fillType evenOdd (externo + interno recortado)
--->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:fillColor="#FF000000"
-        android:fillType="evenOdd"
-        android:pathData="
-            M2.01,21 L23,12 L2.01,3 L2,10 L17,12 L2,14 Z
-            M4,7.66 L4,10.34 L11.05,12 L4,13.66 L4,16.34 L17.04,12 Z
-        "/>
+        android:fillColor="@color/icon_default"
+        android:pathData="M2.01,21L23,12L2.01,3L2,10L17,12L2,14Z" />
 </vector>

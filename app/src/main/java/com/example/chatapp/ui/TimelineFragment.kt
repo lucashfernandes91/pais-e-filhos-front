@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +20,8 @@ class TimelineFragment : Fragment() {
     private lateinit var adapter: TimelineAdapter
     private lateinit var recyclerView: RecyclerView
     private var emptyState: View? = null
+    private var errorState: View? = null
+    private var progressLoading: View? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +38,8 @@ class TimelineFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.timelineRecyclerView)
         emptyState = view.findViewById(R.id.emptyStateTimeline)
+        errorState = view.findViewById(R.id.errorStateTimeline)
+        progressLoading = view.findViewById(R.id.progressLoadingTimeline)
 
         val factory = TimelineViewModelFactory(token, conversationId)
         viewModel = ViewModelProvider(this, factory)[TimelineViewModel::class.java]
@@ -44,6 +47,11 @@ class TimelineFragment : Fragment() {
         setupRecyclerView()
         observeTimeline(username)
 
+        view.findViewById<View>(R.id.btnRetryTimeline).setOnClickListener {
+            showLoadingState()
+            viewModel.loadTimeline()
+        }
+        showLoadingState()
         viewModel.loadTimeline()
     }
 
@@ -55,9 +63,13 @@ class TimelineFragment : Fragment() {
         viewModel.items.observe(viewLifecycleOwner) { items ->
             if (items.isNullOrEmpty()) {
                 recyclerView.visibility = View.GONE
+                progressLoading?.visibility = View.GONE
+                errorState?.visibility = View.GONE
                 emptyState?.visibility = View.VISIBLE
             } else {
                 recyclerView.visibility = View.VISIBLE
+                progressLoading?.visibility = View.GONE
+                errorState?.visibility = View.GONE
                 emptyState?.visibility = View.GONE
                 adapter = TimelineAdapter(items, currentUsername = username)
                 recyclerView.adapter = adapter
@@ -66,8 +78,22 @@ class TimelineFragment : Fragment() {
 
         viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
             if (errorMsg != null) {
-                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                showErrorState()
             }
         }
+    }
+
+    private fun showLoadingState() {
+        progressLoading?.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+        emptyState?.visibility = View.GONE
+        errorState?.visibility = View.GONE
+    }
+
+    private fun showErrorState() {
+        progressLoading?.visibility = View.GONE
+        recyclerView.visibility = View.GONE
+        emptyState?.visibility = View.GONE
+        errorState?.visibility = View.VISIBLE
     }
 }

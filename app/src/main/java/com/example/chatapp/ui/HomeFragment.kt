@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.chatapp.Child
 import com.example.chatapp.Event
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
@@ -24,6 +24,7 @@ import java.util.*
 class HomeFragment : Fragment() {
 
     private var swipeRefresh: SwipeRefreshLayout? = null
+    private val apiDateKeyFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
 
     private fun getGreetingByTime(): String {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -36,15 +37,23 @@ class HomeFragment : Fragment() {
 
     private fun formatEventDate(eventDate: String): String {
         return try {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-            val inputFormatAlt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val dayMonthFormat = SimpleDateFormat("dd 'de' MMMM", Locale("pt", "BR"))
-            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val dayMonthFormat = SimpleDateFormat("dd 'de' MMMM", Locale.forLanguageTag("pt-BR"))
+            dayMonthFormat.dateFormatSymbols = dayMonthFormat.dateFormatSymbols.apply {
+                months = months.map { month ->
+                    month.replaceFirstChar { it.titlecase(Locale.forLanguageTag("pt-BR")) }
+                }.toTypedArray()
+            }
+            val dateKey = eventDateKey(eventDate)
+            val time = eventTimeText(eventDate)
 
-            val date = try { inputFormat.parse(eventDate) } catch (e: Exception) { inputFormatAlt.parse(eventDate) }
+            val date = if (dateKey != null) {
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dateKey)
+            } else {
+                parseEventDate(eventDate)
+            }
 
             if (date != null && eventDate.contains("T")) {
-                "${dayMonthFormat.format(date)} · ${timeFormat.format(date)}"
+                "${dayMonthFormat.format(date)} · ${time ?: "Dia inteiro"}"
             } else if (date != null) {
                 dayMonthFormat.format(date)
             } else "Dia inteiro"
@@ -63,11 +72,13 @@ class HomeFragment : Fragment() {
         val displayName = username.replaceFirstChar { it.uppercase() }
 
         // Data dinâmica
-        val dateFormat = SimpleDateFormat("EEEE, d 'de' MMMM", Locale("pt", "BR"))
+        val dateFormat = SimpleDateFormat("EEEE, d 'de' MMMM", Locale.forLanguageTag("pt-BR"))
         view.findViewById<TextView>(R.id.tvDate)?.text = dateFormat.format(Date())
 
         // Saudação dinâmica
-        view.findViewById<TextView>(R.id.tvGreeting)?.text = "${getGreetingByTime()}, $displayName"
+        view.findViewById<TextView>(R.id.tvGreeting)?.text =
+            getString(R.string.home_greeting, getGreetingByTime(), displayName)
+        renderMessageTarget(view, PrefsHelper.getOtherParentName(requireContext()))
 
         // Pull-to-refresh
         swipeRefresh = view.findViewById(R.id.swipeRefreshHome)
@@ -83,7 +94,12 @@ class HomeFragment : Fragment() {
             catch (_: Exception) {}
         }
         view.findViewById<View>(R.id.btnNewMessage)?.setOnClickListener {
-            try { findNavController().navigate(R.id.chatFragment) } catch (_: Exception) {}
+            val destination = if (PrefsHelper.getOtherParentName(requireContext()).isBlank()) {
+                R.id.profileFragment
+            } else {
+                R.id.chatFragment
+            }
+            try { findNavController().navigate(destination) } catch (_: Exception) {}
         }
         view.findViewById<View>(R.id.btnNewEvent)?.setOnClickListener {
             try { findNavController().navigate(R.id.agendaFragment) } catch (_: Exception) {}
@@ -110,6 +126,7 @@ class HomeFragment : Fragment() {
     private fun loadAllData(view: View, token: String) {
         loadUpcomingEvents(view, token)
         loadUnreadNotificationsCount(view, token)
+        loadMessageTarget(view, token)
     }
 
     private fun loadUpcomingEvents(view: View, token: String) {
@@ -118,27 +135,20 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val conversationId = PrefsHelper.getConversationId(requireContext())
+                val children = RetrofitClient.api.getChildren("Bearer $token", conversationId)
                 val events = RetrofitClient.api.getEvents("Bearer $token", conversationId)
                 val now = Date()
 
                 // --- Card de Guarda dinâmico ---
-                updateCustodyCard(view, events, now)
+                updateCustodyCard(view, events, children, now)
 
                 // --- Próximos eventos (hoje + futuros) ---
-                val todayCal = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }
-                val todayStart = todayCal.time
+                val todayKey = calendarDateKey(Calendar.getInstance())
 
                 val upcoming = events
-                    .filter {
-                        val eventDate = parseEventDate(it.event_date)
-                        eventDate != null && !eventDate.before(todayStart)
-                    }
-                    .sortedBy { it.event_date }
+                    .filter { event -> eventIsTodayOrFuture(event, todayKey) }
+                    .sortedWith(compareBy<Event> { eventSortDateKey(it, todayKey) }
+                        .thenBy { eventSortTimestamp(it) })
                     .take(3)
 
                 container.removeAllViews()
@@ -153,6 +163,9 @@ class HomeFragment : Fragment() {
                     container.addView(createEventRow(event.title, dateStr, event.event_type))
                 }
             } catch (_: Exception) {
+                showCustodyErrorState(view)
+                container.removeAllViews()
+                container.addView(createEventsErrorCard(view, token))
             } finally {
                 swipeRefresh?.isRefreshing = false
                 // Hide skeleton
@@ -162,6 +175,31 @@ class HomeFragment : Fragment() {
                     it.visibility = View.GONE
                 }
             }
+        }
+    }
+
+    private fun loadMessageTarget(view: View, token: String) {
+        lifecycleScope.launch {
+            try {
+                val conversationId = PrefsHelper.getConversationId(requireContext())
+                val conversation = RetrofitClient.api.getConversations("Bearer $token")
+                    .firstOrNull { it.id == conversationId }
+                    ?: return@launch
+                val otherParent = conversation.participants.firstOrNull { !it.is_me }?.username.orEmpty()
+                PrefsHelper.saveOtherParentName(requireContext(), otherParent)
+                renderMessageTarget(view, otherParent)
+            } catch (_: Exception) {
+                // Keep the cached target while offline.
+            }
+        }
+    }
+
+    private fun renderMessageTarget(view: View, name: String) {
+        val target = view.findViewById<TextView>(R.id.tvMessageTarget) ?: return
+        target.text = if (name.isBlank()) {
+            getString(R.string.home_invite_parent)
+        } else {
+            getString(R.string.home_message_to_parent, name.replaceFirstChar { it.uppercase() })
         }
     }
 
@@ -189,17 +227,36 @@ class HomeFragment : Fragment() {
 
     // ── Item 7: Guarda dinâmica ─────────────────────────────
 
-    private fun updateCustodyCard(view: View, events: List<Event>, now: Date) {
+    private fun updateCustodyCard(view: View, events: List<Event>, children: List<Child>, now: Date) {
+        val tvCustodyHeaderLabel = view.findViewById<TextView>(R.id.tvCustodyHeaderLabel)
+        val custodyLegalBadge = view.findViewById<View>(R.id.custodyLegalBadge)
         val tvCustodyStatus = view.findViewById<TextView>(R.id.tvCustodyStatus)
+        val tvNextSwapLabel = view.findViewById<TextView>(R.id.tvNextSwapLabel)
         val tvNextSwapDate = view.findViewById<TextView>(R.id.tvNextSwapDate)
+
+        if (children.isEmpty()) {
+            tvCustodyHeaderLabel?.setText(R.string.home_children_label)
+            custodyLegalBadge?.visibility = View.GONE
+            tvCustodyStatus?.setText(R.string.children_empty)
+            tvNextSwapLabel?.setText(R.string.home_next_step_label)
+            tvNextSwapDate?.setText(R.string.home_no_children_action)
+            return
+        }
+
+        tvCustodyHeaderLabel?.setText(R.string.ui_guarda_atual)
+        tvNextSwapLabel?.setText(R.string.ui_proxima_troca)
 
         val custodyEvents = events.filter { it.event_type.uppercase() == "CUSTODY" }
 
         if (custodyEvents.isEmpty()) {
-            tvCustodyStatus?.text = "Sem guarda configurada"
-            tvNextSwapDate?.text = "Adicione eventos de convivência"
+            custodyLegalBadge?.visibility = View.GONE
+            tvCustodyStatus?.setText(R.string.home_no_custody_configured)
+            tvNextSwapLabel?.setText(R.string.home_next_step_label)
+            tvNextSwapDate?.setText(R.string.home_add_custody_events)
             return
         }
+
+        custodyLegalBadge?.visibility = View.VISIBLE
 
         // Encontrar evento de custódia ativo (agora está entre start e end)
         var currentCustody: Event? = null
@@ -212,7 +269,7 @@ class HomeFragment : Fragment() {
                 Calendar.getInstance().apply { time = start; add(Calendar.DAY_OF_MONTH, 1) }.time
             }
 
-            if (end != null && now.after(start) && now.before(end)) {
+            if (end != null && !now.before(start) && now.before(end)) {
                 currentCustody = event
                 break
             }
@@ -220,13 +277,17 @@ class HomeFragment : Fragment() {
 
         val username = PrefsHelper.getUsername(requireContext())
         val otherParentName = PrefsHelper.getOtherParentName(requireContext())
-            .replaceFirstChar { it.uppercase() }.ifEmpty { "Outro pai" }
+            .replaceFirstChar { it.uppercase() }.ifEmpty { getString(R.string.home_other_parent) }
 
         if (currentCustody != null) {
             val isWithMe = currentCustody.created_by_name == username
-            tvCustodyStatus?.text = if (isWithMe) "Com Você" else "Com $otherParentName"
+            tvCustodyStatus?.text = if (isWithMe) {
+                getString(R.string.home_with_you)
+            } else {
+                getString(R.string.home_with_parent, otherParentName)
+            }
         } else {
-            tvCustodyStatus?.text = "Sem guarda ativa"
+            tvCustodyStatus?.setText(R.string.home_no_active_custody)
         }
 
         // Próxima troca: próximo evento de custódia futuro
@@ -236,16 +297,28 @@ class HomeFragment : Fragment() {
             .minByOrNull { it.second }
 
         if (nextCustody != null) {
-            val dateFormat = SimpleDateFormat("EEEE, dd 'de' MMMM", Locale("pt", "BR"))
+            val dateFormat = SimpleDateFormat("EEEE, dd 'de' MMMM", Locale.forLanguageTag("pt-BR"))
             tvNextSwapDate?.text = dateFormat.format(nextCustody.second)
                 .replaceFirstChar { it.uppercase() }
         } else {
-            tvNextSwapDate?.text = "Sem troca agendada"
+            tvNextSwapDate?.setText(R.string.home_no_scheduled_exchange)
         }
+    }
+
+    private fun showCustodyErrorState(view: View) {
+        view.findViewById<TextView>(R.id.tvCustodyHeaderLabel)?.setText(R.string.ui_guarda_atual)
+        view.findViewById<View>(R.id.custodyLegalBadge)?.visibility = View.GONE
+        view.findViewById<TextView>(R.id.tvCustodyStatus)?.setText(R.string.home_custody_error_title)
+        view.findViewById<TextView>(R.id.tvNextSwapLabel)?.setText(R.string.home_next_step_label)
+        view.findViewById<TextView>(R.id.tvNextSwapDate)?.setText(R.string.home_custody_error_action)
     }
 
     private fun parseEventDate(dateStr: String): Date? {
         val formats = listOf(
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX", Locale.getDefault()),
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault()),
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault()),
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mmX", Locale.getDefault()),
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault()),
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault()),
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()),
@@ -262,6 +335,62 @@ class HomeFragment : Fragment() {
     }
 
     // ── Event Row (mesmo padrão visual) ─────────────────────
+
+    private fun eventDateKey(value: String?): String? {
+        if (value.isNullOrBlank()) return null
+        val rawKey = Regex("""^\d{4}-\d{2}-\d{2}""").find(value)?.value
+        if (rawKey != null) return rawKey
+        return parseEventDate(value)?.let { apiDateKeyFormat.format(it) }
+    }
+
+    private fun eventTimeText(value: String): String? {
+        val timeStart = value.indexOf('T') + 1
+        if (timeStart <= 0 || value.length < timeStart + 5) return null
+        val time = value.substring(timeStart, timeStart + 5)
+        return if (time.matches(Regex("""\d{2}:\d{2}"""))) time else null
+    }
+
+    private fun eventIsTodayOrFuture(event: Event, todayKey: String): Boolean {
+        val startKey = eventDateKey(event.event_date)
+        val endKey = eventEndDateKey(event, startKey)
+        if (endKey != null) return endKey >= todayKey
+
+        val todayStart = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+        val start = parseEventDate(event.event_date) ?: return false
+        val end = event.event_date_end
+            ?.takeIf { it.isNotBlank() }
+            ?.let { parseEventDate(it) }
+            ?: start
+        val effectiveEnd = if (end.before(start)) start else end
+        return !effectiveEnd.before(todayStart)
+    }
+
+    private fun eventEndDateKey(event: Event, startKey: String?): String? {
+        val endKey = eventDateKey(event.event_date_end) ?: startKey
+        return when {
+            endKey == null -> null
+            startKey != null && endKey < startKey -> startKey
+            else -> endKey
+        }
+    }
+
+    private fun calendarDateKey(calendar: Calendar): String =
+        apiDateKeyFormat.format(calendar.time)
+
+    private fun eventSortDateKey(event: Event, todayKey: String): String =
+        eventDateKey(event.event_date)
+            ?.takeIf { it >= todayKey }
+            ?: todayKey
+
+    private fun eventSortTimestamp(event: Event): Long {
+        val start = parseEventDate(event.event_date) ?: return Long.MAX_VALUE
+        return start.time
+    }
 
     private fun createEmptyEventsCard(): View {
         val ctx = requireContext()
@@ -286,7 +415,7 @@ class HomeFragment : Fragment() {
         }
 
         val tvTitle = TextView(ctx).apply {
-            text = "Nenhum evento agendado"
+            text = getString(R.string.ui_nenhum_evento_agendado)
             textSize = 15f
             setTypeface(typeface, android.graphics.Typeface.BOLD)
             setTextColor(ContextCompat.getColor(ctx, R.color.gray_700))
@@ -294,7 +423,7 @@ class HomeFragment : Fragment() {
             gravity = android.view.Gravity.CENTER
         }
         val tvSub = TextView(ctx).apply {
-            text = "Agenda livre. Que dia tranquilo."
+            text = getString(R.string.home_empty_events_subtitle)
             textSize = 13f
             setTextColor(ContextCompat.getColor(ctx, R.color.gray_400))
             gravity = android.view.Gravity.CENTER
@@ -302,6 +431,56 @@ class HomeFragment : Fragment() {
         innerLayout.addView(tvTitle)
         innerLayout.addView(tvSub)
         card.addView(innerLayout)
+        return card
+    }
+
+    private fun createEventsErrorCard(view: View, token: String): View {
+        val ctx = requireContext()
+        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+
+        val card = com.google.android.material.card.MaterialCardView(ctx).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            radius = dp(16).toFloat()
+            cardElevation = 0f
+            strokeColor = ContextCompat.getColor(ctx, R.color.gray_200)
+            strokeWidth = dp(1)
+            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.white))
+        }
+
+        val content = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = android.view.Gravity.CENTER
+            setPadding(dp(20), dp(20), dp(20), dp(20))
+        }
+        val title = TextView(ctx).apply {
+            setText(R.string.state_error_title)
+            textSize = 15f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setTextColor(ContextCompat.getColor(ctx, R.color.gray_700))
+            gravity = android.view.Gravity.CENTER
+        }
+        val message = TextView(ctx).apply {
+            setText(R.string.home_events_error_message)
+            textSize = 13f
+            setTextColor(ContextCompat.getColor(ctx, R.color.gray_500))
+            gravity = android.view.Gravity.CENTER
+            setPadding(0, dp(8), 0, dp(12))
+        }
+        val retry = com.google.android.material.button.MaterialButton(
+            ctx,
+            null,
+            com.google.android.material.R.attr.materialButtonOutlinedStyle
+        ).apply {
+            setText(R.string.action_try_again)
+            setOnClickListener { loadUpcomingEvents(view, token) }
+        }
+        content.addView(title)
+        content.addView(message)
+        content.addView(retry)
+        card.addView(content)
         return card
     }
 
@@ -379,4 +558,5 @@ class HomeFragment : Fragment() {
         card.addView(row)
         return card
     }
+
 }

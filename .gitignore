@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Local UIAutomator/ADB inspection artifacts
+/*.xml
+/*.png
+
+# Android Studio local project metadata
+/.idea/.name

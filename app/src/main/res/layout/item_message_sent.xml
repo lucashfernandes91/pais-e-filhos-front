@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="4dp">
@@ -24,7 +25,7 @@
             android:scaleType="centerCrop"
             android:visibility="gone"
             android:layout_marginBottom="6dp"
-            android:contentDescription="Anexo" />
+            android:contentDescription="@string/ui_anexo" />
 
         <!-- Attachment Document Badge -->
         <LinearLayout
@@ -43,23 +44,24 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_download"
+                app:tint="@color/message_sent_text"
                 android:layout_marginEnd="6dp"
-                android:contentDescription="Documento" />
+                android:contentDescription="@string/ui_documento" />
 
             <TextView
                 android:id="@+id/tvDocName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Documento"
+                android:text="@string/ui_documento"
                 android:textSize="12sp"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/message_sent_text" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/tvMessageContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/message_sent_text"
             android:textSize="15sp"
             android:lineSpacingExtra="2dp" />
 
@@ -75,15 +77,15 @@
                 android:id="@+id/tvMessageTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#C5D9F8"
+                android:textColor="@color/message_time_sent"
                 android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/tvReadStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" ✓"
-                android:textColor="#C5D9F8"
+                android:text="@string/ui_texto"
+                android:textColor="@color/message_time_sent"
                 android:textSize="11sp"
                 android:layout_marginStart="2dp" />
         </LinearLayout>

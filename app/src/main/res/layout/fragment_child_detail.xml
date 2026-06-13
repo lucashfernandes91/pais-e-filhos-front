@@ -14,29 +14,47 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
-        android:background="@color/white"
-        android:elevation="2dp">
+        android:background="@color/bg_primary">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:padding="6dp"
+            style="@style/Widget.CoParent.TouchTarget.Icon"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
             android:src="@drawable/ic_arrow_back"
             app:tint="@color/gray_900"
-            android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="Voltar" />
+            android:contentDescription="@string/cd_back_button" />
 
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Detalhes do filho"
+            android:text="@string/ui_detalhes_do_filho"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/gray_900"
             android:layout_marginStart="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEdit"
+            style="@style/Widget.CoParent.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/touch_target_min"
+            android:text="@string/ui_editar"
+            android:textSize="14sp"
+            android:textColor="@color/primary_blue"
+            android:textAllCaps="false"
+            android:minWidth="0dp"
+            android:paddingHorizontal="12dp"
+            app:icon="@drawable/ic_edit"
+            app:iconTint="@color/primary_blue"
+            app:iconSize="16dp"
+            app:iconGravity="textStart"
+            app:iconPadding="4dp" />
     </LinearLayout>
+
+    <View style="@style/Widget.CoParent.Header.Divider" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -51,13 +69,11 @@
 
             <!-- Header card: avatar + nome + idade -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -67,29 +83,56 @@
                     android:padding="24dp">
 
                     <FrameLayout
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:background="@drawable/bg_avatar_child"
-                        android:layout_marginBottom="12dp">
+                        android:id="@+id/btnChildPhoto"
+                        android:layout_width="108dp"
+                        android:layout_height="108dp"
+                        android:layout_marginBottom="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:contentDescription="@string/cd_add_child_photo">
 
-                        <ImageView
-                            android:id="@+id/ivChildPhoto"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:visibility="gone"
-                            android:contentDescription="Foto do filho" />
+                        <FrameLayout
+                            android:layout_width="96dp"
+                            android:layout_height="96dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/bg_avatar_child"
+                            android:clipToOutline="true">
 
-                        <TextView
-                            android:id="@+id/tvChildInitial"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="?"
-                            android:textSize="36sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/warning"
-                            tools:text="L" />
+                            <ImageView
+                                android:id="@+id/ivChildPhoto"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:visibility="gone"
+                                android:contentDescription="@string/ui_foto_do_filho" />
+
+                            <TextView
+                                android:id="@+id/tvChildInitial"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="?"
+                                android:textSize="36sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/warning"
+                                tools:text="L" />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:background="@drawable/bg_badge_camera">
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_camera"
+                                app:tint="@color/on_primary"
+                                android:contentDescription="@null"
+                                android:importantForAccessibility="no" />
+                        </FrameLayout>
                     </FrameLayout>
 
                     <TextView
@@ -113,12 +156,11 @@
                     <!-- Badge "Sob sua guarda" -->
                     <LinearLayout
                         android:id="@+id/badgeCustody"
+                        style="@style/Widget.CoParent.Badge.Label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="6dp"
                         android:layout_marginTop="12dp"
                         android:background="@drawable/bg_badge_active"
                         android:visibility="gone">
@@ -129,12 +171,12 @@
                             android:src="@drawable/ic_shield"
                             app:tint="@color/secondary_green"
                             android:layout_marginEnd="6dp"
-                            android:contentDescription="Guarda" />
+                            android:contentDescription="@string/ui_guarda" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sob sua guarda"
+                            android:text="@string/ui_sob_sua_guarda"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             android:textColor="@color/secondary_green" />
@@ -146,7 +188,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Informações"
+                android:text="@string/ui_informacoes"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:textColor="@color/gray_500"
@@ -156,13 +198,11 @@
                 android:layout_marginBottom="8dp" />
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -191,7 +231,7 @@
                                 android:layout_gravity="center"
                                 android:src="@drawable/ic_calendar"
                                 app:tint="@color/primary_blue"
-                                android:contentDescription="Data de nascimento" />
+                                android:contentDescription="@string/ui_data_de_nascimento" />
                         </FrameLayout>
 
                         <LinearLayout
@@ -203,7 +243,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Data de nascimento"
+                                android:text="@string/ui_data_de_nascimento"
                                 android:textSize="12sp"
                                 android:textColor="@color/gray_500" />
 
@@ -246,7 +286,7 @@
                                 android:layout_gravity="center"
                                 android:src="@drawable/ic_person"
                                 app:tint="@color/primary_blue"
-                                android:contentDescription="CPF" />
+                                android:contentDescription="@string/ui_cpf" />
                         </FrameLayout>
 
                         <LinearLayout
@@ -258,7 +298,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="CPF"
+                                android:text="@string/ui_cpf"
                                 android:textSize="12sp"
                                 android:textColor="@color/gray_500" />
 
@@ -301,7 +341,7 @@
                                 android:layout_gravity="center"
                                 android:src="@drawable/ic_info_circle"
                                 app:tint="@color/primary_blue"
-                                android:contentDescription="RG" />
+                                android:contentDescription="@string/ui_rg" />
                         </FrameLayout>
 
                         <LinearLayout
@@ -313,7 +353,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="RG"
+                                android:text="@string/ui_rg"
                                 android:textSize="12sp"
                                 android:textColor="@color/gray_500" />
 
@@ -327,23 +367,69 @@
                                 tools:text="12.345.678-9" />
                         </LinearLayout>
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="64dp"
+                        android:background="@color/divider" />
+
+                    <LinearLayout
+                        android:id="@+id/rowCustody"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="14dp">
+
+                        <FrameLayout
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:background="@drawable/bg_icon_circle_blue"
+                            android:layout_marginEnd="14dp">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_shield"
+                                app:tint="@color/primary_blue"
+                                android:contentDescription="@string/ui_guarda" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/ui_guarda"
+                                android:textSize="12sp"
+                                android:textColor="@color/gray_500" />
+
+                            <TextView
+                                android:id="@+id/tvCustodyValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:textColor="@color/gray_900"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Botão Remover -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRemoveChild"
+                style="@style/Widget.CoParent.Button.Danger"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Remover filho"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="@color/error"
-                app:cornerRadius="14dp"
-                app:backgroundTint="@color/white"
-                app:strokeColor="@color/error"
-                app:strokeWidth="1dp"
+                android:text="@string/ui_remover_filho"
                 app:icon="@drawable/ic_close"
                 app:iconTint="@color/error"
                 app:iconSize="18dp"

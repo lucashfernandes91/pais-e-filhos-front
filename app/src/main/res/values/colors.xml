@@ -12,6 +12,26 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 
+    <!-- Semantic Content and Surface Tokens -->
+    <color name="surface_container">@color/white</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_error">#FFFFFF</color>
+    <color name="on_secondary">#08130C</color>
+    <color name="on_background">@color/gray_900</color>
+    <color name="on_surface">@color/gray_900</color>
+    <color name="on_surface_variant">@color/gray_600</color>
+    <color name="icon_default">@color/gray_700</color>
+    <color name="icon_muted">@color/gray_500</color>
+    <color name="icon_info">@color/primary_blue_light</color>
+    <color name="control_selected_bg">@color/event_general_light</color>
+    <color name="control_unselected_bg">@color/surface_container</color>
+    <color name="control_track_checked">@color/primary_blue_light</color>
+    <color name="control_track_unchecked">@color/gray_300</color>
+    <color name="badge_active_bg">@color/success_light</color>
+    <color name="badge_info_bg">@color/event_general_light</color>
+    <color name="badge_legal_bg">#40FFFFFF</color>
+    <color name="badge_error_bg">@color/error</color>
+
     <!-- Text Colors -->
     <color name="gray_900">#111827</color>
     <color name="gray_800">#1F2937</color>
@@ -29,6 +49,15 @@
     <color name="warning">#F59E0B</color>
     <color name="error">#DC2626</color>
     <color name="info">#2563EB</color>
+
+    <!-- Form feedback banners (WCAG AA sobre bg_secondary) -->
+    <color name="feedback_loading_bg">#E8F0FE</color>
+    <color name="feedback_loading_text">#1D4ED8</color>
+    <color name="feedback_success_bg">#DCFCE7</color>
+    <color name="feedback_success_text">#15803D</color>
+    <color name="feedback_error_bg">#FEE2E2</color>
+    <color name="feedback_error_text">#B91C1C</color>
+    <color name="picker_card_bg">#FFFFFF</color>
 
     <!-- Message Colors -->
     <color name="message_sent_bg">#2563EB</color>
@@ -64,6 +93,21 @@
     <color name="avatar_green">#D1FAE5</color>
     <color name="avatar_orange">#FEF3C7</color>
     <color name="avatar_pink">#FCE7F3</color>
+
+    <!-- Semantic Surface Colors (replace hardcoded hex in layouts) -->
+    <color name="info_banner_bg">#E8F0FE</color>
+    <color name="info_banner_text">#1D4ED8</color>
+    <color name="send_button_bg">#E6F0FF</color>
+    <color name="message_time_sent">#C5D9F8</color>
+    <color name="message_time_received">@color/gray_400</color>
+
+    <!-- Accessibility States (WCAG AA contrast tested) -->
+    <color name="state_disabled">#B8BCC4</color>
+    <color name="state_disabled_bg">#F9FAFB</color>
+    <color name="text_disabled">#9CA3AF</color>
+    <color name="error_light">#FEE2E2</color>
+    <color name="success_light">#DCFCE7</color>
+    <color name="warning_light">#FEF3C7</color>
 
     <!-- Event Type Colors -->
     <color name="event_mother">#EC4899</color>

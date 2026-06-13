@@ -11,7 +11,7 @@ data class CreateChildRequest(
     val conversationId: Int,
 
     @SerializedName("birth_date")
-    val birthDate: String? = null,
+    val birthDate: String,
 
     @SerializedName("cpf")
     val cpf: String? = null,
@@ -25,10 +25,8 @@ data class CreateChildRequest(
     init {
         require(name.isNotBlank()) { "Nome do filho não pode estar vazio" }
         require(name.length <= 100) { "Nome máximo 100 caracteres" }
-        birthDate?.let {
-            require(it.matches(Regex("""\d{4}-\d{2}-\d{2}"""))) {
-                "Data deve estar no formato YYYY-MM-DD"
-            }
+        require(birthDate.matches(Regex("""\d{4}-\d{2}-\d{2}"""))) {
+            "Data de nascimento deve estar no formato YYYY-MM-DD"
         }
     }
 }

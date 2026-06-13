@@ -50,6 +50,12 @@ class NotificationsAdapter(
         updateItems(updatedItems)
     }
 
+    fun clearItems() {
+        updateItems(emptyList())
+    }
+
+    fun hasUnreadItems(): Boolean = items.any { !it.isRead }
+
     /**
      * Marks a single item as read by ID.
      */

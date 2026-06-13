@@ -4,12 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/white">
+    android:background="@color/bg_secondary">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="@color/bg_secondary"
         android:padding="24dp">
 
         <!-- Header -->
@@ -22,18 +23,18 @@
 
             <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                style="@style/Widget.CoParent.TouchTarget.Icon"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
                 android:src="@drawable/ic_back"
                 app:tint="@color/gray_900"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="Voltar" />
+                android:contentDescription="@string/cd_event_sheet_back" />
 
             <TextView
                 android:id="@+id/tvDialogTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Novo evento"
+                android:text="@string/ui_novo_evento"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/gray_900"
@@ -42,128 +43,48 @@
 
         <!-- Título -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Título"
-            android:textSize="14sp"
-            android:textColor="@color/gray_700"
-            android:layout_marginBottom="6dp" />
+            android:id="@+id/lblEventTitle"
+            style="@style/TextStyle.EventFormLabel"
+            android:text="@string/event_label_title" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEventTitle"
+            style="@style/Widget.CoParent.TextInputLayout.Event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="@color/gray_300"
-            app:boxStrokeWidth="1dp"
-            app:hintEnabled="false">
+            android:layout_marginBottom="20dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEventTitle"
+                style="@style/Widget.CoParent.TextInputEditText.Event"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Ex: Consulta médica"
-                android:textSize="15sp"
-                android:inputType="text" />
+                android:hint="@string/event_placeholder_title"
+                android:inputType="text"
+                android:imeOptions="actionNext" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Data e Hora (padrão - visível quando NÃO é convivência) -->
+        <!-- Data e Hora (pickers — visível quando NÃO é convivência) -->
         <LinearLayout
             android:id="@+id/layoutDateTimeSingle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal">
 
-            <!-- Data -->
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/containerEventDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginEnd="8dp">
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Data"
-                    android:textSize="14sp"
-                    android:textColor="@color/gray_700"
-                    android:layout_marginBottom="6dp" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxStrokeColor="@color/gray_300"
-                    app:boxStrokeWidth="1dp"
-                    app:hintEnabled="false"
-                    app:endIconMode="custom"
-                    app:endIconDrawable="@drawable/ic_calendar"
-                    app:endIconTint="@color/gray_500">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etEventDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="dd/mm/aaaa"
-                        android:textSize="15sp"
-                        android:inputType="none"
-                        android:focusable="false"
-                        android:clickable="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-
-            <!-- Hora -->
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/containerEventTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hora"
-                    android:textSize="14sp"
-                    android:textColor="@color/gray_700"
-                    android:layout_marginBottom="6dp" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxStrokeColor="@color/gray_300"
-                    app:boxStrokeWidth="1dp"
-                    app:hintEnabled="false"
-                    app:endIconMode="custom"
-                    app:endIconDrawable="@drawable/ic_clock"
-                    app:endIconTint="@color/gray_500">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etEventTime"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="18:00"
-                        android:textSize="15sp"
-                        android:inputType="none"
-                        android:focusable="false"
-                        android:clickable="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
+                android:layout_marginStart="8dp"
+                android:layout_weight="1" />
         </LinearLayout>
 
         <!-- Data e Hora INÍCIO (visível apenas quando Convivência selecionado) -->
@@ -178,7 +99,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Início da convivência"
+                android:text="@string/ui_inicio_da_convivencia"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/gray_700"
@@ -189,89 +110,19 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <FrameLayout
+                    android:id="@+id/containerStartDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="8dp">
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Data"
-                        android:textSize="14sp"
-                        android:textColor="@color/gray_700"
-                        android:layout_marginBottom="6dp" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:boxBackgroundMode="outline"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxStrokeColor="@color/gray_300"
-                        app:boxStrokeWidth="1dp"
-                        app:hintEnabled="false"
-                        app:endIconMode="custom"
-                        app:endIconDrawable="@drawable/ic_calendar"
-                        app:endIconTint="@color/gray_500">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etStartDate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="dd/mm/aaaa"
-                            android:textSize="15sp"
-                            android:inputType="none"
-                            android:focusable="false"
-                            android:clickable="true" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-
-                <LinearLayout
+                <FrameLayout
+                    android:id="@+id/containerStartTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hora"
-                        android:textSize="14sp"
-                        android:textColor="@color/gray_700"
-                        android:layout_marginBottom="6dp" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:boxBackgroundMode="outline"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxStrokeColor="@color/gray_300"
-                        app:boxStrokeWidth="1dp"
-                        app:hintEnabled="false"
-                        app:endIconMode="custom"
-                        app:endIconDrawable="@drawable/ic_clock"
-                        app:endIconTint="@color/gray_500">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etStartTime"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="18:00"
-                            android:textSize="15sp"
-                            android:inputType="none"
-                            android:focusable="false"
-                            android:clickable="true" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1" />
             </LinearLayout>
         </LinearLayout>
 
@@ -287,7 +138,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fim da convivência"
+                android:text="@string/ui_fim_da_convivencia"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/gray_700"
@@ -298,226 +149,141 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <FrameLayout
+                    android:id="@+id/containerEndDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="8dp">
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Data"
-                        android:textSize="14sp"
-                        android:textColor="@color/gray_700"
-                        android:layout_marginBottom="6dp" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:boxBackgroundMode="outline"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxStrokeColor="@color/gray_300"
-                        app:boxStrokeWidth="1dp"
-                        app:hintEnabled="false"
-                        app:endIconMode="custom"
-                        app:endIconDrawable="@drawable/ic_calendar"
-                        app:endIconTint="@color/gray_500">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etEndDate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="dd/mm/aaaa"
-                            android:textSize="15sp"
-                            android:inputType="none"
-                            android:focusable="false"
-                            android:clickable="true" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-
-                <LinearLayout
+                <FrameLayout
+                    android:id="@+id/containerEndTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hora"
-                        android:textSize="14sp"
-                        android:textColor="@color/gray_700"
-                        android:layout_marginBottom="6dp" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:boxBackgroundMode="outline"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxStrokeColor="@color/gray_300"
-                        app:boxStrokeWidth="1dp"
-                        app:hintEnabled="false"
-                        app:endIconMode="custom"
-                        app:endIconDrawable="@drawable/ic_clock"
-                        app:endIconTint="@color/gray_500">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etEndTime"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="18:00"
-                            android:textSize="15sp"
-                            android:inputType="none"
-                            android:focusable="false"
-                            android:clickable="true" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1" />
             </LinearLayout>
         </LinearLayout>
 
         <!-- Tipo -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tipo"
-            android:textSize="14sp"
-            android:textColor="@color/gray_700"
-            android:layout_marginBottom="8dp" />
+            android:id="@+id/lblEventType"
+            style="@style/TextStyle.EventFormLabel"
+            android:layout_marginBottom="8dp"
+            android:text="@string/event_label_type" />
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupType"
+            android:id="@+id/segmentEventType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:singleSelection="true"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="8dp"
             app:selectionRequired="true"
-            app:chipSpacingHorizontal="8dp">
+            app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chipSchool"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/segSchool"
+                style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Escola"
-                android:textColor="@color/chip_text_selector"
-                app:chipBackgroundColor="@color/chip_bg_selector"
-                app:chipStrokeColor="@color/chip_stroke_selector"
-                app:chipStrokeWidth="1dp"
-                app:chipCornerRadius="20dp"
-                app:chipIcon="@drawable/ic_school"
-                app:chipIconVisible="true"
-                app:chipIconSize="16dp"
-                app:checkedIconVisible="false" />
+                android:text="@string/ui_escola" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chipMedical"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/segMedical"
+                style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Saúde"
-                android:textColor="@color/chip_text_selector"
-                app:chipBackgroundColor="@color/chip_bg_selector"
-                app:chipStrokeColor="@color/chip_stroke_selector"
-                app:chipStrokeWidth="1dp"
-                app:chipCornerRadius="20dp"
-                app:chipIcon="@drawable/ic_health"
-                app:chipIconVisible="true"
-                app:chipIconSize="16dp"
-                app:checkedIconVisible="false" />
+                android:text="@string/ui_saude" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chipCustody"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/segCustody"
+                style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Convivência"
-                android:textColor="@color/chip_text_selector"
-                app:chipBackgroundColor="@color/chip_bg_selector"
-                app:chipStrokeColor="@color/chip_stroke_selector"
-                app:chipStrokeWidth="1dp"
-                app:chipCornerRadius="20dp"
-                app:chipIcon="@drawable/ic_custody"
-                app:chipIconVisible="true"
-                app:chipIconSize="16dp"
-                app:checkedIconVisible="false" />
+                android:text="@string/ui_conviv" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chipOther"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/segOther"
+                style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Outro"
-                android:textColor="@color/chip_text_selector"
-                app:chipBackgroundColor="@color/chip_bg_selector"
-                app:chipStrokeColor="@color/chip_stroke_selector"
-                app:chipStrokeWidth="1dp"
-                app:chipCornerRadius="20dp"
-                app:chipIcon="@drawable/ic_other"
-                app:chipIconVisible="true"
-                app:chipIconSize="16dp"
-                app:checkedIconVisible="false" />
+                android:text="@string/ui_outro" />
         </com.google.android.material.chip.ChipGroup>
 
         <!-- Notas -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Notas (opcional)"
-            android:textSize="14sp"
-            android:textColor="@color/gray_700"
-            android:layout_marginBottom="6dp" />
+            android:id="@+id/lblEventNotes"
+            style="@style/TextStyle.EventFormLabel"
+            android:text="@string/event_label_notes" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEventNotes"
+            style="@style/Widget.CoParent.TextInputLayout.Event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="@color/gray_300"
-            app:boxStrokeWidth="1dp"
-            app:hintEnabled="false">
+            android:layout_marginBottom="24dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEventNotes"
+                style="@style/Widget.CoParent.TextInputEditText.Event"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Detalhes, endereço, observações..."
-                android:textSize="15sp"
+                android:gravity="top"
+                android:hint="@string/event_placeholder_notes"
                 android:inputType="textMultiLine"
-                android:minLines="3"
-                android:gravity="top" />
+                android:minLines="3" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Feedback: loading / success / error -->
+        <LinearLayout
+            android:id="@+id/bannerFormFeedback"
+            style="@style/Widget.CoParent.Feedback.Container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"
+            android:accessibilityLiveRegion="polite">
+
+            <ProgressBar
+                android:id="@+id/progressFormFeedback"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:indeterminateTint="@color/primary_blue"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ivFormFeedback"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="@null"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvFormFeedback"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="14sp" />
+        </LinearLayout>
 
         <!-- Save Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveEvent"
+            style="@style/Widget.CoParent.Button.Primary.Pill"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Salvar evento"
-            android:textSize="16sp"
-            android:textColor="@color/white"
-            android:textAllCaps="false"
-            app:backgroundTint="@color/primary_blue"
-            app:cornerRadius="26dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ui_salvar_evento"
             android:layout_marginBottom="8dp" />
 
         <!-- Footer -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="O evento é registrado no histórico oficial."
+            android:text="@string/ui_o_evento_e_registrado_no_historico_oficial"
             android:textSize="12sp"
             android:textColor="@color/gray_500"
             android:gravity="center"

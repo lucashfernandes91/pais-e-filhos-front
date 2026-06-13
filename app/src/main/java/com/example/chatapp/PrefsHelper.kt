@@ -27,9 +27,9 @@ object PrefsHelper {
     private const val KEY_EMAIL_NOTIFICATIONS = "email_notifications"
     private const val KEY_OTHER_PARENT_NAME = "other_parent_name"
     private const val KEY_CHILDREN_NAMES = "children_names"
+    private const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
 
-    // Default conversation ID enquanto o app suporta apenas uma conversa
-    private const val DEFAULT_CONVERSATION_ID = 1
+    const val NO_CONVERSATION_ID = 0
 
     private fun prefs(context: Context): SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -50,6 +50,9 @@ object PrefsHelper {
             .putString(KEY_AUTH_TOKEN, token)
             .putString(KEY_REFRESH_TOKEN, refreshToken)
             .putString(KEY_USERNAME, username)
+            .putInt(KEY_CONVERSATION_ID, NO_CONVERSATION_ID)
+            .remove(KEY_OTHER_PARENT_NAME)
+            .remove(KEY_CHILDREN_NAMES)
             .apply()
     }
 
@@ -69,10 +72,33 @@ object PrefsHelper {
         prefs(context).edit().clear().apply()
     }
 
+    fun clearSession(context: Context) {
+        prefs(context).edit()
+            .remove(KEY_AUTH_TOKEN)
+            .remove(KEY_REFRESH_TOKEN)
+            .remove(KEY_USERNAME)
+            .putInt(KEY_CONVERSATION_ID, NO_CONVERSATION_ID)
+            .remove(KEY_OTHER_PARENT_NAME)
+            .remove(KEY_CHILDREN_NAMES)
+            .apply()
+    }
+
+    fun isOnboardingComplete(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_ONBOARDING_COMPLETE, false)
+
+    fun setOnboardingComplete(context: Context, complete: Boolean) {
+        prefs(context).edit()
+            .putBoolean(KEY_ONBOARDING_COMPLETE, complete)
+            .commit()
+    }
+
     // ── Conversation ─────────────────────────────────────
 
     fun getConversationId(context: Context): Int =
-        prefs(context).getInt(KEY_CONVERSATION_ID, DEFAULT_CONVERSATION_ID)
+        prefs(context).getInt(KEY_CONVERSATION_ID, NO_CONVERSATION_ID)
+
+    fun hasConversationId(context: Context): Boolean =
+        getConversationId(context) > NO_CONVERSATION_ID
 
     fun saveConversationId(context: Context, conversationId: Int) {
         prefs(context).edit()

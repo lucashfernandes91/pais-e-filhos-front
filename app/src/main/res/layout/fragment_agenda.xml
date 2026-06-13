@@ -38,7 +38,7 @@
                         android:id="@+id/tvAgendaTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Agenda"
+                        android:text="@string/ui_agenda"
                         android:textSize="26sp"
                         android:textStyle="bold"
                         android:textColor="@color/gray_900" />
@@ -53,30 +53,35 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddEvent"
+                    style="@style/Widget.CoParent.Button.Primary.Pill"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="+ Novo"
-                    android:textColor="@color/white"
-                    android:textAllCaps="false"
+                    android:layout_height="@dimen/touch_target_min"
+                    android:text="@string/ui_novo"
+                    android:contentDescription="@string/cd_add_event_button"
                     android:textSize="14sp"
-                    app:backgroundTint="@color/primary_blue"
-                    app:cornerRadius="20dp"
+                    app:icon="@drawable/ic_add"
+                    app:iconGravity="textStart"
+                    app:iconPadding="6dp"
+                    app:iconSize="18dp"
+                    app:iconTint="@color/on_primary"
+                    android:minWidth="96dp"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp" />
             </LinearLayout>
 
+            <View
+                style="@style/Widget.CoParent.Header.Divider"
+                android:layout_marginBottom="8dp" />
+
             <!-- Calendar Card -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.CoParent.Card.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="0dp"
                 android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardElevation="0dp"
-                app:cardCornerRadius="16dp"
-                app:strokeColor="@color/gray_200"
-                app:strokeWidth="1dp">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -99,7 +104,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:paddingEnd="16dp">
+                            android:layout_marginEnd="16dp">
 
                             <View
                                 android:layout_width="10dp"
@@ -111,7 +116,7 @@
                                 android:id="@+id/tvLegendMother"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Mãe"
+                                android:text="@string/agenda_no_other_parent"
                                 android:textSize="12sp"
                                 android:textColor="@color/gray_500" />
                         </LinearLayout>
@@ -122,7 +127,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:paddingEnd="16dp">
+                            android:layout_marginEnd="16dp">
 
                             <View
                                 android:layout_width="10dp"
@@ -134,7 +139,7 @@
                                 android:id="@+id/tvLegendFather"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Pai"
+                                android:text="@string/agenda_you"
                                 android:textSize="12sp"
                                 android:textColor="@color/gray_500" />
                         </LinearLayout>
@@ -149,13 +154,13 @@
                             <View
                                 android:layout_width="10dp"
                                 android:layout_height="10dp"
-                                android:background="@drawable/bg_event_dot"
-                                android:layout_marginEnd="4dp" />
+                                android:layout_marginEnd="4dp"
+                                android:background="@drawable/bg_event_dot" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Evento"
+                                android:text="@string/ui_evento"
                                 android:textSize="12sp"
                                 android:textColor="@color/gray_500" />
                         </LinearLayout>
@@ -164,20 +169,19 @@
                     <!-- Month Navigation -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="@dimen/touch_target_min"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="4dp">
 
                         <ImageButton
                             android:id="@+id/btnPrevMonth"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:src="@drawable/ic_arrow_back"
                             android:background="?selectableItemBackgroundBorderless"
-                            android:contentDescription="Mês anterior"
-                            android:scaleX="0.7"
-                            android:scaleY="0.7" />
+                            android:contentDescription="@string/cd_prev_month_button"
+                            android:padding="12dp" />
 
                         <TextView
                             android:id="@+id/tvCalendarMonth"
@@ -191,13 +195,12 @@
 
                         <ImageButton
                             android:id="@+id/btnNextMonth"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:src="@drawable/ic_arrow_forward"
                             android:background="?selectableItemBackgroundBorderless"
-                            android:contentDescription="Próximo mês"
-                            android:scaleX="0.7"
-                            android:scaleY="0.7" />
+                            android:contentDescription="@string/cd_next_month_button"
+                            android:padding="12dp" />
                     </LinearLayout>
 
                     <!-- Days Header -->
@@ -207,13 +210,13 @@
                         android:orientation="horizontal"
                         android:gravity="center">
 
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="D" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="S" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="T" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Q" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Q" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="S" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="S" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_d" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_s" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_t" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_q" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_q" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_s" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_s" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
                     </LinearLayout>
 
                     <!-- Dynamic Calendar Grid -->
@@ -229,12 +232,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Próximos eventos"
+                android:text="@string/ui_proximos_eventos"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/gray_900"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="12dp" />
+
+            <ProgressBar
+                android:id="@+id/progressLoadingAgenda"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/spacing_l"
+                android:visibility="gone"
+                android:accessibilityLiveRegion="polite"
+                android:contentDescription="@string/cd_loading_agenda" />
 
             <!-- Events List -->
             <androidx.recyclerview.widget.RecyclerView
@@ -245,6 +258,54 @@
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="false" />
 
+            <!-- Error State -->
+            <LinearLayout
+                android:id="@+id/errorStateAgenda"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingHorizontal="@dimen/spacing_xl"
+                android:paddingTop="@dimen/spacing_l"
+                android:visibility="gone"
+                android:accessibilityLiveRegion="polite"
+                android:contentDescription="@string/cd_error_agenda">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_l"
+                    android:layout_height="@dimen/icon_size_l"
+                    android:src="@drawable/ic_error_circle"
+                    app:tint="@color/error"
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_m"
+                    android:text="@string/state_error_title"
+                    android:textColor="@color/on_surface"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_s"
+                    android:gravity="center"
+                    android:text="@string/agenda_error_message"
+                    android:textColor="@color/on_surface_variant"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRetryAgenda"
+                    style="@style/Widget.CoParent.Button.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/touch_target_min"
+                    android:layout_marginTop="@dimen/spacing_l"
+                    android:text="@string/action_try_again" />
+            </LinearLayout>
+
             <!-- Empty State -->
             <LinearLayout
                 android:id="@+id/emptyStateAgenda"
@@ -254,7 +315,9 @@
                 android:gravity="center_horizontal"
                 android:paddingHorizontal="40dp"
                 android:paddingTop="32dp"
-                android:visibility="gone">
+                android:visibility="gone"
+                android:accessibilityLiveRegion="polite"
+                android:contentDescription="@string/cd_empty_agenda">
 
                 <ImageView
                     android:layout_width="64dp"
@@ -262,12 +325,13 @@
                     android:src="@drawable/ic_calendar"
                     app:tint="@color/gray_300"
                     android:layout_marginBottom="16dp"
-                    android:contentDescription="Sem eventos" />
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nenhum evento agendado"
+                    android:text="@string/ui_nenhum_evento_agendado"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/gray_700"
@@ -276,7 +340,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Adicione um evento para começar a organizar a agenda."
+                    android:text="@string/ui_adicione_um_evento_para_comecar_a_organizar_a"
                     android:textSize="14sp"
                     android:textColor="@color/gray_400"
                     android:gravity="center"

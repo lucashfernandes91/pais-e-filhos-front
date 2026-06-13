@@ -13,29 +13,30 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
-        android:background="@color/white"
+        android:background="@color/surface_container"
         android:elevation="2dp">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:padding="6dp"
+            style="@style/Widget.CoParent.TouchTarget.Icon"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
             android:src="@drawable/ic_arrow_back"
             app:tint="@color/gray_900"
-            android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="Voltar" />
+            android:contentDescription="@string/cd_back_button" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Notificações"
+            android:text="@string/ui_notificacoes"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/gray_900"
             android:layout_marginStart="12dp" />
     </LinearLayout>
+
+    <View style="@style/Widget.CoParent.Header.Divider" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -50,13 +51,11 @@
 
             <!-- Card: Notificações push -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -77,7 +76,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_notification_bell"
                             app:tint="@color/primary_blue"
-                            android:contentDescription="Push" />
+                            android:contentDescription="@string/ui_push" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -90,7 +89,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Notificações push"
+                            android:text="@string/ui_notificacoes_push"
                             android:textSize="15sp"
                             android:textStyle="bold"
                             android:textColor="@color/gray_900" />
@@ -98,7 +97,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Mensagens e eventos importantes"
+                            android:text="@string/ui_mensagens_e_eventos_importantes"
                             android:textSize="13sp"
                             android:textColor="@color/gray_500"
                             android:layout_marginTop="2dp" />
@@ -106,23 +105,20 @@
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchPush"
+                        style="@style/Widget.CoParent.Switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
-                        app:thumbTint="@color/switch_thumb_selector"
-                        app:trackTint="@color/switch_track_selector" />
+                        android:checked="true" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Card: Email de backup -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -143,7 +139,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_email_outline"
                             app:tint="@color/primary_blue"
-                            android:contentDescription="Email" />
+                            android:contentDescription="@string/ui_email" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -156,7 +152,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Email de backup"
+                            android:text="@string/ui_email_de_backup"
                             android:textSize="15sp"
                             android:textStyle="bold"
                             android:textColor="@color/gray_900" />
@@ -164,7 +160,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Receba uma cópia se o push falhar"
+                            android:text="@string/ui_receba_uma_copia_se_o_push_falhar"
                             android:textSize="13sp"
                             android:textColor="@color/gray_500"
                             android:layout_marginTop="2dp" />
@@ -172,23 +168,20 @@
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchEmailBackup"
+                        style="@style/Widget.CoParent.Switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
-                        app:thumbTint="@color/switch_thumb_selector"
-                        app:trackTint="@color/switch_track_selector" />
+                        android:checked="true" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Card: Modo silencioso noturno -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -209,7 +202,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_night_mode"
                             app:tint="@color/primary_blue"
-                            android:contentDescription="Modo noturno" />
+                            android:contentDescription="@string/ui_modo_noturno" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -222,7 +215,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Modo silencioso noturno"
+                            android:text="@string/ui_modo_silencioso_noturno"
                             android:textSize="15sp"
                             android:textStyle="bold"
                             android:textColor="@color/gray_900" />
@@ -230,7 +223,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sem notificações entre 22h e 7h"
+                            android:text="@string/ui_sem_notificacoes_entre_22h_e_7h"
                             android:textSize="13sp"
                             android:textColor="@color/gray_500"
                             android:layout_marginTop="2dp" />
@@ -238,11 +231,10 @@
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchNightMode"
+                        style="@style/Widget.CoParent.Switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"
-                        app:thumbTint="@color/switch_thumb_selector"
-                        app:trackTint="@color/switch_track_selector" />
+                        android:checked="false" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

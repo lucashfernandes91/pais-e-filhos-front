@@ -26,6 +26,7 @@ import com.example.chatapp.EventsAdapter
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
 import com.example.chatapp.RetrofitClient
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
@@ -41,6 +42,9 @@ class AgendaFragment : Fragment() {
     private var eventsRecyclerView: RecyclerView? = null
     private var swipeRefresh: SwipeRefreshLayout? = null
     private var emptyState: View? = null
+    private var errorState: View? = null
+    private var progressLoading: View? = null
+    private var btnRetry: MaterialButton? = null
     private var apiService: ApiService? = null
     private var conversationId: Int = 1
     private var token: String = ""
@@ -95,6 +99,9 @@ class AgendaFragment : Fragment() {
             eventsRecyclerView = view.findViewById(R.id.eventsRecyclerView)
             swipeRefresh = view.findViewById(R.id.swipeRefresh)
             emptyState = view.findViewById(R.id.emptyStateAgenda)
+            errorState = view.findViewById(R.id.errorStateAgenda)
+            progressLoading = view.findViewById(R.id.progressLoadingAgenda)
+            btnRetry = view.findViewById(R.id.btnRetryAgenda)
             calendarGrid = view.findViewById(R.id.calendarGrid)
             tvCalendarMonth = view.findViewById(R.id.tvCalendarMonth)
             tvCurrentMonth = view.findViewById(R.id.tvCurrentMonth)
@@ -103,7 +110,8 @@ class AgendaFragment : Fragment() {
             setupCalendarNavigation(view)
             setupSwipeRefresh()
 
-            btnAddEvent?.setOnClickListener { showAddEventDialog() }
+            btnAddEvent?.setOnClickListener { showAddEventDialogFixed() }
+            btnRetry?.setOnClickListener { loadEvents() }
 
             loadEvents()
         } catch (e: Exception) {
@@ -115,7 +123,7 @@ class AgendaFragment : Fragment() {
         eventsAdapter = EventsAdapter(
             events,
             onDeleteClick = { event -> confirmDeleteEvent(event) },
-            onEditClick = { event -> showEditEventDialog(event) }
+            onEditClick = { event -> showDayEventsSheetForEvent(event) }
         )
         eventsRecyclerView?.layoutManager = LinearLayoutManager(requireContext())
         eventsRecyclerView?.adapter = eventsAdapter
@@ -452,11 +460,11 @@ class AgendaFragment : Fragment() {
             if (isCustody) {
                 val end = if (!event.event_date_end.isNullOrEmpty())
                     parseEventDate(event.event_date_end) else start
-                val startCal = Calendar.getInstance().apply { time = start }
-                val endCal = Calendar.getInstance().apply { time = end ?: start }
-                val dayCopy = dayCal.clone() as Calendar
-                dayCopy.set(Calendar.HOUR_OF_DAY, 12)
-                !dayCopy.before(startCal) && !dayCopy.after(endCal)
+                val eventStart = startOfDay(start)
+                val eventEnd = endOfDay(end ?: start)
+                val selectedDayStart = startOfDay(dayCal.time)
+                val selectedDayEnd = endOfDay(dayCal.time)
+                !selectedDayEnd.before(eventStart) && !selectedDayStart.after(eventEnd)
             } else {
                 val evtCal = Calendar.getInstance().apply { time = start }
                 evtCal.get(Calendar.DAY_OF_MONTH) == day &&
@@ -473,18 +481,8 @@ class AgendaFragment : Fragment() {
         val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
 
         for (event in dayEvents) {
-            val iconRes = when (event.event_type.uppercase()) {
-                "SCHOOL"  -> R.drawable.ic_school
-                "MEDICAL" -> R.drawable.ic_health
-                "CUSTODY" -> R.drawable.ic_custody
-                else      -> R.drawable.ic_other
-            }
-            val typeLabel = when (event.event_type.uppercase()) {
-                "SCHOOL"  -> "Escola"
-                "MEDICAL" -> "Sa\u00fade"
-                "CUSTODY" -> "Conviv\u00eancia"
-                else      -> "Outro"
-            }
+            val iconRes = eventIconRes(event)
+            val typeLabel = eventTypeLabel(event)
 
             val timeFmt = SimpleDateFormat("HH:mm", Locale.getDefault())
             val startDate = parseEventDate(event.event_date)
@@ -511,6 +509,12 @@ class AgendaFragment : Fragment() {
                     setColor(ContextCompat.getColor(ctx, R.color.gray_50))
                 }
                 setPadding(dp(14), dp(12), dp(14), dp(12))
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    dialog.dismiss()
+                    showEventDetailSheet(event)
+                }
             }
 
             val iconSize = dp(38)
@@ -560,6 +564,176 @@ class AgendaFragment : Fragment() {
         dialog.show()
     }
 
+    private fun showEventDetailSheet(event: Event) {
+        val ctx = requireContext()
+        val dialog = BottomSheetDialog(ctx, R.style.BottomSheetDialogTheme)
+        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+
+        val sheetView = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(20), dp(12), dp(20), dp(24))
+        }
+
+        sheetView.addView(View(ctx).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(36), dp(4)).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+                bottomMargin = dp(18)
+            }
+            background = ContextCompat.getDrawable(ctx, R.drawable.bg_drag_handle)
+        })
+
+        val headerRow = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(18) }
+        }
+
+        val iconFrame = FrameLayout(ctx).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(44), dp(44)).apply {
+                marginEnd = dp(12)
+            }
+            background = ContextCompat.getDrawable(ctx, R.drawable.bg_icon_circle_blue)
+        }
+        iconFrame.addView(android.widget.ImageView(ctx).apply {
+            layoutParams = FrameLayout.LayoutParams(dp(22), dp(22)).apply {
+                gravity = Gravity.CENTER
+            }
+            setImageResource(eventIconRes(event))
+            setColorFilter(ContextCompat.getColor(ctx, R.color.primary_blue))
+        })
+        headerRow.addView(iconFrame)
+
+        headerRow.addView(LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            addView(TextView(ctx).apply {
+                text = event.title
+                textSize = 18f
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setTextColor(ContextCompat.getColor(ctx, R.color.gray_900))
+            })
+            addView(TextView(ctx).apply {
+                text = eventTypeLabel(event)
+                textSize = 13f
+                setTextColor(ContextCompat.getColor(ctx, R.color.primary_blue))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(2) }
+            })
+        })
+        sheetView.addView(headerRow)
+
+        sheetView.addView(detailDivider(dp))
+        sheetView.addView(detailRow("Quando", eventDateDetailText(event), dp))
+        sheetView.addView(detailRow("Criado por", event.created_by_name.ifBlank { "Não informado" }, dp))
+
+        if (event.notes.isNotBlank()) {
+            sheetView.addView(detailRow("Notas", event.notes, dp))
+        }
+
+        dialog.setContentView(sheetView)
+        dialog.show()
+    }
+
+    private fun eventIconRes(event: Event): Int =
+        when (event.event_type.uppercase()) {
+            "SCHOOL" -> R.drawable.ic_school
+            "MEDICAL" -> R.drawable.ic_health
+            "CUSTODY" -> R.drawable.ic_custody
+            else -> R.drawable.ic_other
+        }
+
+    private fun eventTypeLabel(event: Event): String =
+        when (event.event_type.uppercase()) {
+            "SCHOOL" -> "Escola"
+            "MEDICAL" -> "Saúde"
+            "CUSTODY" -> "Convivência"
+            else -> "Outro"
+        }
+
+    private fun eventDateDetailText(event: Event): String {
+        val start = parseEventDate(event.event_date) ?: return event.event_date
+        val ptBr = Locale("pt", "BR")
+        val dateTimeFmt = SimpleDateFormat("dd 'de' MMMM 'às' HH:mm", ptBr)
+        val dateOnlyFmt = SimpleDateFormat("dd 'de' MMMM", ptBr)
+        val startText = dateTimeFmt.format(start).replaceFirstChar { it.uppercase() }
+        val end = event.event_date_end?.takeIf { it.isNotBlank() }?.let { parseEventDate(it) }
+            ?: return startText
+        val endText = if (event.event_type.uppercase() == "CUSTODY") {
+            dateOnlyFmt.format(end).replaceFirstChar { it.uppercase() }
+        } else {
+            dateTimeFmt.format(end).replaceFirstChar { it.uppercase() }
+        }
+        return "$startText até $endText"
+    }
+
+    private fun detailDivider(dp: (Int) -> Int): View =
+        View(requireContext()).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dp(1)
+            ).apply { bottomMargin = dp(12) }
+            setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray_200))
+        }
+
+    private fun detailRow(label: String, value: String, dp: (Int) -> Int): View {
+        val ctx = requireContext()
+        return LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(14) }
+            addView(TextView(ctx).apply {
+                text = label.uppercase(Locale("pt", "BR"))
+                textSize = 12f
+                letterSpacing = 0.06f
+                setTextColor(ContextCompat.getColor(ctx, R.color.gray_500))
+            })
+            addView(TextView(ctx).apply {
+                text = value
+                textSize = 15f
+                setTextColor(ContextCompat.getColor(ctx, R.color.gray_900))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(4) }
+            })
+        }
+    }
+
+    private fun showDayEventsSheetForEvent(event: Event) {
+        val eventDate = parseEventDate(event.event_date)
+        if (eventDate == null) {
+            Toast.makeText(requireContext(), "Não foi possível abrir os dados deste evento", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val eventCal = Calendar.getInstance().apply { time = eventDate }
+        showDayEventsSheet(eventCal.get(Calendar.DAY_OF_MONTH), eventCal)
+    }
+
+    private fun startOfDay(date: Date): Calendar =
+        Calendar.getInstance().apply {
+            time = date
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+    private fun endOfDay(date: Date): Calendar =
+        Calendar.getInstance().apply {
+            time = date
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+
     // ── Date Parsing ────────────────────────────────────────
 
     private fun parseEventDate(dateStr: String): Date? {
@@ -576,8 +750,12 @@ class AgendaFragment : Fragment() {
 
     private fun loadEvents() {
         lifecycleScope.launch {
+            showLoadingState()
             try {
-                if (token.isEmpty() || apiService == null) return@launch
+                if (token.isEmpty() || apiService == null) {
+                    showErrorState()
+                    return@launch
+                }
                 val eventList = apiService!!.getEvents("Bearer $token", conversationId)
 
                 allEvents.clear()
@@ -589,13 +767,30 @@ class AgendaFragment : Fragment() {
 
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Erro ao carregar eventos: ${e.message}", Toast.LENGTH_SHORT).show()
+                showErrorState()
             } finally {
+                progressLoading?.visibility = View.GONE
                 swipeRefresh?.isRefreshing = false
             }
         }
     }
 
+    private fun showLoadingState() {
+        errorState?.visibility = View.GONE
+        emptyState?.visibility = View.GONE
+        eventsRecyclerView?.visibility = View.GONE
+        progressLoading?.visibility = View.VISIBLE
+    }
+
+    private fun showErrorState() {
+        eventsRecyclerView?.visibility = View.GONE
+        emptyState?.visibility = View.GONE
+        errorState?.visibility = View.VISIBLE
+    }
+
     private fun updateEmptyState() {
+        errorState?.visibility = View.GONE
+        progressLoading?.visibility = View.GONE
         if (events.isEmpty()) {
             eventsRecyclerView?.visibility = View.GONE
             emptyState?.visibility = View.VISIBLE
@@ -723,6 +918,137 @@ class AgendaFragment : Fragment() {
         dialog.show()
     }
 
+    private fun showAddEventDialogFixed() {
+        val dialog = BottomSheetDialog(requireContext(), R.style.AddEventBottomSheetTheme)
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, null)
+        dialog.setContentView(dialogView)
+
+        val btnBack = dialogView.findViewById<ImageButton>(R.id.btnBack)
+        val btnSave = dialogView.findViewById<MaterialButton>(R.id.btnSaveEvent)
+        val form = AddEventFormBinder(
+            dialogView,
+            displayDateFormat = { displayDateFormat.format(it.time) },
+            displayTimeFormat = { displayTimeFormat.format(it.time) }
+        )
+        val layoutDateTimeSingle = dialogView.findViewById<LinearLayout>(R.id.layoutDateTimeSingle)
+        val layoutDateTimeStart = dialogView.findViewById<LinearLayout>(R.id.layoutDateTimeStart)
+        val layoutDateTimeEnd = dialogView.findViewById<LinearLayout>(R.id.layoutDateTimeEnd)
+
+        val selectedCalendar = Calendar.getInstance()
+        val startCalendar = Calendar.getInstance()
+        val endCalendar = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 1) }
+
+        fun updateDateVisibility() {
+            val isCustody = form.isCustodySelected()
+            layoutDateTimeSingle?.visibility = if (isCustody) View.GONE else View.VISIBLE
+            layoutDateTimeStart?.visibility = if (isCustody) View.VISIBLE else View.GONE
+            layoutDateTimeEnd?.visibility = if (isCustody) View.VISIBLE else View.GONE
+            expandBottomSheet(dialog)
+        }
+
+        btnBack.setOnClickListener { dialog.dismiss() }
+        setupEventFormPickers(form, selectedCalendar, startCalendar, endCalendar)
+        form.setupTextFieldValidation()
+        form.setupAccessibility(btnSave)
+        form.setupSegmentGroup { updateDateVisibility() }
+        form.segmentType.check(R.id.segSchool)
+        updateDateVisibility()
+
+        btnSave.setOnClickListener {
+            val isCustody = form.isCustodySelected()
+            if (!form.validateAll(isCustody, startCalendar, endCalendar)) {
+                form.rejectHaptic()
+                return@setOnClickListener
+            }
+
+            val title = form.etTitle.text?.toString()?.trim().orEmpty()
+            val notes = form.etNotes.text?.toString()?.trim().orEmpty()
+            val type = eventTypeFromSegment(form.segmentType.checkedChipId)
+
+            if (type == "CUSTODY") {
+                createEvent(title, apiDateFormat.format(startCalendar.time), type, notes, apiDateFormat.format(endCalendar.time))
+            } else {
+                createEvent(title, apiDateFormat.format(selectedCalendar.time), type, notes, null)
+            }
+            dialog.dismiss()
+        }
+
+        dialog.show()
+        expandBottomSheet(dialog)
+    }
+
+    private fun setupEventFormPickers(
+        form: AddEventFormBinder,
+        selectedCalendar: Calendar,
+        startCalendar: Calendar,
+        endCalendar: Calendar
+    ) {
+        form.setPickerValue(form.datePicker, selectedCalendar, isDate = true)
+        form.setPickerValue(form.timePicker, selectedCalendar, isDate = false)
+        form.setPickerValue(form.startDatePicker, startCalendar, isDate = true)
+        form.setPickerValue(form.startTimePicker, startCalendar, isDate = false)
+        form.setPickerValue(form.endDatePicker, endCalendar, isDate = true)
+        form.setPickerValue(form.endTimePicker, endCalendar, isDate = false)
+
+        form.setupPickerRow(form.datePicker) { done ->
+            showDatePicker(selectedCalendar) {
+                form.setPickerValue(form.datePicker, selectedCalendar, isDate = true)
+                done()
+            }
+        }
+        form.setupPickerRow(form.timePicker) { done ->
+            showTimePicker(selectedCalendar) {
+                form.setPickerValue(form.timePicker, selectedCalendar, isDate = false)
+                done()
+            }
+        }
+        form.setupPickerRow(form.startDatePicker) { done ->
+            showDatePicker(startCalendar) {
+                form.setPickerValue(form.startDatePicker, startCalendar, isDate = true)
+                done()
+            }
+        }
+        form.setupPickerRow(form.startTimePicker) { done ->
+            showTimePicker(startCalendar) {
+                form.setPickerValue(form.startTimePicker, startCalendar, isDate = false)
+                done()
+            }
+        }
+        form.setupPickerRow(form.endDatePicker) { done ->
+            showDatePicker(endCalendar) {
+                form.setPickerValue(form.endDatePicker, endCalendar, isDate = true)
+                done()
+            }
+        }
+        form.setupPickerRow(form.endTimePicker) { done ->
+            showTimePicker(endCalendar) {
+                form.setPickerValue(form.endTimePicker, endCalendar, isDate = false)
+                done()
+            }
+        }
+    }
+
+    private fun eventTypeFromSegment(checkedChipId: Int): String =
+        when (checkedChipId) {
+            R.id.segSchool -> "SCHOOL"
+            R.id.segMedical -> "MEDICAL"
+            R.id.segCustody -> "CUSTODY"
+            R.id.segOther -> "OTHER"
+            else -> "OTHER"
+        }
+
+    private fun expandBottomSheet(dialog: BottomSheetDialog) {
+        val bottomSheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            ?: return
+        bottomSheet.layoutParams = bottomSheet.layoutParams.apply {
+            height = ViewGroup.LayoutParams.MATCH_PARENT
+        }
+        BottomSheetBehavior.from(bottomSheet).apply {
+            skipCollapsed = true
+            state = BottomSheetBehavior.STATE_EXPANDED
+        }
+    }
+
     private fun showDatePicker(calendar: Calendar, onDateSet: () -> Unit) {
         DatePickerDialog(requireContext(), { _, year, month, day ->
             calendar.set(Calendar.YEAR, year)
@@ -844,6 +1170,80 @@ class AgendaFragment : Fragment() {
         }
 
         dialog.show()
+    }
+
+    private fun showEditEventDialogFixed(event: Event) {
+        val dialog = BottomSheetDialog(requireContext(), R.style.AddEventBottomSheetTheme)
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, null)
+        dialog.setContentView(dialogView)
+
+        val btnBack = dialogView.findViewById<ImageButton>(R.id.btnBack)
+        val btnSave = dialogView.findViewById<MaterialButton>(R.id.btnSaveEvent)
+        val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val form = AddEventFormBinder(
+            dialogView,
+            displayDateFormat = { displayDateFormat.format(it.time) },
+            displayTimeFormat = { displayTimeFormat.format(it.time) }
+        )
+        val layoutDateTimeSingle = dialogView.findViewById<LinearLayout>(R.id.layoutDateTimeSingle)
+        val layoutDateTimeStart = dialogView.findViewById<LinearLayout>(R.id.layoutDateTimeStart)
+        val layoutDateTimeEnd = dialogView.findViewById<LinearLayout>(R.id.layoutDateTimeEnd)
+
+        tvDialogTitle?.text = "Editar Evento"
+        btnSave.setText(R.string.ui_salvar_alteracoes)
+        form.etTitle.setText(event.title)
+        form.etNotes.setText(event.notes)
+        layoutDateTimeSingle?.visibility = View.VISIBLE
+        layoutDateTimeStart?.visibility = View.GONE
+        layoutDateTimeEnd?.visibility = View.GONE
+
+        val selectedCalendar = Calendar.getInstance()
+        try {
+            val parsed = apiDateFormat.parse(event.event_date)
+            if (parsed != null) selectedCalendar.time = parsed
+        } catch (_: Exception) {}
+
+        form.setPickerValue(form.datePicker, selectedCalendar, isDate = true)
+        form.setPickerValue(form.timePicker, selectedCalendar, isDate = false)
+        form.setupPickerRow(form.datePicker) { done ->
+            showDatePicker(selectedCalendar) {
+                form.setPickerValue(form.datePicker, selectedCalendar, isDate = true)
+                done()
+            }
+        }
+        form.setupPickerRow(form.timePicker) { done ->
+            showTimePicker(selectedCalendar) {
+                form.setPickerValue(form.timePicker, selectedCalendar, isDate = false)
+                done()
+            }
+        }
+        form.setupTextFieldValidation()
+        form.setupAccessibility(btnSave)
+        form.segmentType.check(
+            when (event.event_type.uppercase()) {
+                "SCHOOL" -> R.id.segSchool
+                "MEDICAL" -> R.id.segMedical
+                "CUSTODY" -> R.id.segCustody
+                else -> R.id.segOther
+            }
+        )
+
+        btnBack.setOnClickListener { dialog.dismiss() }
+        btnSave.setOnClickListener {
+            if (!form.validateTitle()) {
+                form.rejectHaptic()
+                return@setOnClickListener
+            }
+
+            val title = form.etTitle.text?.toString()?.trim().orEmpty()
+            val notes = form.etNotes.text?.toString()?.trim().orEmpty()
+            val type = eventTypeFromSegment(form.segmentType.checkedChipId)
+            updateEvent(event.id, title, apiDateFormat.format(selectedCalendar.time), type, notes)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+        expandBottomSheet(dialog)
     }
 
     private fun updateEvent(eventId: Int, title: String, date: String, type: String, notes: String) {

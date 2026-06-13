@@ -39,7 +39,7 @@ class MessageAdapter(
     private fun buildChatItems(messages: List<Message>): List<ChatItem> {
         val items = mutableListOf<ChatItem>()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val displayFormat = SimpleDateFormat("dd 'de' MMMM", Locale("pt", "BR"))
+        val displayFormat = SimpleDateFormat("dd 'de' MMMM", Locale.forLanguageTag("pt-BR"))
         var lastDateStr = ""
         var unreadInserted = false
 

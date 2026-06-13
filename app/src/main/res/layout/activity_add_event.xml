@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/bg_secondary"
     android:fillViewport="true">
 
     <LinearLayout
@@ -18,21 +18,21 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="12dp">
 
             <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                style="@style/Widget.CoParent.TouchTarget.Icon"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
                 android:src="@drawable/ic_back"
                 app:tint="@color/gray_900"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="Voltar" />
+                android:contentDescription="@string/cd_back_button" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Novo evento"
+                android:text="@string/ui_novo_evento"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/gray_900"
@@ -40,19 +40,24 @@
         </LinearLayout>
 
         <!-- Título -->
+        <View
+            style="@style/Widget.CoParent.Header.Divider"
+            android:layout_marginBottom="24dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Título"
+            android:text="@string/ui_titulo"
             android:textSize="14sp"
             android:textColor="@color/gray_700"
             android:layout_marginBottom="6dp" />
 
         <EditText
             android:id="@+id/etEventTitle"
+            android:importantForAutofill="no"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:hint="Ex: Consulta médica"
+            android:hint="@string/ui_ex_consulta_medica"
             android:textSize="15sp"
             android:textColor="@color/gray_900"
             android:textColorHint="@color/gray_400"
@@ -79,7 +84,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Data"
+                    android:text="@string/ui_data"
                     android:textSize="14sp"
                     android:textColor="@color/gray_700"
                     android:layout_marginBottom="6dp" />
@@ -91,16 +96,18 @@
 
                     <EditText
                         android:id="@+id/etEventDate"
+                        android:importantForAutofill="no"
+                        android:inputType="date"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:textSize="15sp"
                         android:textColor="@color/gray_900"
-                        android:hint="dd/mm/aaaa"
+                        android:hint="@string/ui_dd_mm_aaaa"
                         android:paddingStart="16dp"
                         android:paddingEnd="44dp"
                         android:gravity="center_vertical"
                         android:background="@android:color/transparent"
-                        android:focusable="false"
+                        android:focusable="true"
                         android:clickable="true" />
 
                     <ImageView
@@ -110,7 +117,7 @@
                         android:layout_marginEnd="14dp"
                         android:src="@drawable/ic_calendar"
                         app:tint="@color/gray_500"
-                        android:contentDescription="Data" />
+                        android:contentDescription="@string/ui_data" />
                 </FrameLayout>
             </LinearLayout>
 
@@ -124,7 +131,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hora"
+                    android:text="@string/ui_hora"
                     android:textSize="14sp"
                     android:textColor="@color/gray_700"
                     android:layout_marginBottom="6dp" />
@@ -136,16 +143,18 @@
 
                     <EditText
                         android:id="@+id/etEventTime"
+                        android:importantForAutofill="no"
+                        android:inputType="time"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:textSize="15sp"
                         android:textColor="@color/gray_900"
-                        android:hint="18:00"
+                        android:hint="@string/ui_18_00"
                         android:paddingStart="16dp"
                         android:paddingEnd="44dp"
                         android:gravity="center_vertical"
                         android:background="@android:color/transparent"
-                        android:focusable="false"
+                        android:focusable="true"
                         android:clickable="true" />
 
                     <ImageView
@@ -155,7 +164,7 @@
                         android:layout_marginEnd="14dp"
                         android:src="@drawable/ic_clock"
                         app:tint="@color/gray_500"
-                        android:contentDescription="Hora" />
+                        android:contentDescription="@string/ui_hora" />
                 </FrameLayout>
             </LinearLayout>
         </LinearLayout>
@@ -172,7 +181,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Início da convivência"
+                android:text="@string/ui_inicio_da_convivencia"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/gray_700"
@@ -193,7 +202,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Data"
+                        android:text="@string/ui_data"
                         android:textSize="14sp"
                         android:textColor="@color/gray_700"
                         android:layout_marginBottom="6dp" />
@@ -205,16 +214,18 @@
 
                         <EditText
                             android:id="@+id/etStartDate"
+                            android:importantForAutofill="no"
+                            android:inputType="date"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:textSize="15sp"
                             android:textColor="@color/gray_900"
-                            android:hint="dd/mm/aaaa"
+                            android:hint="@string/ui_dd_mm_aaaa"
                             android:paddingStart="16dp"
                             android:paddingEnd="44dp"
                             android:gravity="center_vertical"
                             android:background="@android:color/transparent"
-                            android:focusable="false"
+                            android:focusable="true"
                             android:clickable="true" />
 
                         <ImageView
@@ -224,7 +235,7 @@
                             android:layout_marginEnd="14dp"
                             android:src="@drawable/ic_calendar"
                             app:tint="@color/gray_500"
-                            android:contentDescription="Data início" />
+                            android:contentDescription="@string/ui_data_inicio" />
                     </FrameLayout>
                 </LinearLayout>
 
@@ -238,7 +249,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hora"
+                        android:text="@string/ui_hora"
                         android:textSize="14sp"
                         android:textColor="@color/gray_700"
                         android:layout_marginBottom="6dp" />
@@ -250,16 +261,18 @@
 
                         <EditText
                             android:id="@+id/etStartTime"
+                            android:importantForAutofill="no"
+                            android:inputType="time"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:textSize="15sp"
                             android:textColor="@color/gray_900"
-                            android:hint="18:00"
+                            android:hint="@string/ui_18_00"
                             android:paddingStart="16dp"
                             android:paddingEnd="44dp"
                             android:gravity="center_vertical"
                             android:background="@android:color/transparent"
-                            android:focusable="false"
+                            android:focusable="true"
                             android:clickable="true" />
 
                         <ImageView
@@ -269,7 +282,7 @@
                             android:layout_marginEnd="14dp"
                             android:src="@drawable/ic_clock"
                             app:tint="@color/gray_500"
-                            android:contentDescription="Hora início" />
+                            android:contentDescription="@string/ui_hora_inicio" />
                     </FrameLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -287,7 +300,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fim da convivência"
+                android:text="@string/ui_fim_da_convivencia"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/gray_700"
@@ -308,7 +321,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Data"
+                        android:text="@string/ui_data"
                         android:textSize="14sp"
                         android:textColor="@color/gray_700"
                         android:layout_marginBottom="6dp" />
@@ -320,16 +333,18 @@
 
                         <EditText
                             android:id="@+id/etEndDate"
+                            android:importantForAutofill="no"
+                            android:inputType="date"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:textSize="15sp"
                             android:textColor="@color/gray_900"
-                            android:hint="dd/mm/aaaa"
+                            android:hint="@string/ui_dd_mm_aaaa"
                             android:paddingStart="16dp"
                             android:paddingEnd="44dp"
                             android:gravity="center_vertical"
                             android:background="@android:color/transparent"
-                            android:focusable="false"
+                            android:focusable="true"
                             android:clickable="true" />
 
                         <ImageView
@@ -339,7 +354,7 @@
                             android:layout_marginEnd="14dp"
                             android:src="@drawable/ic_calendar"
                             app:tint="@color/gray_500"
-                            android:contentDescription="Data fim" />
+                            android:contentDescription="@string/ui_data_fim" />
                     </FrameLayout>
                 </LinearLayout>
 
@@ -353,7 +368,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hora"
+                        android:text="@string/ui_hora"
                         android:textSize="14sp"
                         android:textColor="@color/gray_700"
                         android:layout_marginBottom="6dp" />
@@ -365,16 +380,18 @@
 
                         <EditText
                             android:id="@+id/etEndTime"
+                            android:importantForAutofill="no"
+                            android:inputType="time"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:textSize="15sp"
                             android:textColor="@color/gray_900"
-                            android:hint="18:00"
+                            android:hint="@string/ui_18_00"
                             android:paddingStart="16dp"
                             android:paddingEnd="44dp"
                             android:gravity="center_vertical"
                             android:background="@android:color/transparent"
-                            android:focusable="false"
+                            android:focusable="true"
                             android:clickable="true" />
 
                         <ImageView
@@ -384,7 +401,7 @@
                             android:layout_marginEnd="14dp"
                             android:src="@drawable/ic_clock"
                             app:tint="@color/gray_500"
-                            android:contentDescription="Hora fim" />
+                            android:contentDescription="@string/ui_hora_fim" />
                     </FrameLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -394,7 +411,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tipo"
+            android:text="@string/ui_tipo"
             android:textSize="14sp"
             android:textColor="@color/gray_700"
             android:layout_marginBottom="8dp" />
@@ -410,79 +427,56 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSchool"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Escola"
-                app:chipBackgroundColor="@color/chip_bg_selector"
-                app:chipStrokeColor="@color/chip_stroke_selector"
-                app:chipStrokeWidth="1dp"
-                app:chipCornerRadius="20dp"
+                android:text="@string/ui_escola"
                 app:chipIcon="@drawable/ic_school"
-                app:chipIconTint="@color/chip_text_selector"
-                app:chipIconSize="16dp"
-                app:checkedIconVisible="false" />
+                />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMedical"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Saúde"
-                app:chipBackgroundColor="@color/chip_bg_selector"
-                app:chipStrokeColor="@color/chip_stroke_selector"
-                app:chipStrokeWidth="1dp"
-                app:chipCornerRadius="20dp"
+                android:text="@string/ui_saude"
                 app:chipIcon="@drawable/ic_health"
-                app:chipIconTint="@color/chip_text_selector"
-                app:chipIconSize="16dp"
-                app:checkedIconVisible="false" />
+                />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipCustody"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Convivência"
-                app:chipBackgroundColor="@color/chip_bg_selector"
-                app:chipStrokeColor="@color/chip_stroke_selector"
-                app:chipStrokeWidth="1dp"
-                app:chipCornerRadius="20dp"
+                android:text="@string/ui_convivencia"
                 app:chipIcon="@drawable/ic_custody"
-                app:chipIconTint="@color/chip_text_selector"
-                app:chipIconSize="16dp"
-                app:checkedIconVisible="false" />
+                />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipOther"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Outro"
-                app:chipBackgroundColor="@color/chip_bg_selector"
-                app:chipStrokeColor="@color/chip_stroke_selector"
-                app:chipStrokeWidth="1dp"
-                app:chipCornerRadius="20dp"
+                android:text="@string/ui_outro"
                 app:chipIcon="@drawable/ic_other"
-                app:chipIconTint="@color/chip_text_selector"
-                app:chipIconSize="16dp"
-                app:checkedIconVisible="false" />
+                />
         </com.google.android.material.chip.ChipGroup>
 
         <!-- Notas -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Notas (opcional)"
+            android:text="@string/ui_notas_opcional"
             android:textSize="14sp"
             android:textColor="@color/gray_700"
             android:layout_marginBottom="6dp" />
 
         <EditText
             android:id="@+id/etEventNotes"
+            android:importantForAutofill="no"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:hint="Detalhes, endereço, observações..."
+            android:hint="@string/ui_detalhes_endereco_observacoes"
             android:textSize="15sp"
             android:textColor="@color/gray_900"
             android:textColorHint="@color/gray_400"
@@ -496,19 +490,16 @@
         <!-- Salvar -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveEvent"
+            style="@style/Widget.CoParent.Button.Primary.Pill"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Salvar evento"
-            android:textSize="16sp"
-            android:textColor="@color/white"
-            android:textAllCaps="false"
-            app:backgroundTint="@color/primary_blue"
-            app:cornerRadius="26dp" />
+            android:layout_height="wrap_content"
+            android:text="@string/ui_salvar_evento"
+            />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="O evento é registrado no histórico oficial."
+            android:text="@string/ui_o_evento_e_registrado_no_historico_oficial"
             android:textSize="12sp"
             android:textColor="@color/gray_500"
             android:gravity="center"

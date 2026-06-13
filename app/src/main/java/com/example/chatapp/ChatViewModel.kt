@@ -13,6 +13,7 @@ class ChatViewModel(
     val messages = MutableLiveData<List<Message>>()
     val isLoading = MutableLiveData<Boolean>()
     val error = MutableLiveData<String?>()
+    val loadError = MutableLiveData<Boolean>(false)
     val wsStatus = MutableLiveData<WsStatus>()
     val typingUser = MutableLiveData<String?>(null)
 
@@ -59,6 +60,7 @@ class ChatViewModel(
             try {
                 isLoading.postValue(true)
                 error.postValue(null)
+                loadError.postValue(false)
 
                 val bearerToken = "Bearer $token"
                 val result = RetrofitClient.api.getMessages(bearerToken, conversationId)
@@ -70,7 +72,7 @@ class ChatViewModel(
                 // Item 20: Mark as read automático
                 markOtherMessagesAsRead()
             } catch (e: Exception) {
-                error.postValue("Erro ao carregar: ${e.message}")
+                loadError.postValue(true)
             } finally {
                 isLoading.postValue(false)
             }

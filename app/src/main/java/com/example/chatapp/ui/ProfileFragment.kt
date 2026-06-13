@@ -35,6 +35,8 @@ import java.util.Locale
 class ProfileFragment : Fragment() {
 
     private var childrenContainer: LinearLayout? = null
+    private var progressLoadingChildren: View? = null
+    private var errorStateChildren: View? = null
     private var childPhotoCallback: ((Uri) -> Unit)? = null
 
     private val photoPickerLauncher = registerForActivityResult(
@@ -91,17 +93,18 @@ class ProfileFragment : Fragment() {
         view.findViewById<TextView>(R.id.tvUserSubtitle)?.setOnClickListener { showEditProfileDialog() }
 
         // Dados dinâmicos do coparental
-        val otherParentName = PrefsHelper.getOtherParentName(requireContext())
-        if (otherParentName.isNotEmpty()) {
-            val displayOther = otherParentName.replaceFirstChar { it.uppercase() }
-            view.findViewById<TextView>(R.id.tvCoparentName)?.text = displayOther
-            view.findViewById<TextView>(R.id.tvCoparentAvatar)?.text = displayOther.first().toString()
-        }
+        renderCoparent(view, PrefsHelper.getOtherParentName(requireContext()))
+        loadCoparent(view)
 
         // Children
         childrenContainer = view.findViewById(R.id.childrenContainer)
+        progressLoadingChildren = view.findViewById(R.id.progressLoadingChildren)
+        errorStateChildren = view.findViewById(R.id.errorStateChildren)
         view.findViewById<View>(R.id.btnAddChild)?.setOnClickListener {
             showAddChildDialog()
+        }
+        view.findViewById<View>(R.id.btnRetryChildren)?.setOnClickListener {
+            loadChildren()
         }
         loadChildren()
 
@@ -149,12 +152,50 @@ class ProfileFragment : Fragment() {
 
     // ── Children ────────────────────────────────────────────
 
+    private fun loadCoparent(view: View) {
+        val token = PrefsHelper.getAuthToken(requireContext())
+        if (token.isEmpty()) return
+
+        lifecycleScope.launch {
+            try {
+                val conversationId = PrefsHelper.getConversationId(requireContext())
+                val conversation = RetrofitClient.api.getConversations("Bearer $token")
+                    .firstOrNull { it.id == conversationId }
+                    ?: return@launch
+                val name = conversation.participants.firstOrNull { !it.is_me }?.username.orEmpty()
+                PrefsHelper.saveOtherParentName(requireContext(), name)
+                renderCoparent(view, name)
+            } catch (_: Exception) {
+                // Keep the locally known state while offline.
+            }
+        }
+    }
+
+    private fun renderCoparent(view: View, name: String) {
+        val connectedContent = view.findViewById<View>(R.id.coparentConnectedContent)
+        val emptyState = view.findViewById<View>(R.id.emptyStateCoparent)
+        if (name.isBlank()) {
+            connectedContent?.visibility = View.GONE
+            emptyState?.visibility = View.VISIBLE
+            return
+        }
+
+        val displayOther = name.replaceFirstChar { it.uppercase() }
+        connectedContent?.visibility = View.VISIBLE
+        emptyState?.visibility = View.GONE
+        view.findViewById<TextView>(R.id.tvCoparentName)?.text = displayOther
+        view.findViewById<TextView>(R.id.tvCoparentAvatar)?.text =
+            displayOther.firstOrNull()?.uppercase() ?: getString(R.string.chat_avatar_fallback)
+    }
+
     private fun loadChildren() {
+        showChildrenLoading()
         val token = PrefsHelper.getAuthToken(requireContext())
         val conversationId = PrefsHelper.getConversationId(requireContext())
         android.util.Log.d("ProfileFragment", "loadChildren called: token=${token.take(10)}..., convId=$conversationId")
         if (token.isEmpty()) {
             android.util.Log.w("ProfileFragment", "loadChildren: token empty, skipping")
+            showChildrenError()
             return
         }
 
@@ -166,26 +207,30 @@ class ProfileFragment : Fragment() {
             } catch (e: retrofit2.HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
                 android.util.Log.e("ProfileFragment", "loadChildren HTTP ${e.code()}: $errorBody")
-                renderChildren(emptyList())
+                showChildrenError()
             } catch (e: Exception) {
                 android.util.Log.e("ProfileFragment", "loadChildren error: ${e.message}")
-                renderChildren(emptyList())
+                showChildrenError()
             }
         }
     }
 
     private fun renderChildren(children: List<Child>) {
         val container = childrenContainer ?: return
+        progressLoadingChildren?.visibility = View.GONE
+        errorStateChildren?.visibility = View.GONE
+        container.visibility = View.VISIBLE
         container.removeAllViews()
 
         // Atualizar subtítulo e prefs com nomes atualizados
         if (children.isNotEmpty()) {
             val names = children.joinToString(", ") { it.name }
             PrefsHelper.saveChildrenNames(requireContext(), names)
-            view?.findViewById<TextView>(R.id.tvUserSubtitle)?.text = "Responsável por $names"
+            view?.findViewById<TextView>(R.id.tvUserSubtitle)?.text =
+                getString(R.string.profile_responsible_for, names)
         } else {
             PrefsHelper.saveChildrenNames(requireContext(), "")
-            view?.findViewById<TextView>(R.id.tvUserSubtitle)?.text = "CoParent Lite"
+            view?.findViewById<TextView>(R.id.tvUserSubtitle)?.setText(R.string.ui_coparent_lite)
         }
 
         if (children.isEmpty()) {
@@ -193,10 +238,11 @@ class ProfileFragment : Fragment() {
             val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
 
             val emptyText = TextView(ctx).apply {
-                text = "Nenhum filho cadastrado"
+                text = getString(R.string.children_empty)
                 textSize = 14f
                 setTextColor(ContextCompat.getColor(ctx, R.color.gray_400))
                 setPadding(0, dp(4), 0, dp(4))
+                accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
             }
             container.addView(emptyText)
             return
@@ -205,6 +251,18 @@ class ProfileFragment : Fragment() {
         for (child in children) {
             container.addView(createChildRow(child))
         }
+    }
+
+    private fun showChildrenLoading() {
+        childrenContainer?.visibility = View.GONE
+        errorStateChildren?.visibility = View.GONE
+        progressLoadingChildren?.visibility = View.VISIBLE
+    }
+
+    private fun showChildrenError() {
+        childrenContainer?.visibility = View.GONE
+        progressLoadingChildren?.visibility = View.GONE
+        errorStateChildren?.visibility = View.VISIBLE
     }
 
     private fun createChildRow(child: Child): View {
@@ -279,7 +337,7 @@ class ProfileFragment : Fragment() {
 
         if (child.has_custody) {
             val tvCustody = TextView(ctx).apply {
-                text = "✓ Guarda"
+                text = getString(R.string.profile_has_custody)
                 textSize = 12f
                 setTextColor(ContextCompat.getColor(ctx, R.color.secondary_green))
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
@@ -291,13 +349,13 @@ class ProfileFragment : Fragment() {
 
         // Delete button (X)
         val btnDelete = android.widget.ImageButton(ctx).apply {
-            val size = dp(32)
+            val size = resources.getDimensionPixelSize(R.dimen.touch_target_min)
             layoutParams = LinearLayout.LayoutParams(size, size)
             setImageResource(R.drawable.ic_close)
             setColorFilter(ContextCompat.getColor(ctx, R.color.gray_400))
             setBackgroundResource(android.R.color.transparent)
-            setPadding(dp(4), dp(4), dp(4), dp(4))
-            contentDescription = "Remover"
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            contentDescription = getString(R.string.cd_remove_child, child.name)
             setOnClickListener { confirmDeleteChild(child) }
         }
         row.addView(btnDelete)
@@ -308,7 +366,7 @@ class ProfileFragment : Fragment() {
     private fun formatBirthDate(dateStr: String): String {
         return try {
             val input = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val output = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
+            val output = SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("pt-BR"))
             val date = input.parse(dateStr)
             if (date != null) output.format(date) else dateStr
         } catch (e: Exception) {
@@ -371,8 +429,8 @@ class ProfileFragment : Fragment() {
             DatePickerDialog(
                 requireContext(),
                 { _, year, month, day ->
-                    selectedDate = String.format("%04d-%02d-%02d", year, month + 1, day)
-                    etBirthDate.setText(String.format("%02d/%02d/%04d", day, month + 1, year))
+                    selectedDate = String.format(Locale.ROOT, "%04d-%02d-%02d", year, month + 1, day)
+                    etBirthDate.setText(String.format(Locale.forLanguageTag("pt-BR"), "%02d/%02d/%04d", day, month + 1, year))
                 },
                 cal.get(Calendar.YEAR) - 5,
                 cal.get(Calendar.MONTH),
@@ -380,25 +438,49 @@ class ProfileFragment : Fragment() {
             ).show()
         }
 
-        MaterialAlertDialogBuilder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Adicionar filho(a)")
             .setView(dialogView)
-            .setPositiveButton("Salvar") { _, _ ->
+            .setPositiveButton("Salvar", null)
+            .setNegativeButton("Cancelar", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val name = etName.text.toString().trim()
+                etName.error = null
+                etBirthDate.error = null
+
+                var isValid = true
                 if (name.isEmpty()) {
-                    Toast.makeText(requireContext(), "Nome é obrigatório", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
+                    etName.error = getString(R.string.child_name_required)
+                    isValid = false
                 }
+                if (selectedDate == null) {
+                    etBirthDate.error = getString(R.string.child_birth_date_required)
+                    isValid = false
+                }
+                if (!isValid) return@setOnClickListener
+
                 val cpf = etCpf.text.toString().trim().ifEmpty { null }
                 val rg = etRg.text.toString().trim().ifEmpty { null }
                 val hasCustody = cbHasCustody.isChecked
-                createChild(name, selectedDate, cpf, rg, hasCustody)
+                createChild(name, selectedDate!!, cpf, rg, hasCustody) {
+                    dialog.dismiss()
+                }
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        }
+        dialog.show()
     }
 
-    private fun createChild(name: String, birthDate: String?, cpf: String?, rg: String?, hasCustody: Boolean) {
+    private fun createChild(
+        name: String,
+        birthDate: String,
+        cpf: String?,
+        rg: String?,
+        hasCustody: Boolean,
+        onSuccess: () -> Unit
+    ) {
         val token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty()) return
 
@@ -420,7 +502,7 @@ class ProfileFragment : Fragment() {
                 val request = CreateChildRequest(
                     name = name.trim(),
                     conversationId = conversationId,
-                    birthDate = birthDate?.trim(),
+                    birthDate = birthDate.trim(),
                     cpf = cpf,
                     rg = rg,
                     hasCustody = hasCustody
@@ -435,6 +517,7 @@ class ProfileFragment : Fragment() {
                 val children = RetrofitClient.api.getChildren("Bearer $token", conversationId)
                 android.util.Log.d("ProfileFragment", "loadChildren after create: ${children.size} filhos")
                 renderChildren(children)
+                onSuccess()
             } catch (e: retrofit2.HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
                 android.util.Log.e("ProfileFragment", "createChild HTTP ${e.code()}: $errorBody")

@@ -9,7 +9,8 @@
     android:gravity="center_vertical"
     android:foreground="?selectableItemBackground"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:minHeight="72dp">
 
     <!-- Icon -->
     <FrameLayout
@@ -25,7 +26,8 @@
             android:layout_height="22dp"
             android:layout_gravity="center"
             app:tint="@color/primary_blue"
-            android:contentDescription="Notificação" />
+            android:contentDescription="@null"
+            android:importantForAccessibility="no" />
     </FrameLayout>
 
     <!-- Content -->
@@ -42,7 +44,7 @@
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="@color/gray_900"
-            android:maxLines="1"
+            android:maxLines="2"
             android:ellipsize="end" />
 
         <TextView

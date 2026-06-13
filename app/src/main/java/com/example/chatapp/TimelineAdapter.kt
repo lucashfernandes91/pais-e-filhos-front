@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class TimelineAdapter(
@@ -17,8 +18,10 @@ class TimelineAdapter(
 
     private val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
     private val inputFormatAlt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.US)
-    private val dateHeaderFormat = SimpleDateFormat("dd 'DE' MMM.", Locale("pt", "BR"))
-    private val timeFormat = SimpleDateFormat("HH:mm", Locale("pt", "BR"))
+    private val ptBr = Locale.forLanguageTag("pt-BR")
+    private val dayFormat = SimpleDateFormat("dd", ptBr)
+    private val monthFormat = SimpleDateFormat("MMMM", ptBr)
+    private val timeFormat = SimpleDateFormat("HH:mm", ptBr)
 
     override fun getItemViewType(position: Int) = when (items[position]) {
         is TimelineItem.MessageItem -> VIEW_TYPE_MESSAGE
@@ -57,6 +60,11 @@ class TimelineAdapter(
         }
     }
 
+    private fun formatDateTime(date: Date): String {
+        val month = monthFormat.format(date).replaceFirstChar { it.titlecase(ptBr) }
+        return "${dayFormat.format(date)} de $month \u00b7 ${timeFormat.format(date)}"
+    }
+
     inner class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val messageBubble: LinearLayout = itemView.findViewById(R.id.messageBubble)
         private val senderName: TextView = itemView.findViewById(R.id.senderName)
@@ -68,13 +76,12 @@ class TimelineAdapter(
 
             val senderDisplay = message.sender.replaceFirstChar { it.uppercase() }
             senderName.text = senderDisplay
-            messageContent.text = "${senderDisplay}: ${message.content}"
+            messageContent.text =
+                itemView.context.getString(R.string.timeline_sender_message, senderDisplay, message.content)
 
             val date = parseDate(message.created_at)
             if (date != null) {
-                val dateHeader = dateHeaderFormat.format(date).uppercase()
-                val time = timeFormat.format(date)
-                messageTime.text = "$dateHeader \u00b7 $time"
+                messageTime.text = formatDateTime(date)
             } else {
                 messageTime.text = message.created_at
             }
@@ -95,9 +102,7 @@ class TimelineAdapter(
 
             val date = parseDate(event.event_date)
             if (date != null) {
-                val dateHeader = dateHeaderFormat.format(date).uppercase()
-                val time = timeFormat.format(date)
-                eventDate.text = "$dateHeader \u00b7 $time"
+                eventDate.text = formatDateTime(date)
             } else {
                 eventDate.text = event.event_date
             }

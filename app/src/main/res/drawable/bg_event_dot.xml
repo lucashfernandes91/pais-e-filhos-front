@@ -3,6 +3,6 @@
     android:shape="oval">
     <solid android:color="@color/event_dot" />
     <size
-        android:width="5dp"
-        android:height="5dp" />
+        android:width="8dp"
+        android:height="8dp" />
 </shape>

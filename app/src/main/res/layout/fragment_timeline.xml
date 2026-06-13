@@ -18,22 +18,25 @@
             style="@style/TextStyle.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Linha do tempo" />
+            android:text="@string/ui_linha_do_tempo" />
 
         <TextView
             style="@style/TextStyle.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tudo em ordem cronológica" />
+            android:text="@string/ui_tudo_em_ordem_cronologica" />
     </LinearLayout>
+
+    <View style="@style/Widget.CoParent.Header.Divider" />
 
     <!-- Info Banner -->
     <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.CoParent.Card.Info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_m"
         android:layout_marginBottom="@dimen/spacing_m"
-        app:cardBackgroundColor="@color/secondary_green_light">
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,19 +49,29 @@
                 android:layout_width="@dimen/icon_size_m"
                 android:layout_height="@dimen/icon_size_m"
                 android:src="@drawable/ic_info"
-                app:tint="@color/secondary_green"
-                android:contentDescription="Info" />
+                app:tint="@color/icon_info"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no" />
 
             <TextView
                 style="@style/TextStyle.BodySmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Todas as mensagens e eventos têm registro oficial e podem ser exportados em PDF."
+                android:text="@string/ui_todas_as_mensagens_e_eventos_tem_registro_oficial"
                 android:layout_marginStart="@dimen/spacing_m"
-                android:textColor="@color/secondary_green" />
+                android:textColor="@color/info_banner_text" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <ProgressBar
+        android:id="@+id/progressLoadingTimeline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/spacing_l"
+        android:accessibilityLiveRegion="polite"
+        android:contentDescription="@string/cd_loading_timeline" />
 
     <!-- Timeline List -->
     <androidx.recyclerview.widget.RecyclerView
@@ -70,6 +83,54 @@
         android:paddingVertical="@dimen/spacing_s"
         android:clipToPadding="false" />
 
+    <!-- Error State -->
+    <LinearLayout
+        android:id="@+id/errorStateTimeline"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/spacing_xl"
+        android:visibility="gone"
+        android:accessibilityLiveRegion="polite"
+        android:contentDescription="@string/cd_error_timeline">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size_l"
+            android:layout_height="@dimen/icon_size_l"
+            android:src="@drawable/ic_error_circle"
+            app:tint="@color/error"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:text="@string/state_error_title"
+            android:textColor="@color/on_surface"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_s"
+            android:gravity="center"
+            android:text="@string/timeline_error_message"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRetryTimeline"
+            style="@style/Widget.CoParent.Button.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_marginTop="@dimen/spacing_l"
+            android:text="@string/action_try_again" />
+    </LinearLayout>
+
     <!-- Empty State -->
     <LinearLayout
         android:id="@+id/emptyStateTimeline"
@@ -79,7 +140,9 @@
         android:orientation="vertical"
         android:gravity="center"
         android:paddingHorizontal="40dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:accessibilityLiveRegion="polite"
+        android:contentDescription="@string/cd_empty_timeline">
 
         <ImageView
             android:layout_width="64dp"
@@ -87,12 +150,13 @@
             android:src="@drawable/ic_schedule"
             app:tint="@color/gray_300"
             android:layout_marginBottom="16dp"
-            android:contentDescription="Sem itens" />
+            android:contentDescription="@null"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Linha do tempo vazia"
+            android:text="@string/ui_linha_do_tempo_vazia"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/gray_700"
@@ -101,7 +165,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mensagens e eventos aparecer\u00e3o aqui em ordem cronol\u00f3gica."
+            android:text="@string/ui_mensagens_e_eventos_aparecerao_aqui_em_ordem_cronologica"
             android:textSize="14sp"
             android:textColor="@color/gray_400"
             android:gravity="center"

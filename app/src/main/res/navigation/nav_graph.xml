@@ -74,5 +74,14 @@
     <fragment
         android:id="@+id/childDetailFragment"
         android:name="com.example.chatapp.ui.ChildDetailFragment"
-        android:label="Detalhes do filho" />
+        android:label="Detalhes do filho">
+        <action
+            android:id="@+id/action_childDetail_to_editChild"
+            app:destination="@id/editChildFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editChildFragment"
+        android:name="com.example.chatapp.ui.EditChildFragment"
+        android:label="Editar dados" />
 </navigation>

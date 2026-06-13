@@ -42,7 +42,14 @@ class ChatFragment : Fragment() {
     private lateinit var messagesRecyclerView: RecyclerView
     private lateinit var messageInput: EditText
     private lateinit var sendButton: FloatingActionButton
+    private lateinit var attachButton: ImageButton
     private lateinit var messageAdapter: MessageAdapter
+    private lateinit var tvChatName: TextView
+    private lateinit var tvAvatarInitial: TextView
+    private lateinit var tvChatStatus: TextView
+    private lateinit var emptyState: View
+    private lateinit var errorState: View
+    private var hasOtherParent = false
     private var currentUsername: String = ""
 
     // Search
@@ -83,18 +90,26 @@ class ChatFragment : Fragment() {
 
         currentUsername = PrefsHelper.getUsername(requireContext())
 
-        initViews(view)
         initViewModel()
+        initViews(view)
         observeViewModel()
         setupRecyclerView()
         setupSendButton()
         setupSearch(view)
+        loadActiveConversationParticipant()
+        viewModel.loadMessages()
     }
 
     private fun initViews(view: View) {
         messagesRecyclerView = view.findViewById(R.id.messagesRecyclerView)
         messageInput = view.findViewById(R.id.messageInput)
         sendButton = view.findViewById(R.id.sendButton)
+        attachButton = view.findViewById(R.id.btnAttach)
+        tvChatName = view.findViewById(R.id.tvChatName)
+        tvAvatarInitial = view.findViewById(R.id.tvAvatarInitial)
+        tvChatStatus = view.findViewById(R.id.tvChatStatus)
+        emptyState = view.findViewById(R.id.emptyStateChat)
+        errorState = view.findViewById(R.id.errorStateChat)
         headerNormal = view.findViewById(R.id.headerNormal)
         searchBar = view.findViewById(R.id.searchBar)
         searchInput = view.findViewById(R.id.searchInput)
@@ -103,11 +118,104 @@ class ChatFragment : Fragment() {
         btnSearchDown = view.findViewById(R.id.btnSearchDown)
 
         // Dados dinâmicos do outro pai
-        val otherParentName = PrefsHelper.getOtherParentName(requireContext())
-        if (otherParentName.isNotEmpty()) {
-            val displayName = otherParentName.replaceFirstChar { it.uppercase() }
-            view.findViewById<TextView>(R.id.tvChatName)?.text = displayName
-            view.findViewById<TextView>(R.id.tvAvatarInitial)?.text = displayName.first().toString()
+        val cachedName = PrefsHelper.getOtherParentName(requireContext())
+        if (cachedName.isBlank()) renderNoCoparent() else renderChatParticipant(cachedName)
+
+        view.findViewById<View>(R.id.btnRetryChat).setOnClickListener {
+            errorState.visibility = View.GONE
+            viewModel.loadMessages()
+        }
+    }
+
+    private fun loadActiveConversationParticipant() {
+        val token = PrefsHelper.getAuthToken(requireContext())
+        if (token.isEmpty()) return
+
+        val activeConversationId = PrefsHelper.getConversationId(requireContext())
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val conversation = RetrofitClient.api.getConversations("Bearer $token")
+                    .firstOrNull { it.id == activeConversationId }
+                    ?: return@launch
+                val otherParent = conversation.participants.firstOrNull { !it.is_me }
+                if (otherParent == null) {
+                    PrefsHelper.saveOtherParentName(requireContext(), "")
+                    renderNoCoparent()
+                } else {
+                    PrefsHelper.saveOtherParentName(requireContext(), otherParent.username)
+                    renderChatParticipant(otherParent.username)
+                }
+            } catch (_: Exception) {
+                // Keep cached data or placeholder when header refresh is unavailable.
+            }
+        }
+    }
+
+    private fun renderChatParticipant(name: String) {
+        hasOtherParent = true
+        val displayName = name.trim().replaceFirstChar { it.uppercase() }
+        tvChatName.text = displayName
+        tvAvatarInitial.text = displayName.firstOrNull()?.uppercase()
+            ?: getString(R.string.chat_avatar_fallback)
+        setComposerAvailable(true)
+        view?.findViewById<TextView>(R.id.tvEmptyChatTitle)?.setText(R.string.ui_nenhuma_mensagem_ainda)
+        view?.findViewById<TextView>(R.id.tvEmptyChatMessage)
+            ?.setText(R.string.ui_comece_uma_conversa_todas_as_mensagens_ficam_registradas)
+        renderConnectionStatus(viewModel.wsStatus.value)
+    }
+
+    private fun renderNoCoparent() {
+        hasOtherParent = false
+        tvChatName.setText(R.string.chat_no_coparent_title)
+        tvAvatarInitial.setText(R.string.chat_avatar_fallback)
+        tvChatStatus.setText(R.string.chat_invite_coparent_status)
+        tvChatStatus.setTextColor(resources.getColor(R.color.gray_400, null))
+        pendingAttachmentUri = null
+        messageInput.text?.clear()
+        setComposerAvailable(false)
+        view?.findViewById<TextView>(R.id.tvEmptyChatTitle)?.setText(R.string.chat_no_coparent_title)
+        view?.findViewById<TextView>(R.id.tvEmptyChatMessage)?.setText(R.string.chat_invite_to_start)
+    }
+
+    private fun setComposerAvailable(available: Boolean) {
+        messageInput.isEnabled = available
+        messageInput.alpha = if (available) 1f else 0.62f
+        messageInput.hint = getString(
+            if (available) R.string.ui_mensagem else R.string.chat_composer_unavailable_hint
+        )
+        attachButton.isEnabled = available
+        attachButton.alpha = if (available) 1f else 0.42f
+        setSendEnabled(available)
+    }
+
+    private fun setSendEnabled(enabled: Boolean) {
+        sendButton.isEnabled = enabled
+        sendButton.alpha = if (enabled) 1f else 0.45f
+    }
+
+    private fun renderConnectionStatus(status: WsStatus?) {
+        if (!hasOtherParent) {
+            tvChatStatus.setText(R.string.chat_invite_coparent_status)
+            tvChatStatus.setTextColor(resources.getColor(R.color.gray_400, null))
+            return
+        }
+        when (status) {
+            WsStatus.CONNECTED -> {
+                tvChatStatus.setText(R.string.chat_status_connected)
+                tvChatStatus.setTextColor(resources.getColor(R.color.success, null))
+            }
+            WsStatus.RECONNECTING -> {
+                tvChatStatus.setText(R.string.chat_status_reconnecting)
+                tvChatStatus.setTextColor(resources.getColor(R.color.warning, null))
+            }
+            WsStatus.ERROR -> {
+                tvChatStatus.setText(R.string.chat_status_error)
+                tvChatStatus.setTextColor(resources.getColor(R.color.error, null))
+            }
+            else -> {
+                tvChatStatus.setText(R.string.chat_status_disconnected)
+                tvChatStatus.setTextColor(resources.getColor(R.color.gray_400, null))
+            }
         }
     }
 
@@ -143,7 +251,7 @@ class ChatFragment : Fragment() {
             }
         }
 
-        view?.findViewById<ImageButton>(R.id.btnAttach)?.setOnClickListener {
+        attachButton.setOnClickListener {
             filePickerLauncher.launch("*/*")
         }
     }
@@ -304,13 +412,13 @@ class ChatFragment : Fragment() {
             markUnreadMessagesAsRead(messages)
 
             // Empty state
-            val emptyState = view?.findViewById<View>(R.id.emptyStateChat)
+            errorState.visibility = View.GONE
             if (messages.isEmpty()) {
                 messagesRecyclerView.visibility = View.GONE
-                emptyState?.visibility = View.VISIBLE
+                emptyState.visibility = View.VISIBLE
             } else {
                 messagesRecyclerView.visibility = View.VISIBLE
-                emptyState?.visibility = View.GONE
+                emptyState.visibility = View.GONE
                 // Scroll para a última mensagem de forma garantida
                 messagesRecyclerView.post {
                     if (messages.isNotEmpty()) {
@@ -332,31 +440,20 @@ class ChatFragment : Fragment() {
             }
         }
 
-        viewModel.wsStatus.observe(viewLifecycleOwner) { status ->
-            val tvStatus = view?.findViewById<TextView>(R.id.tvChatStatus)
-            when (status) {
-                WsStatus.CONNECTED -> {
-                    tvStatus?.text = "Online · Mensagens registradas"
-                    tvStatus?.setTextColor(resources.getColor(R.color.success, null))
-                }
-                WsStatus.DISCONNECTED -> {
-                    tvStatus?.text = "Desconectado"
-                    tvStatus?.setTextColor(resources.getColor(R.color.gray_400, null))
-                }
-                WsStatus.RECONNECTING -> {
-                    tvStatus?.text = "Reconectando..."
-                    tvStatus?.setTextColor(resources.getColor(R.color.warning, null))
-                }
-                WsStatus.ERROR -> {
-                    tvStatus?.text = "Erro na conexão"
-                    tvStatus?.setTextColor(resources.getColor(R.color.error, null))
-                }
-                else -> {}
+        viewModel.loadError.observe(viewLifecycleOwner) { hasError ->
+            if (hasError == true) {
+                messagesRecyclerView.visibility = View.GONE
+                emptyState.visibility = View.GONE
+                errorState.visibility = View.VISIBLE
             }
         }
 
+        viewModel.wsStatus.observe(viewLifecycleOwner) { status ->
+            renderConnectionStatus(status)
+        }
+
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            sendButton.isEnabled = !isLoading
+            setSendEnabled(hasOtherParent && !isLoading)
         }
 
         // Item 6: Typing indicator
@@ -364,7 +461,7 @@ class ChatFragment : Fragment() {
             val tvTyping = view?.findViewById<TextView>(R.id.tvTypingIndicator)
             if (username != null) {
                 val displayName = username.replaceFirstChar { it.uppercase() }
-                tvTyping?.text = "$displayName est\u00e1 digitando..."
+                tvTyping?.text = getString(R.string.chat_typing_user, displayName)
                 tvTyping?.visibility = View.VISIBLE
             } else {
                 tvTyping?.visibility = View.GONE

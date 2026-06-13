@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_primary"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Top Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:background="@color/bg_primary">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                style="@style/Widget.CoParent.TouchTarget.Icon"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/gray_900"
+                android:contentDescription="@string/cd_back_button" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ui_editar_dados"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/gray_900"
+                android:layout_marginStart="12dp" />
+        </LinearLayout>
+
+        <View style="@style/Widget.CoParent.Header.Divider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Avatar com opção de foto -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:id="@+id/btnChildPhoto"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_avatar_child"
+                    android:clipToOutline="true"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="@string/cd_add_child_photo">
+
+                    <ImageView
+                        android:id="@+id/ivChildPhoto"
+                        android:layout_width="88dp"
+                        android:layout_height="88dp"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no" />
+
+                    <TextView
+                        android:id="@+id/tvChildInitial"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/warning" />
+                </LinearLayout>
+
+                <!-- Camera badge -->
+                <FrameLayout
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="60dp"
+                    android:layout_marginTop="60dp"
+                    android:background="@drawable/bg_badge_camera">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_camera"
+                        app:tint="@color/on_primary"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no" />
+                </FrameLayout>
+            </FrameLayout>
+
+            <!-- Nome -->
+            <TextView
+                style="@style/TextAppearance.CoParent.InputLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_nome"
+                android:layout_marginBottom="6dp"
+                />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.CoParent.TextInputLayout.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                app:hintEnabled="false"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etChildName"
+                    style="@style/Widget.CoParent.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/ui_nome_do_filho_a"
+                    android:inputType="textPersonName"
+                    android:imeOptions="actionNext" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Data de nascimento -->
+            <TextView
+                style="@style/TextAppearance.CoParent.InputLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_data_de_nascimento"
+                android:layout_marginBottom="6dp"
+                />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.CoParent.TextInputLayout.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                app:hintEnabled="false"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_calendar"
+                app:endIconTint="@color/gray_500">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etBirthDate"
+                    style="@style/Widget.CoParent.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/ui_dd_mm_aaaa"
+                    android:inputType="none"
+                    android:focusable="true"
+                    android:clickable="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- CPF -->
+            <TextView
+                style="@style/TextAppearance.CoParent.InputLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_cpf"
+                android:layout_marginBottom="6dp"
+                />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.CoParent.TextInputLayout.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                app:hintEnabled="false">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCpf"
+                    style="@style/Widget.CoParent.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/ui_000_000_000_00"
+                    android:inputType="number"
+                    android:maxLength="14"
+                    android:imeOptions="actionNext" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- RG -->
+            <TextView
+                style="@style/TextAppearance.CoParent.InputLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_rg"
+                android:layout_marginBottom="6dp"
+                />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.CoParent.TextInputLayout.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                app:hintEnabled="false">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etRg"
+                    style="@style/Widget.CoParent.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/ui_numero_do_rg"
+                    android:inputType="text"
+                    android:maxLength="20"
+                    android:imeOptions="actionDone" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Guarda -->
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cbHasCustody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="28dp"
+                android:text="@string/ui_possuo_a_guarda_desta_crianca"
+                android:textSize="15sp"
+                android:textColor="@color/gray_700"
+                app:buttonTint="@color/primary_blue" />
+
+            <!-- Botão Salvar -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSave"
+                style="@style/Widget.CoParent.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_salvar_alteracoes"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Nota de segurança -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_as_alteracoes_sao_registradas_no_historico_oficial"
+                android:textSize="12sp"
+                android:textColor="@color/gray_500"
+                android:gravity="center" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

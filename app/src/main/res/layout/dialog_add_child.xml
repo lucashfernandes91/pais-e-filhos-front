@@ -26,14 +26,17 @@
                 android:gravity="center"
                 android:background="@drawable/bg_avatar_child"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:contentDescription="@string/cd_add_child_photo">
 
                 <ImageView
                     android:id="@+id/ivChildPhoto"
                     android:layout_width="88dp"
                     android:layout_height="88dp"
                     android:scaleType="centerCrop"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no" />
 
                 <ImageView
                     android:id="@+id/ivCameraIcon"
@@ -41,13 +44,14 @@
                     android:layout_height="28dp"
                     android:src="@drawable/ic_camera"
                     app:tint="@color/gray_400"
-                    android:contentDescription="Adicionar foto" />
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no" />
 
                 <TextView
                     android:id="@+id/tvPhotoLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Foto"
+                    android:text="@string/ui_foto"
                     android:textSize="11sp"
                     android:textColor="@color/gray_400"
                     android:layout_marginTop="2dp" />
@@ -57,9 +61,10 @@
         <!-- Nome -->
         <EditText
             android:id="@+id/etChildName"
+            android:importantForAutofill="no"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="Nome do filho(a)"
+            android:hint="@string/ui_nome_do_filho_a"
             android:textSize="15sp"
             android:textColor="@color/gray_900"
             android:textColorHint="@color/gray_400"
@@ -71,27 +76,29 @@
         <!-- Data de nascimento -->
         <EditText
             android:id="@+id/etChildBirthDate"
+            android:importantForAutofill="no"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="12dp"
-            android:hint="Data de nascimento (opcional)"
+            android:hint="@string/ui_data_de_nascimento"
             android:textSize="15sp"
             android:textColor="@color/gray_900"
             android:textColorHint="@color/gray_400"
             android:background="@drawable/bg_input_outlined"
             android:paddingHorizontal="14dp"
             android:inputType="date"
-            android:focusable="false"
+            android:focusable="true"
             android:clickable="true"
             android:singleLine="true" />
 
         <!-- CPF -->
         <EditText
             android:id="@+id/etChildCpf"
+            android:importantForAutofill="no"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="12dp"
-            android:hint="CPF (opcional)"
+            android:hint="@string/ui_cpf_opcional"
             android:textSize="15sp"
             android:textColor="@color/gray_900"
             android:textColorHint="@color/gray_400"
@@ -104,10 +111,11 @@
         <!-- RG -->
         <EditText
             android:id="@+id/etChildRg"
+            android:importantForAutofill="no"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="12dp"
-            android:hint="RG (opcional)"
+            android:hint="@string/ui_rg_opcional"
             android:textSize="15sp"
             android:textColor="@color/gray_900"
             android:textColorHint="@color/gray_400"
@@ -123,7 +131,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Possuo a guarda desta criança"
+            android:text="@string/ui_possuo_a_guarda_desta_crianca"
             android:textSize="15sp"
             android:textColor="@color/gray_700"
             app:buttonTint="@color/primary_blue" />

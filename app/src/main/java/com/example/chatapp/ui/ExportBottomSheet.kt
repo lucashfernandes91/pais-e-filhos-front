@@ -58,7 +58,8 @@ class ExportBottomSheet : BottomSheetDialogFragment() {
         val progressContainer = view.findViewById<LinearLayout>(R.id.progressContainer)
         val tvProgressText = view.findViewById<TextView>(R.id.tvProgressText)
 
-        tvMessageCount.text = "$messageCount mensagens"
+        tvMessageCount.text =
+            resources.getQuantityString(R.plurals.export_message_count, messageCount, messageCount)
 
         btnDownload.setOnClickListener {
             exportPdf(progressContainer, tvProgressText, btnDownload, btnShare, share = false)
@@ -87,7 +88,7 @@ class ExportBottomSheet : BottomSheetDialogFragment() {
 
         // Show progress
         progressContainer.visibility = View.VISIBLE
-        tvProgressText.text = "Gerando PDF..."
+        tvProgressText.setText(R.string.export_generating_pdf)
         btnDownload.isEnabled = false
         btnShare.isEnabled = false
 
@@ -114,7 +115,7 @@ class ExportBottomSheet : BottomSheetDialogFragment() {
                     if (share) {
                         sharePdfFile(pdfFile)
                     } else {
-                        tvProgressText.text = "PDF salvo em Downloads"
+                        tvProgressText.setText(R.string.export_pdf_saved)
                         Toast.makeText(ctx, "PDF salvo com sucesso", Toast.LENGTH_SHORT).show()
                     }
                     btnDownload.isEnabled = true

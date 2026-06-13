@@ -70,6 +70,11 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Map<String, Any>
 
+    @DELETE("api/notifications/delete-all/")
+    suspend fun deleteAllNotifications(
+        @Header("Authorization") token: String
+    ): Map<String, Any>
+
     @POST("api/notifications/{notificationId}/read/")
     suspend fun markNotificationRead(
         @Header("Authorization") token: String,
@@ -132,11 +137,32 @@ interface ApiService {
         @Body body: CreateChildRequest
     ): Child
 
-    @PATCH("api/children/{childId}/")
+    @PATCH("api/children/{childId}/update/")
     suspend fun updateChild(
         @Header("Authorization") token: String,
         @Path("childId") childId: Int,
         @Body body: UpdateChildRequest
+    ): Child
+
+    @Multipart
+    @PATCH("api/children/{childId}/update/")
+    suspend fun updateChildWithPhoto(
+        @Header("Authorization") token: String,
+        @Path("childId") childId: Int,
+        @Part("name") name: okhttp3.RequestBody,
+        @Part("birth_date") birthDate: okhttp3.RequestBody,
+        @Part("cpf") cpf: okhttp3.RequestBody,
+        @Part("rg") rg: okhttp3.RequestBody,
+        @Part("has_custody") hasCustody: okhttp3.RequestBody,
+        @Part photo: okhttp3.MultipartBody.Part?
+    ): Child
+
+    @Multipart
+    @PATCH("api/children/{childId}/update/")
+    suspend fun updateChildPhoto(
+        @Header("Authorization") token: String,
+        @Path("childId") childId: Int,
+        @Part photo: okhttp3.MultipartBody.Part
     ): Child
 
     @DELETE("api/children/{childId}/delete/")

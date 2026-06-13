@@ -1,23 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base App Theme -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_blue</item>
         <item name="colorPrimaryVariant">@color/primary_blue_dark</item>
         <item name="colorSecondary">@color/secondary_green</item>
         <item name="colorSecondaryVariant">@color/secondary_green_light</item>
+        <item name="colorSurface">@color/surface_container</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+        <item name="colorOnSurface">@color/on_surface</item>
         <item name="android:colorBackground">@color/bg_primary</item>
+        <item name="android:windowBackground">@color/bg_primary</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:windowSplashScreenBackground">@color/bg_primary</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/bg_primary</item>
+        <item name="android:textColorPrimary">@color/on_surface</item>
+        <item name="android:textColorSecondary">@color/on_surface_variant</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/bg_primary</item>
+        <item name="android:navigationBarColor">@color/primary_blue_dark</item>
     </style>
 
     <!-- Theme for ChatApp -->
-    <style name="Theme.ChatApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="Theme.ChatApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_blue</item>
         <item name="colorPrimaryVariant">@color/primary_blue_dark</item>
         <item name="colorSecondary">@color/secondary_green</item>
         <item name="colorSecondaryVariant">@color/secondary_green_light</item>
+        <item name="colorSurface">@color/surface_container</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+        <item name="colorOnSurface">@color/on_surface</item>
         <item name="android:colorBackground">@color/bg_primary</item>
+        <item name="android:windowBackground">@color/bg_primary</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:windowSplashScreenBackground">@color/bg_primary</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/bg_primary</item>
+        <item name="android:textColorPrimary">@color/on_surface</item>
+        <item name="android:textColorSecondary">@color/on_surface_variant</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/bg_primary</item>
+        <item name="android:navigationBarColor">@color/primary_blue_dark</item>
     </style>
 
     <!-- Text Styles -->
@@ -77,33 +103,14 @@
     </style>
 
     <!-- Button Styles -->
-    <style name="ButtonStyle.Primary" parent="Widget.MaterialComponents.Button">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/text_size_m</item>
-        <item name="android:padding">@dimen/spacing_m</item>
-        <item name="android:minHeight">@dimen/height_button</item>
-        <item name="backgroundTint">@color/primary_blue</item>
-        <item name="cornerRadius">@dimen/corner_radius_l</item>
-    </style>
+    <style name="ButtonStyle.Primary" parent="Widget.CoParent.Button.Primary" />
 
-    <style name="ButtonStyle.Secondary" parent="Widget.AppCompat.Button.Colored">
-        <item name="android:textColor">@color/primary_blue</item>
-        <item name="android:textSize">@dimen/text_size_m</item>
-        <item name="android:minHeight">@dimen/height_button</item>
-        <item name="cornerRadius">@dimen/corner_radius_l</item>
-    </style>
+    <style name="ButtonStyle.Secondary" parent="Widget.CoParent.Button.Outlined" />
 
-    <style name="ButtonStyle.Tertiary" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/primary_blue</item>
-        <item name="android:textSize">@dimen/text_size_m</item>
-        <item name="android:minHeight">@dimen/height_button</item>
-    </style>
+    <style name="ButtonStyle.Tertiary" parent="Widget.CoParent.Button.Text" />
 
     <!-- Card Styles -->
-    <style name="CardStyle.Base" parent="Widget.MaterialComponents.CardView">
-        <item name="cardCornerRadius">@dimen/corner_radius_l</item>
-        <item name="cardElevation">@dimen/elevation_low</item>
-        <item name="cardBackgroundColor">@color/white</item>
+    <style name="CardStyle.Base" parent="Widget.CoParent.Card.Surface">
         <item name="android:layout_margin">@dimen/spacing_m</item>
     </style>
 
@@ -111,19 +118,10 @@
         <item name="cardElevation">@dimen/elevation_high</item>
     </style>
 
-    <style name="CardStyle.Outlined" parent="CardStyle.Base">
-        <item name="cardElevation">@dimen/elevation_none</item>
-        <item name="strokeColor">@color/divider</item>
-        <item name="strokeWidth">@dimen/stroke_width_thin</item>
-    </style>
+    <style name="CardStyle.Outlined" parent="Widget.CoParent.Card.Outlined" />
 
     <!-- Input Styles -->
-    <style name="InputStyle.Base" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
-        <item name="android:textSize">@dimen/text_size_m</item>
-        <item name="android:textColor">@color/gray_900</item>
-        <item name="android:minHeight">@dimen/height_input</item>
-        <item name="android:padding">@dimen/spacing_m</item>
-    </style>
+    <style name="InputStyle.Base" parent="Widget.CoParent.TextInputEditText" />
 
     <!-- Divider Styles -->
     <style name="Divider">
@@ -133,9 +131,10 @@
 
     <!-- Navigation Styles -->
     <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="backgroundColor">@color/white</item>
+        <item name="backgroundColor">@color/surface_container</item>
         <item name="elevation">@dimen/elevation_high</item>
         <item name="itemIconTint">@color/bottom_nav_color</item>
+        <item name="itemIconSize">20dp</item>
         <item name="itemTextColor">@color/bottom_nav_color</item>
         <item name="itemActiveIndicatorStyle">@null</item>
     </style>
@@ -153,11 +152,9 @@
     </style>
 
     <!-- Custom Badge Style -->
-    <style name="BadgeStyle">
-        <item name="android:background">@color/secondary_green</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/text_size_xs</item>
-        <item name="android:padding">@dimen/spacing_xs</item>
+    <style name="BadgeStyle" parent="Widget.CoParent.Badge.Label">
+        <item name="android:background">@drawable/bg_badge_green</item>
+        <item name="android:textColor">@color/on_secondary</item>
     </style>
 
     <!-- Avatar Style -->
@@ -165,21 +162,45 @@
         <item name="android:layout_width">@dimen/avatar_size_m</item>
         <item name="android:layout_height">@dimen/avatar_size_m</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/on_primary</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_size_l</item>
         <item name="android:gravity">center</item>
     </style>
     <!-- Bottom Sheet Dialog Theme -->
-    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowAnimationStyle">@style/Animation.AddEventBottomSheet</item>
+    </style>
+
+    <!-- Fundo igual à tela Agenda (bg_secondary) — usado em novo/editar evento -->
+    <style name="AddEventBottomSheetTheme" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AddEventBottomSheetStyle</item>
+        <item name="colorSurface">@color/bg_secondary</item>
+        <item name="android:colorBackground">@color/bg_secondary</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowAnimationStyle">@style/Animation.AddEventBottomSheet</item>
+    </style>
+
+    <style name="Animation.AddEventBottomSheet" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
     </style>
 
     <style name="BottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
         <item name="shapeAppearanceOverlay">@style/BottomSheetShapeAppearance</item>
-        <item name="android:background">@color/white</item>
+        <item name="android:background">@color/surface_container</item>
+    </style>
+
+    <style name="AddEventBottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">@style/BottomSheetShapeAppearance</item>
+        <item name="android:background">@drawable/bg_bottom_sheet_agenda</item>
+        <item name="backgroundTint">@null</item>
     </style>
 
     <style name="BottomSheetShapeAppearance" parent="">
@@ -187,5 +208,40 @@
         <item name="cornerSizeTopLeft">20dp</item>
         <item name="cornerSizeTopRight">20dp</item>
     </style>
+
+    <!-- Event form — labels acima + placeholders nos campos -->
+    <style name="TextStyle.EventFormLabel" parent="TextAppearance.CoParent.InputLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">6dp</item>
+    </style>
+
+    <style name="Widget.CoParent.TextInputLayout.Event" parent="Widget.CoParent.TextInputLayout.Outlined">
+        <item name="boxBackgroundColor">@color/input_box_background_color</item>
+        <item name="hintEnabled">false</item>
+        <item name="errorTextColor">@color/error</item>
+    </style>
+
+    <style name="Widget.CoParent.SegmentedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/height_control_compact</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/segment_button_text</item>
+        <item name="backgroundTint">@color/segment_button_bg</item>
+        <item name="strokeColor">@color/gray_300</item>
+        <item name="strokeWidth">@dimen/stroke_width_thin</item>
+        <item name="cornerRadius">0dp</item>
+    </style>
+
+    <style name="Widget.CoParent.TextInputEditText.Event" parent="Widget.CoParent.TextInputEditText" />
+
+    <!-- TextInputLayout shape appearances -->
+    <style name="ShapeAppearance.LoginInput" parent="ShapeAppearance.CoParent.Input" />
+
+    <style name="ShapeAppearance.RegisterInput" parent="ShapeAppearance.CoParent.Input" />
 
 </resources>

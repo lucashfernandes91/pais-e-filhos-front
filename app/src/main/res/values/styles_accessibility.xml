@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TextAppearance_Valid" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/success</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance_Error" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/error</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance_Warning" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/warning</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance_Helper" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/gray_500</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance_Disabled" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textColor">@color/text_disabled</item>
+        <item name="android:alpha">0.6</item>
+    </style>
+
+    <style name="Widget.Button.Disabled" parent="Widget.CoParent.Button.Primary">
+        <item name="android:enabled">false</item>
+        <item name="backgroundTint">@color/state_disabled</item>
+        <item name="android:textColor">@color/text_disabled</item>
+        <item name="android:alpha">0.5</item>
+    </style>
+
+    <style name="Widget.ErrorMessageBox" parent="Widget.CoParent.Card.Surface">
+        <item name="cardBackgroundColor">@color/error_light</item>
+    </style>
+
+    <style name="Widget.SuccessMessageBox" parent="Widget.CoParent.Card.Surface">
+        <item name="cardBackgroundColor">@color/success_light</item>
+    </style>
+</resources>

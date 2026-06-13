@@ -1,53 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:fitsSystemWindows="true"
+    android:background="@color/surface_container">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!-- Bottom area: dots + buttons -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="24dp"
-        android:paddingBottom="32dp"
-        android:gravity="center_horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!-- Page indicators -->
         <LinearLayout
-            android:id="@+id/dotsContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="32dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnNext"
+            android:id="@+id/pageContent"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Continuar"
-            android:textSize="16sp"
-            android:textAllCaps="false"
-            android:textStyle="bold"
-            app:cornerRadius="12dp"
-            app:backgroundTint="@color/primary_blue"
-            xmlns:app="http://schemas.android.com/apk/res-auto" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/surface_container"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/entry_content_padding_horizontal">
 
-        <TextView
-            android:id="@+id/btnSkip"
-            android:layout_width="wrap_content"
+            <FrameLayout
+                android:layout_width="@dimen/onboarding_hero_icon_container_size"
+                android:layout_height="@dimen/onboarding_hero_icon_container_size"
+                android:layout_marginBottom="@dimen/onboarding_hero_icon_title_gap"
+                android:background="@drawable/bg_icon_circle_blue">
+
+                <ImageView
+                    android:id="@+id/ivIcon"
+                    android:layout_width="@dimen/onboarding_hero_icon_size"
+                    android:layout_height="@dimen/onboarding_hero_icon_size"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no"
+                    android:scaleType="fitCenter" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/onboarding_title_description_gap"
+                android:gravity="center"
+                android:lineSpacingExtra="2dp"
+                android:maxLines="1"
+                android:textColor="@color/gray_900"
+                android:textSize="@dimen/text_size_xl"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lineSpacingExtra="4dp"
+                android:maxWidth="320dp"
+                android:textColor="@color/gray_600"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- Bottom area: dots + buttons -->
+        <LinearLayout
+            android:id="@+id/bottomActions"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pular"
-            android:textSize="14sp"
-            android:textColor="@color/gray_500"
-            android:paddingVertical="12dp"
-            android:layout_marginTop="8dp" />
+            android:elevation="24dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/entry_content_padding_horizontal"
+            android:paddingTop="20dp"
+            android:paddingBottom="96dp">
+
+            <LinearLayout
+                android:id="@+id/dotsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="28dp"
+                android:orientation="horizontal" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNext"
+                style="@style/Widget.CoParent.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginBottom="12dp"
+                android:text="@string/ui_continuar" />
+
+            <TextView
+                android:id="@+id/btnSkip"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/touch_target_min"
+                android:background="@android:color/transparent"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:text="@string/ui_pular_introducao"
+                android:textColor="@color/primary_blue"
+                android:textSize="15sp" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        style="@style/Widget.CoParent.TouchTarget.Icon"
+        android:layout_width="@dimen/touch_target_min"
+        android:layout_height="@dimen/touch_target_min"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="@dimen/entry_content_padding_horizontal"
+        android:layout_marginTop="@dimen/entry_navigation_padding_top"
+        android:contentDescription="@string/onboarding_back"
+        android:src="@drawable/ic_arrow_back"
+        android:visibility="gone"
+        app:tint="@color/icon_default" />
+</FrameLayout>

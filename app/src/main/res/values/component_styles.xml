@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Reusable component contract. Screens provide sizing/margins only when contextual. -->
+    <style name="Widget.CoParent.Button.Base" parent="Widget.MaterialComponents.Button">
+        <item name="android:minHeight">@dimen/height_action</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/corner_radius_l</item>
+    </style>
+
+    <style name="Widget.CoParent.Button.Primary" parent="Widget.CoParent.Button.Base">
+        <item name="android:textColor">@color/on_primary</item>
+        <item name="backgroundTint">@color/primary_blue</item>
+    </style>
+
+    <style name="Widget.CoParent.Button.Primary.Pill" parent="Widget.CoParent.Button.Primary">
+        <item name="cornerRadius">@dimen/corner_radius_full</item>
+    </style>
+
+    <style name="Widget.CoParent.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:minHeight">@dimen/height_action</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/corner_radius_l</item>
+        <item name="strokeColor">@color/primary_blue</item>
+        <item name="strokeWidth">@dimen/stroke_width_thin</item>
+    </style>
+
+    <style name="Widget.CoParent.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/primary_blue</item>
+    </style>
+
+    <style name="Widget.CoParent.Button.Outlined.Compact" parent="Widget.CoParent.Button.Outlined">
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="cornerRadius">@dimen/corner_radius_full</item>
+    </style>
+
+    <style name="Widget.CoParent.Button.Danger" parent="Widget.CoParent.Button.Outlined">
+        <item name="android:textColor">@color/error</item>
+        <item name="backgroundTint">@color/surface_container</item>
+        <item name="strokeColor">@color/error</item>
+    </style>
+
+    <style name="Widget.CoParent.TextInputLayout.Outlined" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxBackgroundColor">@color/surface_container</item>
+        <item name="boxStrokeColor">@color/input_box_stroke_color</item>
+        <item name="boxStrokeErrorColor">@color/error</item>
+        <item name="boxStrokeWidth">@dimen/stroke_width_thin</item>
+        <item name="errorEnabled">false</item>
+        <item name="helperTextEnabled">false</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.CoParent.Input</item>
+    </style>
+
+    <style name="Widget.CoParent.TextInputEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:minHeight">@dimen/height_input</item>
+        <item name="android:paddingStart">@dimen/spacing_sm</item>
+        <item name="android:paddingEnd">@dimen/spacing_sm</item>
+        <item name="android:textColor">@color/on_surface</item>
+        <item name="android:textColorHint">@color/on_surface_variant</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.InputLabel" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/input_label_text_color</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.CoParent.Card.Surface" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/surface_container</item>
+        <item name="cardCornerRadius">@dimen/corner_radius_xl</item>
+        <item name="cardElevation">@dimen/elevation_none</item>
+        <item name="strokeWidth">@dimen/elevation_none</item>
+    </style>
+
+    <style name="Widget.CoParent.Card.Outlined" parent="Widget.CoParent.Card.Surface">
+        <item name="strokeColor">@color/border</item>
+        <item name="strokeWidth">@dimen/stroke_width_thin</item>
+    </style>
+
+    <style name="Widget.CoParent.Card.Primary" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/primary_blue</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">@dimen/elevation_low</item>
+        <item name="strokeWidth">@dimen/elevation_none</item>
+    </style>
+
+    <style name="Widget.CoParent.Card.Info" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/info_banner_bg</item>
+        <item name="cardCornerRadius">@dimen/corner_radius_l</item>
+        <item name="cardElevation">@dimen/elevation_none</item>
+        <item name="strokeWidth">@dimen/elevation_none</item>
+    </style>
+
+    <style name="Widget.CoParent.Card.Input" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/picker_card_bg</item>
+        <item name="cardCornerRadius">@dimen/corner_radius_l</item>
+        <item name="cardElevation">@dimen/elevation_none</item>
+        <item name="strokeColor">@color/border</item>
+        <item name="strokeWidth">@dimen/stroke_width_thin</item>
+    </style>
+
+    <style name="Widget.CoParent.Sheet.Content" parent="">
+        <item name="android:background">@color/surface_container</item>
+    </style>
+
+    <style name="Widget.CoParent.Chip.Choice" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/chip_bg_selector</item>
+        <item name="chipStrokeColor">@color/chip_stroke_selector</item>
+        <item name="chipStrokeWidth">@dimen/stroke_width_thin</item>
+        <item name="chipCornerRadius">@dimen/corner_radius_full</item>
+        <item name="chipIconTint">@color/chip_text_selector</item>
+        <item name="chipIconSize">@dimen/icon_size_s</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="android:textColor">@color/chip_text_selector</item>
+    </style>
+
+    <style name="Widget.CoParent.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/switch_thumb_selector</item>
+        <item name="trackTint">@color/switch_track_selector</item>
+    </style>
+
+    <style name="Widget.CoParent.Badge.Label" parent="">
+        <item name="android:paddingStart">@dimen/spacing_sm</item>
+        <item name="android:paddingEnd">@dimen/spacing_sm</item>
+        <item name="android:paddingTop">@dimen/spacing_xs</item>
+        <item name="android:paddingBottom">@dimen/spacing_xs</item>
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.CoParent.Feedback.Container" parent="">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/spacing_sm</item>
+    </style>
+
+    <style name="Widget.CoParent.TouchTarget.Icon" parent="">
+        <item name="android:minWidth">@dimen/touch_target_min</item>
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:padding">@dimen/spacing_sm</item>
+        <item name="android:background">?selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Widget.CoParent.Header.Divider" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/stroke_width_thin</item>
+        <item name="android:background">@color/divider</item>
+    </style>
+
+    <style name="ShapeAppearance.CoParent.Input" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/corner_radius_l</item>
+    </style>
+</resources>
