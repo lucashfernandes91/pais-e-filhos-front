@@ -182,8 +182,7 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:background="@drawable/bg_info_banner"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="10dp">
+            android:padding="@dimen/spacing_m">
 
             <ImageView
                 android:layout_width="16dp"

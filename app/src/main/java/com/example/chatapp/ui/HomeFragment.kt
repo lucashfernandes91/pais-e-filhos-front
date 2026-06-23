@@ -1,5 +1,6 @@
 package com.example.chatapp.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -131,16 +132,18 @@ class HomeFragment : Fragment() {
 
     private fun loadUpcomingEvents(view: View, token: String) {
         val container = view.findViewById<LinearLayout>(R.id.eventsContainer) ?: return
+        val ctx = context ?: return
 
         lifecycleScope.launch {
             try {
-                val conversationId = PrefsHelper.getConversationId(requireContext())
+                val conversationId = PrefsHelper.getConversationId(ctx)
                 val children = RetrofitClient.api.getChildren("Bearer $token", conversationId)
                 val events = RetrofitClient.api.getEvents("Bearer $token", conversationId)
                 val now = Date()
+                if (!isAdded || this@HomeFragment.view !== view) return@launch
 
                 // --- Card de Guarda dinâmico ---
-                updateCustodyCard(view, events, children, now)
+                updateCustodyCard(view, ctx, events, children, now)
 
                 // --- Próximos eventos (hoje + futuros) ---
                 val todayKey = calendarDateKey(Calendar.getInstance())
@@ -154,19 +157,21 @@ class HomeFragment : Fragment() {
                 container.removeAllViews()
 
                 if (upcoming.isEmpty()) {
-                    container.addView(createEmptyEventsCard())
+                    container.addView(createEmptyEventsCard(ctx))
                     return@launch
                 }
 
                 for (event in upcoming) {
                     val dateStr = formatEventDate(event.event_date)
-                    container.addView(createEventRow(event.title, dateStr, event.event_type))
+                    container.addView(createEventRow(ctx, event.title, dateStr, event.event_type))
                 }
             } catch (_: Exception) {
+                if (!isAdded || this@HomeFragment.view !== view) return@launch
                 showCustodyErrorState(view)
                 container.removeAllViews()
-                container.addView(createEventsErrorCard(view, token))
+                container.addView(createEventsErrorCard(ctx, view, token))
             } finally {
+                if (!isAdded || this@HomeFragment.view !== view) return@launch
                 swipeRefresh?.isRefreshing = false
                 // Hide skeleton
                 val skeleton = view.findViewById<View>(R.id.skeletonHome)
@@ -179,14 +184,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadMessageTarget(view: View, token: String) {
+        val ctx = context ?: return
         lifecycleScope.launch {
             try {
-                val conversationId = PrefsHelper.getConversationId(requireContext())
+                val conversationId = PrefsHelper.getConversationId(ctx)
                 val conversation = RetrofitClient.api.getConversations("Bearer $token")
                     .firstOrNull { it.id == conversationId }
                     ?: return@launch
                 val otherParent = conversation.participants.firstOrNull { !it.is_me }?.username.orEmpty()
-                PrefsHelper.saveOtherParentName(requireContext(), otherParent)
+                if (!isAdded || this@HomeFragment.view !== view) return@launch
+                PrefsHelper.saveOtherParentName(ctx, otherParent)
                 renderMessageTarget(view, otherParent)
             } catch (_: Exception) {
                 // Keep the cached target while offline.
@@ -227,7 +234,7 @@ class HomeFragment : Fragment() {
 
     // ── Item 7: Guarda dinâmica ─────────────────────────────
 
-    private fun updateCustodyCard(view: View, events: List<Event>, children: List<Child>, now: Date) {
+    private fun updateCustodyCard(view: View, ctx: Context, events: List<Event>, children: List<Child>, now: Date) {
         val tvCustodyHeaderLabel = view.findViewById<TextView>(R.id.tvCustodyHeaderLabel)
         val custodyLegalBadge = view.findViewById<View>(R.id.custodyLegalBadge)
         val tvCustodyStatus = view.findViewById<TextView>(R.id.tvCustodyStatus)
@@ -275,16 +282,16 @@ class HomeFragment : Fragment() {
             }
         }
 
-        val username = PrefsHelper.getUsername(requireContext())
-        val otherParentName = PrefsHelper.getOtherParentName(requireContext())
-            .replaceFirstChar { it.uppercase() }.ifEmpty { getString(R.string.home_other_parent) }
+        val username = PrefsHelper.getUsername(ctx)
+        val otherParentName = PrefsHelper.getOtherParentName(ctx)
+            .replaceFirstChar { it.uppercase() }.ifEmpty { ctx.getString(R.string.home_other_parent) }
 
         if (currentCustody != null) {
             val isWithMe = currentCustody.created_by_name == username
             tvCustodyStatus?.text = if (isWithMe) {
-                getString(R.string.home_with_you)
+                ctx.getString(R.string.home_with_you)
             } else {
-                getString(R.string.home_with_parent, otherParentName)
+                ctx.getString(R.string.home_with_parent, otherParentName)
             }
         } else {
             tvCustodyStatus?.setText(R.string.home_no_active_custody)
@@ -392,8 +399,7 @@ class HomeFragment : Fragment() {
         return start.time
     }
 
-    private fun createEmptyEventsCard(): View {
-        val ctx = requireContext()
+    private fun createEmptyEventsCard(ctx: Context): View {
         val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
 
         val card = com.google.android.material.card.MaterialCardView(ctx).apply {
@@ -415,7 +421,7 @@ class HomeFragment : Fragment() {
         }
 
         val tvTitle = TextView(ctx).apply {
-            text = getString(R.string.ui_nenhum_evento_agendado)
+            text = ctx.getString(R.string.ui_nenhum_evento_agendado)
             textSize = 15f
             setTypeface(typeface, android.graphics.Typeface.BOLD)
             setTextColor(ContextCompat.getColor(ctx, R.color.gray_700))
@@ -423,7 +429,7 @@ class HomeFragment : Fragment() {
             gravity = android.view.Gravity.CENTER
         }
         val tvSub = TextView(ctx).apply {
-            text = getString(R.string.home_empty_events_subtitle)
+            text = ctx.getString(R.string.home_empty_events_subtitle)
             textSize = 13f
             setTextColor(ContextCompat.getColor(ctx, R.color.gray_400))
             gravity = android.view.Gravity.CENTER
@@ -434,8 +440,7 @@ class HomeFragment : Fragment() {
         return card
     }
 
-    private fun createEventsErrorCard(view: View, token: String): View {
-        val ctx = requireContext()
+    private fun createEventsErrorCard(ctx: Context, view: View, token: String): View {
         val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
 
         val card = com.google.android.material.card.MaterialCardView(ctx).apply {
@@ -484,8 +489,7 @@ class HomeFragment : Fragment() {
         return card
     }
 
-    private fun createEventRow(title: String, subtitle: String, eventType: String = ""): View {
-        val ctx = requireContext()
+    private fun createEventRow(ctx: Context, title: String, subtitle: String, eventType: String = ""): View {
         val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
 
         val card = com.google.android.material.card.MaterialCardView(ctx).apply {

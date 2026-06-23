@@ -38,7 +38,7 @@ class AddEventFormBinder(
     val lblNotes: TextView = root.findViewById(R.id.lblEventNotes)
 
     val lblType: TextView = root.findViewById(R.id.lblEventType)
-    val segmentType: ChipGroup = root.findViewById(R.id.segmentEventType)
+    val segmentType: ChipGroup = root.findViewById(R.id.chipGroupType)
 
     val bannerFeedback: LinearLayout = root.findViewById(R.id.bannerFormFeedback)
     val progressFeedback: ProgressBar = root.findViewById(R.id.progressFormFeedback)
@@ -197,10 +197,10 @@ class AddEventFormBinder(
         ViewCompat.setAccessibilityHeading(lblType, true)
 
         mapOf(
-            R.id.segSchool to R.string.seg_school,
-            R.id.segMedical to R.string.seg_medical,
-            R.id.segCustody to R.string.seg_custody,
-            R.id.segOther to R.string.seg_other
+            R.id.chipSchool to R.string.seg_school,
+            R.id.chipMedical to R.string.seg_medical,
+            R.id.chipCustody to R.string.seg_custody,
+            R.id.chipOther to R.string.seg_other
         ).forEach { (id, labelRes) ->
             segmentType.findViewById<Chip>(id)?.contentDescription =
                 root.context.getString(
@@ -220,14 +220,14 @@ class AddEventFormBinder(
     }
 
     fun isCustodySelected(): Boolean =
-        segmentType.checkedChipId == R.id.segCustody
+        segmentType.checkedChipId == R.id.chipCustody
 
     fun updateTitlePlaceholder() {
         val placeholder = when (segmentType.checkedChipId) {
-            R.id.segSchool -> R.string.event_placeholder_school
-            R.id.segMedical -> R.string.event_placeholder_medical
-            R.id.segCustody -> R.string.event_placeholder_custody
-            R.id.segOther -> R.string.event_placeholder_other
+            R.id.chipSchool -> R.string.event_placeholder_school
+            R.id.chipMedical -> R.string.event_placeholder_medical
+            R.id.chipCustody -> R.string.event_placeholder_custody
+            R.id.chipOther -> R.string.event_placeholder_other
             else -> R.string.event_placeholder_title
         }
         etTitle.hint = root.context.getString(placeholder)

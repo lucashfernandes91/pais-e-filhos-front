@@ -69,7 +69,7 @@
     <string name="ui_cpf_opcional">CPF (opcional)</string>
     <string name="ui_rg_opcional">RG (opcional)</string>
     <string name="ui_possuo_a_guarda_desta_crianca">Possuo a guarda desta crian&#231;a</string>
-    <string name="ui_conviv">Conviv.</string>
+    <string name="ui_conviv">Convívio</string>
     <string name="ui_nome">Nome</string>
     <string name="ui_sobrenome">Sobrenome</string>
     <string name="ui_email">Email</string>
@@ -124,7 +124,7 @@
     <string name="ui_modo_silencioso_noturno">Modo silencioso noturno</string>
     <string name="ui_sem_notificacoes_entre_22h_e_7h">Sem notifica&#231;&#245;es entre 22h e 7h</string>
     <string name="ui_marcar_todas_como_lidas">Marcar todas como lidas</string>
-    <string name="ui_apagar_todas">Apagar todas</string>
+    <string name="ui_apagar_todas">Limpar notificações</string>
     <string name="ui_tudo_em_dia">Tudo em dia!</string>
     <string name="ui_nenhuma_notificacao_no_momento" tools:ignore="Typos">Nenhuma notifica&#231;&#227;o no momento.</string>
     <string name="ui_a">A</string>
