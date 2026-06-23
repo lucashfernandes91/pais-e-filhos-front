@@ -375,8 +375,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showAddChildDialog() {
+        val dialogRoot = requireActivity().findViewById<ViewGroup>(android.R.id.content)
         val dialogView = LayoutInflater.from(requireContext())
-            .inflate(R.layout.dialog_add_child, null)
+            .inflate(R.layout.dialog_add_child, dialogRoot, false)
 
         val etName = dialogView.findViewById<EditText>(R.id.etChildName)
         val etBirthDate = dialogView.findViewById<EditText>(R.id.etChildBirthDate)
@@ -624,8 +625,9 @@ class ProfileFragment : Fragment() {
         val token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty()) return
 
+        val dialogRoot = requireActivity().findViewById<ViewGroup>(android.R.id.content)
         val dialogView = LayoutInflater.from(requireContext())
-            .inflate(R.layout.dialog_edit_profile, null)
+            .inflate(R.layout.dialog_edit_profile, dialogRoot, false)
 
         val etFirstName = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etFirstName)
         val etLastName = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etLastName)
@@ -687,8 +689,9 @@ class ProfileFragment : Fragment() {
     // ── Privacidade ──────────────────────────────────────
 
     private fun showPrivacyDialog() {
+        val dialogRoot = requireActivity().findViewById<ViewGroup>(android.R.id.content)
         val dialogView = LayoutInflater.from(requireContext())
-            .inflate(R.layout.dialog_privacy, null)
+            .inflate(R.layout.dialog_privacy, dialogRoot, false)
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Pol\u00edtica de Privacidade")

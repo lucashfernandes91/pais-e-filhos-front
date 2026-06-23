@@ -34,6 +34,7 @@
         style="@style/Widget.CoParent.Card.Info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_s"
         android:layout_marginHorizontal="@dimen/spacing_m"
         android:layout_marginBottom="@dimen/spacing_m"
         >

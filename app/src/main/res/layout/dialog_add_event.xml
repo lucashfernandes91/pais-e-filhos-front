@@ -2,8 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:layout_height="wrap_content"
+    android:fillViewport="false"
     android:background="@color/bg_secondary">
 
     <LinearLayout
@@ -11,7 +11,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@color/bg_secondary"
-        android:padding="24dp">
+        android:paddingStart="24dp"
+        android:paddingTop="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="16dp">
 
         <!-- Header -->
         <LinearLayout
@@ -77,14 +80,30 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:layout_weight="1" />
+                android:layout_weight="1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEventDate"
+                    android:layout_width="1dp"
+                    android:layout_height="1dp"
+                    android:visibility="gone"
+                    android:importantForAccessibility="no" />
+            </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/containerEventTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_weight="1" />
+                android:layout_weight="1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEventTime"
+                    android:layout_width="1dp"
+                    android:layout_height="1dp"
+                    android:visibility="gone"
+                    android:importantForAccessibility="no" />
+            </FrameLayout>
         </LinearLayout>
 
         <!-- Data e Hora INÍCIO (visível apenas quando Convivência selecionado) -->
@@ -115,14 +134,30 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etStartDate"
+                        android:layout_width="1dp"
+                        android:layout_height="1dp"
+                        android:visibility="gone"
+                        android:importantForAccessibility="no" />
+                </FrameLayout>
 
                 <FrameLayout
                     android:id="@+id/containerStartTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etStartTime"
+                        android:layout_width="1dp"
+                        android:layout_height="1dp"
+                        android:visibility="gone"
+                        android:importantForAccessibility="no" />
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -154,14 +189,30 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEndDate"
+                        android:layout_width="1dp"
+                        android:layout_height="1dp"
+                        android:visibility="gone"
+                        android:importantForAccessibility="no" />
+                </FrameLayout>
 
                 <FrameLayout
                     android:id="@+id/containerEndTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEndTime"
+                        android:layout_width="1dp"
+                        android:layout_height="1dp"
+                        android:visibility="gone"
+                        android:importantForAccessibility="no" />
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -173,7 +224,7 @@
             android:text="@string/event_label_type" />
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/segmentEventType"
+            android:id="@+id/chipGroupType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -183,28 +234,28 @@
             app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/segSchool"
+                android:id="@+id/chipSchool"
                 style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_escola" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/segMedical"
+                android:id="@+id/chipMedical"
                 style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_saude" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/segCustody"
+                android:id="@+id/chipCustody"
                 style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_conviv" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/segOther"
+                android:id="@+id/chipOther"
                 style="@style/Widget.CoParent.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -286,8 +337,7 @@
             android:text="@string/ui_o_evento_e_registrado_no_historico_oficial"
             android:textSize="12sp"
             android:textColor="@color/gray_500"
-            android:gravity="center"
-            android:layout_marginBottom="16dp" />
+            android:gravity="center" />
 
     </LinearLayout>
 </ScrollView>

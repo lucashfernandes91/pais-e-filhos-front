@@ -87,7 +87,9 @@ class MessageAdapter(
         searchQuery = query
         activeMatchPosition = activePos
         matchPositions = matches
-        notifyDataSetChanged()
+        if (chatItems.isNotEmpty()) {
+            notifyItemRangeChanged(0, chatItems.size)
+        }
     }
 
     override fun getItemViewType(position: Int): Int {

@@ -29,6 +29,7 @@ import com.example.chatapp.RetrofitClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -60,6 +61,7 @@ class AgendaFragment : Fragment() {
     private var calendarGrid: LinearLayout? = null
     private var tvCalendarMonth: TextView? = null
     private var tvCurrentMonth: TextView? = null
+    private var tvLegendOtherParent: TextView? = null
     private var displayedCalendar = Calendar.getInstance()
 
     // Calendar data maps — day -> custody owner
@@ -68,9 +70,10 @@ class AgendaFragment : Fragment() {
     private var custodyDays = mutableMapOf<Int, CustodyOwner>()
     private var genericEventDays = mutableSetOf<Int>()
 
-    private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale("pt", "BR"))
-    private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
-    private val displayTimeFormat = SimpleDateFormat("HH:mm", Locale("pt", "BR"))
+    private val ptBrLocale = Locale.forLanguageTag("pt-BR")
+    private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", ptBrLocale)
+    private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", ptBrLocale)
+    private val displayTimeFormat = SimpleDateFormat("HH:mm", ptBrLocale)
 
     private val dateFormats = listOf(
         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault()),
@@ -105,10 +108,12 @@ class AgendaFragment : Fragment() {
             calendarGrid = view.findViewById(R.id.calendarGrid)
             tvCalendarMonth = view.findViewById(R.id.tvCalendarMonth)
             tvCurrentMonth = view.findViewById(R.id.tvCurrentMonth)
+            tvLegendOtherParent = view.findViewById(R.id.tvLegendMother)
 
             setupRecyclerView()
             setupCalendarNavigation(view)
             setupSwipeRefresh()
+            loadOtherParentLegend()
 
             btnAddEvent?.setOnClickListener { showAddEventDialogFixed() }
             btnRetry?.setOnClickListener { loadEvents() }
@@ -127,6 +132,38 @@ class AgendaFragment : Fragment() {
         )
         eventsRecyclerView?.layoutManager = LinearLayoutManager(requireContext())
         eventsRecyclerView?.adapter = eventsAdapter
+    }
+
+    private fun loadOtherParentLegend() {
+        updateOtherParentLegend(PrefsHelper.getOtherParentName(requireContext()))
+
+        if (token.isEmpty() || apiService == null) return
+        lifecycleScope.launch {
+            try {
+                val conversations = apiService!!.getConversations("Bearer $token")
+                val conversation = conversations.firstOrNull { it.id == conversationId }
+                    ?: conversations.firstOrNull()
+                    ?: return@launch
+                val otherParentName = conversation.participants
+                    .firstOrNull { !it.is_me }
+                    ?.username
+                    .orEmpty()
+
+                if (otherParentName.isNotBlank()) {
+                    PrefsHelper.saveOtherParentName(requireContext(), otherParentName)
+                    updateOtherParentLegend(otherParentName)
+                }
+            } catch (_: Exception) {
+                // Mantém o nome em cache quando estiver offline ou a conversa não carregar.
+            }
+        }
+    }
+
+    private fun updateOtherParentLegend(name: String) {
+        tvLegendOtherParent?.text = name.trim()
+            .takeIf { it.isNotBlank() }
+            ?.replaceFirstChar { it.uppercase() }
+            ?: getString(R.string.agenda_no_other_parent)
     }
 
     private fun setupSwipeRefresh() {
@@ -156,6 +193,7 @@ class AgendaFragment : Fragment() {
         val today = Calendar.getInstance()
         val isCurrentMonth = today.get(Calendar.YEAR) == displayedCalendar.get(Calendar.YEAR) &&
                 today.get(Calendar.MONTH) == displayedCalendar.get(Calendar.MONTH)
+        val oldSize = events.size
 
         events.clear()
 
@@ -204,7 +242,22 @@ class AgendaFragment : Fragment() {
             )
         }
 
-        eventsAdapter?.notifyDataSetChanged()
+        eventsAdapter?.let { adapter ->
+            val newSize = events.size
+            when {
+                oldSize == 0 && newSize > 0 -> adapter.notifyItemRangeInserted(0, newSize)
+                newSize == 0 && oldSize > 0 -> adapter.notifyItemRangeRemoved(0, oldSize)
+                oldSize == newSize && newSize > 0 -> adapter.notifyItemRangeChanged(0, newSize)
+                oldSize < newSize -> {
+                    if (oldSize > 0) adapter.notifyItemRangeChanged(0, oldSize)
+                    adapter.notifyItemRangeInserted(oldSize, newSize - oldSize)
+                }
+                oldSize > newSize -> {
+                    if (newSize > 0) adapter.notifyItemRangeChanged(0, newSize)
+                    adapter.notifyItemRangeRemoved(newSize, oldSize - newSize)
+                }
+            }
+        }
         updateEmptyState()
     }
 
@@ -270,7 +323,7 @@ class AgendaFragment : Fragment() {
         val grid = calendarGrid ?: return
         grid.removeAllViews()
 
-        val monthFormat = SimpleDateFormat("MMMM 'de' yyyy", Locale("pt", "BR"))
+        val monthFormat = SimpleDateFormat("MMMM 'de' yyyy", ptBrLocale)
         val monthText = monthFormat.format(displayedCalendar.time)
             .replaceFirstChar { it.uppercase() }
         tvCalendarMonth?.text = monthText
@@ -295,9 +348,11 @@ class AgendaFragment : Fragment() {
         val totalRows = (totalCells + 6) / 7
 
         // Tamanhos dos círculos — menores para que o dot laranja fique abaixo deles
-        val circleSizeDp = 30   // era 36dp — reduzido para dar espaço ao dot embaixo
+        val todayCircleSizeDp = 22
+        val custodyBgWidthDp = 32
+        val custodyBgHeightDp = 32
         val dotSizeDp    = 5
-        val dotBottomMarginDp = 6  // margem do dot em relação à borda inferior da célula
+        val dotBottomMarginDp = 5  // margem do dot em relação à borda inferior da célula
 
         for (row in 0 until totalRows) {
             val rowLayout = LinearLayout(ctx).apply {
@@ -336,7 +391,7 @@ class AgendaFragment : Fragment() {
 
                     // ── Fundo de custódia (retângulo arredondado) ──────────
                     // Fica na metade superior da célula para não colidir com o dot
-                    if (custodyOwner != CustodyOwner.NONE && !isToday) {
+                    if (custodyOwner != CustodyOwner.NONE) {
                         val bgColor = when (custodyOwner) {
                             CustodyOwner.MOTHER -> R.color.custody_mother_bg
                             CustodyOwner.FATHER -> R.color.custody_father_bg
@@ -345,17 +400,18 @@ class AgendaFragment : Fragment() {
                         if (bgColor != 0) {
                             val bgView = View(ctx).apply {
                                 layoutParams = FrameLayout.LayoutParams(
-                                    dp(circleSizeDp),
-                                    dp(circleSizeDp)
+                                    dp(custodyBgWidthDp),
+                                    dp(custodyBgHeightDp)
                                 ).apply {
                                     // Centralizado horizontalmente, alinhado ao topo da célula
                                     // com uma margem para não ficar colado na borda
                                     gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
                                     topMargin = dp(4)
+
                                 }
                                 background = GradientDrawable().apply {
                                     shape = GradientDrawable.RECTANGLE
-                                    cornerRadius = dp(8).toFloat()
+                                    cornerRadius = dp(12).toFloat()
                                     setColor(ContextCompat.getColor(ctx, bgColor))
                                 }
                             }
@@ -368,11 +424,11 @@ class AgendaFragment : Fragment() {
                     if (isToday) {
                         val circle = View(ctx).apply {
                             layoutParams = FrameLayout.LayoutParams(
-                                dp(circleSizeDp),
-                                dp(circleSizeDp)
+                                dp(todayCircleSizeDp),
+                                dp(todayCircleSizeDp)
                             ).apply {
                                 gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
-                                topMargin = dp(4)
+                                topMargin = dp(9)
                             }
                             background = ContextCompat.getDrawable(ctx, R.drawable.bg_today_circle)
                         }
@@ -383,24 +439,22 @@ class AgendaFragment : Fragment() {
                     // Alinhado ao topo junto com o círculo, centralizado horizontalmente
                     val textColor = when {
                         isToday -> R.color.white
-                        custodyOwner == CustodyOwner.MOTHER -> R.color.custody_mother
-                        custodyOwner == CustodyOwner.FATHER -> R.color.custody_father
                         else -> R.color.gray_700
                     }
 
                     val tv = TextView(ctx).apply {
                         layoutParams = FrameLayout.LayoutParams(
-                            dp(circleSizeDp),
-                            dp(circleSizeDp)
+                            dp(todayCircleSizeDp),
+                            dp(todayCircleSizeDp)
                         ).apply {
                             gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
-                            topMargin = dp(4)
+                            topMargin = dp(9)
                         }
                         text = day.toString()
                         gravity = Gravity.CENTER
                         textSize = 13f
                         setTextColor(ContextCompat.getColor(ctx, textColor))
-                        if (isToday || custodyOwner != CustodyOwner.NONE) {
+                        if (isToday) {
                             setTypeface(typeface, android.graphics.Typeface.BOLD)
                         }
                     }
@@ -440,11 +494,12 @@ class AgendaFragment : Fragment() {
     private fun showDayEventsSheet(day: Int, dayCal: Calendar) {
         val ctx = requireContext()
         val dialog = BottomSheetDialog(ctx, R.style.BottomSheetDialogTheme)
-        val sheetView = LayoutInflater.from(ctx).inflate(R.layout.bottom_sheet_day_events, null)
+        val dialogRoot = requireActivity().findViewById<ViewGroup>(android.R.id.content)
+        val sheetView = LayoutInflater.from(ctx).inflate(R.layout.bottom_sheet_day_events, dialogRoot, false)
         dialog.setContentView(sheetView)
 
-        val dayNameFmt = SimpleDateFormat("EEEE", Locale("pt", "BR"))
-        val dateFmt = SimpleDateFormat("d 'de' MMMM", Locale("pt", "BR"))
+        val dayNameFmt = SimpleDateFormat("EEEE", ptBrLocale)
+        val dateFmt = SimpleDateFormat("d 'de' MMMM", ptBrLocale)
         sheetView.findViewById<TextView>(R.id.tvDaySheetDayName).text =
             dayNameFmt.format(dayCal.time).replaceFirstChar { it.uppercase() }
         sheetView.findViewById<TextView>(R.id.tvDaySheetDate).text =
@@ -489,7 +544,7 @@ class AgendaFragment : Fragment() {
             val endDate = if (!event.event_date_end.isNullOrEmpty()) parseEventDate(event.event_date_end) else null
             val timeStr = when {
                 event.event_type.uppercase() == "CUSTODY" && endDate != null -> {
-                    val endDayFmt = SimpleDateFormat("d MMM", Locale("pt", "BR"))
+                    val endDayFmt = SimpleDateFormat("d MMM", ptBrLocale)
                     "At\u00e9 ${endDayFmt.format(endDate)}"
                 }
                 startDate != null -> timeFmt.format(startDate)
@@ -657,9 +712,8 @@ class AgendaFragment : Fragment() {
 
     private fun eventDateDetailText(event: Event): String {
         val start = parseEventDate(event.event_date) ?: return event.event_date
-        val ptBr = Locale("pt", "BR")
-        val dateTimeFmt = SimpleDateFormat("dd 'de' MMMM 'às' HH:mm", ptBr)
-        val dateOnlyFmt = SimpleDateFormat("dd 'de' MMMM", ptBr)
+        val dateTimeFmt = SimpleDateFormat("dd 'de' MMMM 'às' HH:mm", ptBrLocale)
+        val dateOnlyFmt = SimpleDateFormat("dd 'de' MMMM", ptBrLocale)
         val startText = dateTimeFmt.format(start).replaceFirstChar { it.uppercase() }
         val end = event.event_date_end?.takeIf { it.isNotBlank() }?.let { parseEventDate(it) }
             ?: return startText
@@ -689,7 +743,7 @@ class AgendaFragment : Fragment() {
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply { bottomMargin = dp(14) }
             addView(TextView(ctx).apply {
-                text = label.uppercase(Locale("pt", "BR"))
+                text = label.uppercase(ptBrLocale)
                 textSize = 12f
                 letterSpacing = 0.06f
                 setTextColor(ContextCompat.getColor(ctx, R.color.gray_500))
@@ -813,9 +867,11 @@ class AgendaFragment : Fragment() {
 
     // ── Add Event Dialog ────────────────────────────────────
 
+    @Suppress("unused")
     private fun showAddEventDialog() {
         val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, null)
+        val dialogRoot = requireActivity().findViewById<ViewGroup>(android.R.id.content)
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, dialogRoot, false)
         dialog.setContentView(dialogView)
 
         val btnBack = dialogView.findViewById<ImageButton>(R.id.btnBack)
@@ -885,7 +941,7 @@ class AgendaFragment : Fragment() {
             showTimePicker(endCalendar) { endTimeInput.setText(displayTimeFormat.format(endCalendar.time)) }
         }
 
-        dialogView.findViewById<com.google.android.material.chip.Chip>(R.id.chipSchool)?.isChecked = true
+        dialogView.findViewById<Chip>(R.id.chipSchool)?.isChecked = true
 
         btnSave.setOnClickListener {
             val title = titleInput?.text?.toString()?.trim() ?: ""
@@ -920,7 +976,8 @@ class AgendaFragment : Fragment() {
 
     private fun showAddEventDialogFixed() {
         val dialog = BottomSheetDialog(requireContext(), R.style.AddEventBottomSheetTheme)
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, null)
+        val dialogRoot = requireActivity().findViewById<ViewGroup>(android.R.id.content)
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, dialogRoot, false)
         dialog.setContentView(dialogView)
 
         val btnBack = dialogView.findViewById<ImageButton>(R.id.btnBack)
@@ -943,7 +1000,7 @@ class AgendaFragment : Fragment() {
             layoutDateTimeSingle?.visibility = if (isCustody) View.GONE else View.VISIBLE
             layoutDateTimeStart?.visibility = if (isCustody) View.VISIBLE else View.GONE
             layoutDateTimeEnd?.visibility = if (isCustody) View.VISIBLE else View.GONE
-            expandBottomSheet(dialog)
+            fitBottomSheetToContent(dialog)
         }
 
         btnBack.setOnClickListener { dialog.dismiss() }
@@ -951,7 +1008,7 @@ class AgendaFragment : Fragment() {
         form.setupTextFieldValidation()
         form.setupAccessibility(btnSave)
         form.setupSegmentGroup { updateDateVisibility() }
-        form.segmentType.check(R.id.segSchool)
+        form.segmentType.check(R.id.chipSchool)
         updateDateVisibility()
 
         btnSave.setOnClickListener {
@@ -974,7 +1031,7 @@ class AgendaFragment : Fragment() {
         }
 
         dialog.show()
-        expandBottomSheet(dialog)
+        fitBottomSheetToContent(dialog)
     }
 
     private fun setupEventFormPickers(
@@ -1030,21 +1087,24 @@ class AgendaFragment : Fragment() {
 
     private fun eventTypeFromSegment(checkedChipId: Int): String =
         when (checkedChipId) {
-            R.id.segSchool -> "SCHOOL"
-            R.id.segMedical -> "MEDICAL"
-            R.id.segCustody -> "CUSTODY"
-            R.id.segOther -> "OTHER"
+            R.id.chipSchool -> "SCHOOL"
+            R.id.chipMedical -> "MEDICAL"
+            R.id.chipCustody -> "CUSTODY"
+            R.id.chipOther -> "OTHER"
             else -> "OTHER"
         }
 
-    private fun expandBottomSheet(dialog: BottomSheetDialog) {
+    private fun fitBottomSheetToContent(dialog: BottomSheetDialog) {
         val bottomSheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             ?: return
         bottomSheet.layoutParams = bottomSheet.layoutParams.apply {
-            height = ViewGroup.LayoutParams.MATCH_PARENT
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
         }
+        bottomSheet.requestLayout()
         BottomSheetBehavior.from(bottomSheet).apply {
-            skipCollapsed = true
+            isFitToContents = true
+            skipCollapsed = false
+            peekHeight = BottomSheetBehavior.PEEK_HEIGHT_AUTO
             state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
@@ -1105,9 +1165,11 @@ class AgendaFragment : Fragment() {
 
     // ── Edit Event ────────────────────────────────────────
 
+    @Suppress("unused")
     private fun showEditEventDialog(event: Event) {
         val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, null)
+        val dialogRoot = requireActivity().findViewById<ViewGroup>(android.R.id.content)
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, dialogRoot, false)
         dialog.setContentView(dialogView)
 
         val btnBack = dialogView.findViewById<ImageButton>(R.id.btnBack)
@@ -1127,10 +1189,10 @@ class AgendaFragment : Fragment() {
         notesInput?.setText(event.notes)
 
         when (event.event_type.uppercase()) {
-            "SCHOOL" -> dialogView.findViewById<com.google.android.material.chip.Chip>(R.id.chipSchool)?.isChecked = true
-            "MEDICAL" -> dialogView.findViewById<com.google.android.material.chip.Chip>(R.id.chipMedical)?.isChecked = true
-            "CUSTODY" -> dialogView.findViewById<com.google.android.material.chip.Chip>(R.id.chipCustody)?.isChecked = true
-            else -> dialogView.findViewById<com.google.android.material.chip.Chip>(R.id.chipOther)?.isChecked = true
+            "SCHOOL" -> dialogView.findViewById<Chip>(R.id.chipSchool)?.isChecked = true
+            "MEDICAL" -> dialogView.findViewById<Chip>(R.id.chipMedical)?.isChecked = true
+            "CUSTODY" -> dialogView.findViewById<Chip>(R.id.chipCustody)?.isChecked = true
+            else -> dialogView.findViewById<Chip>(R.id.chipOther)?.isChecked = true
         }
 
         val selectedCalendar = Calendar.getInstance()
@@ -1174,7 +1236,8 @@ class AgendaFragment : Fragment() {
 
     private fun showEditEventDialogFixed(event: Event) {
         val dialog = BottomSheetDialog(requireContext(), R.style.AddEventBottomSheetTheme)
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, null)
+        val dialogRoot = requireActivity().findViewById<ViewGroup>(android.R.id.content)
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_event, dialogRoot, false)
         dialog.setContentView(dialogView)
 
         val btnBack = dialogView.findViewById<ImageButton>(R.id.btnBack)
@@ -1221,10 +1284,10 @@ class AgendaFragment : Fragment() {
         form.setupAccessibility(btnSave)
         form.segmentType.check(
             when (event.event_type.uppercase()) {
-                "SCHOOL" -> R.id.segSchool
-                "MEDICAL" -> R.id.segMedical
-                "CUSTODY" -> R.id.segCustody
-                else -> R.id.segOther
+                "SCHOOL" -> R.id.chipSchool
+                "MEDICAL" -> R.id.chipMedical
+                "CUSTODY" -> R.id.chipCustody
+                else -> R.id.chipOther
             }
         )
 
@@ -1243,7 +1306,7 @@ class AgendaFragment : Fragment() {
         }
 
         dialog.show()
-        expandBottomSheet(dialog)
+        fitBottomSheetToContent(dialog)
     }
 
     private fun updateEvent(eventId: Int, title: String, date: String, type: String, notes: String) {

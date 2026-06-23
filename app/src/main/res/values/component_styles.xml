@@ -114,7 +114,7 @@
         <item name="chipBackgroundColor">@color/chip_bg_selector</item>
         <item name="chipStrokeColor">@color/chip_stroke_selector</item>
         <item name="chipStrokeWidth">@dimen/stroke_width_thin</item>
-        <item name="chipCornerRadius">@dimen/corner_radius_full</item>
+        <item name="chipCornerRadius">@dimen/corner_radius_xl</item>
         <item name="chipIconTint">@color/chip_text_selector</item>
         <item name="chipIconSize">@dimen/icon_size_s</item>
         <item name="checkedIconVisible">false</item>
