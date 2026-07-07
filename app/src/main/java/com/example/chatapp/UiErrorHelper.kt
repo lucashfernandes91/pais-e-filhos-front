@@ -1,8 +1,8 @@
 package com.example.chatapp
 
 import android.content.Context
-import android.widget.Toast
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 
@@ -21,7 +21,7 @@ object UiErrorHelper {
     fun showErrorSnackbar(
         view: View,
         message: String,
-        actionText: String = "Tentar novamente",
+        actionText: String = view.context.getString(R.string.action_try_again),
         onAction: (() -> Unit)? = null
     ) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).apply {
@@ -37,14 +37,14 @@ object UiErrorHelper {
      */
     fun showErrorDialog(
         context: Context,
-        title: String = "Erro",
+        title: String = context.getString(R.string.ui_error_title),
         message: String,
         onDismiss: (() -> Unit)? = null
     ) {
         AlertDialog.Builder(context)
             .setTitle(title)
             .setMessage(message)
-            .setPositiveButton("Ok") { dialog, _ ->
+            .setPositiveButton(R.string.action_ok) { dialog, _ ->
                 dialog.dismiss()
                 onDismiss?.invoke()
             }
@@ -71,13 +71,13 @@ object UiErrorHelper {
         onCancel: (() -> Unit)? = null
     ) {
         AlertDialog.Builder(context)
-            .setTitle("Erro")
+            .setTitle(R.string.ui_error_title)
             .setMessage(message)
-            .setPositiveButton("Tentar novamente") { dialog, _ ->
+            .setPositiveButton(R.string.action_try_again) { dialog, _ ->
                 dialog.dismiss()
                 onRetry()
             }
-            .setNegativeButton("Cancelar") { dialog, _ ->
+            .setNegativeButton(R.string.action_cancel) { dialog, _ ->
                 dialog.dismiss()
                 onCancel?.invoke()
             }
@@ -93,7 +93,7 @@ object UiErrorHelper {
     ) {
         showRetryDialog(
             context,
-            "Não foi possível conectar ao servidor.\n\nVerifique sua conexão de internet.",
+            context.getString(R.string.ui_network_error_message),
             onRetry
         )
     }
@@ -106,9 +106,9 @@ object UiErrorHelper {
         onLogin: () -> Unit
     ) {
         AlertDialog.Builder(context)
-            .setTitle("Sessão expirada")
-            .setMessage("Sua sessão expirou. Por favor, faça login novamente.")
-            .setPositiveButton("Ir para Login") { dialog, _ ->
+            .setTitle(R.string.ui_session_expired_title)
+            .setMessage(R.string.ui_session_expired_message)
+            .setPositiveButton(R.string.ui_go_to_login) { dialog, _ ->
                 dialog.dismiss()
                 onLogin()
             }

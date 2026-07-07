@@ -13,12 +13,7 @@
 
         <!-- Top Bar -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
-            android:background="@color/bg_primary">
+            style="@style/Widget.CoParent.TopBar.Row.Surface">
 
             <ImageView
                 android:id="@+id/btnBack"
@@ -30,35 +25,30 @@
                 android:contentDescription="@string/cd_back_button" />
 
             <TextView
+                style="@style/TextAppearance.CoParent.TopBar.Title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/ui_editar_dados"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/gray_900"
-                android:layout_marginStart="12dp" />
+                android:layout_marginStart="@dimen/spacing_sm" />
         </LinearLayout>
 
         <View style="@style/Widget.CoParent.Header.Divider" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            style="@style/Widget.CoParent.Form.Content">
 
             <!-- Avatar com opção de foto -->
             <FrameLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/spacing_l">
 
                 <LinearLayout
                     android:id="@+id/btnChildPhoto"
-                    android:layout_width="88dp"
-                    android:layout_height="88dp"
-                    android:layout_gravity="center"
+                    android:layout_width="@dimen/avatar_size_xl_plus"
+                    android:layout_height="@dimen/avatar_size_xl_plus"
                     android:orientation="vertical"
                     android:gravity="center"
                     android:background="@drawable/bg_avatar_child"
@@ -69,8 +59,8 @@
 
                     <ImageView
                         android:id="@+id/ivChildPhoto"
-                        android:layout_width="88dp"
-                        android:layout_height="88dp"
+                        android:layout_width="@dimen/avatar_size_xl_plus"
+                        android:layout_height="@dimen/avatar_size_xl_plus"
                         android:scaleType="centerCrop"
                         android:visibility="gone"
                         android:contentDescription="@null"
@@ -81,23 +71,21 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:textSize="32sp"
+                        android:textSize="@dimen/text_size_xxxl"
                         android:textStyle="bold"
                         android:textColor="@color/warning" />
                 </LinearLayout>
 
                 <!-- Camera badge -->
                 <FrameLayout
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="60dp"
-                    android:layout_marginTop="60dp"
+                    android:layout_width="@dimen/icon_container_size_xs"
+                    android:layout_height="@dimen/icon_container_size_xs"
+                    android:layout_gravity="bottom|end"
                     android:background="@drawable/bg_badge_camera">
 
                     <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
+                        android:layout_width="@dimen/icon_size_xs"
+                        android:layout_height="@dimen/icon_size_xs"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_camera"
                         app:tint="@color/on_primary"
@@ -108,18 +96,13 @@
 
             <!-- Nome -->
             <TextView
-                style="@style/TextAppearance.CoParent.InputLabel"
+                style="@style/TextAppearance.CoParent.Form.SectionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ui_nome"
-                android:layout_marginBottom="6dp"
-                />
+                android:text="@string/ui_nome" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.CoParent.TextInputLayout.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                style="@style/Widget.CoParent.Form.TextInputLayout"
                 app:hintEnabled="false"
                 >
 
@@ -129,24 +112,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/ui_nome_do_filho_a"
-                    android:inputType="textPersonName"
+                    android:inputType="textPersonName|textCapWords|textAutoCorrect"
                     android:imeOptions="actionNext" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Data de nascimento -->
             <TextView
-                style="@style/TextAppearance.CoParent.InputLabel"
+                style="@style/TextAppearance.CoParent.Form.SectionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ui_data_de_nascimento"
-                android:layout_marginBottom="6dp"
-                />
+                android:text="@string/ui_data_de_nascimento" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.CoParent.TextInputLayout.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                style="@style/Widget.CoParent.Form.TextInputLayout"
                 app:hintEnabled="false"
                 app:endIconMode="custom"
                 app:endIconDrawable="@drawable/ic_calendar"
@@ -165,18 +143,13 @@
 
             <!-- CPF -->
             <TextView
-                style="@style/TextAppearance.CoParent.InputLabel"
+                style="@style/TextAppearance.CoParent.Form.SectionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ui_cpf"
-                android:layout_marginBottom="6dp"
-                />
+                android:text="@string/ui_cpf" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.CoParent.TextInputLayout.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                style="@style/Widget.CoParent.Form.TextInputLayout"
                 app:hintEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -192,18 +165,13 @@
 
             <!-- RG -->
             <TextView
-                style="@style/TextAppearance.CoParent.InputLabel"
+                style="@style/TextAppearance.CoParent.Form.SectionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ui_rg"
-                android:layout_marginBottom="6dp"
-                />
+                android:text="@string/ui_rg" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.CoParent.TextInputLayout.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                style="@style/Widget.CoParent.Form.TextInputLayout"
                 app:hintEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -212,7 +180,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/ui_numero_do_rg"
-                    android:inputType="text"
+                    android:inputType="textCapSentences|textAutoCorrect"
                     android:maxLength="20"
                     android:imeOptions="actionDone" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -222,9 +190,9 @@
                 android:id="@+id/cbHasCustody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="28dp"
+                android:layout_marginBottom="@dimen/spacing_xl"
                 android:text="@string/ui_possuo_a_guarda_desta_crianca"
-                android:textSize="15sp"
+                android:textSize="@dimen/text_size_m"
                 android:textColor="@color/gray_700"
                 app:buttonTint="@color/primary_blue" />
 
@@ -235,15 +203,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_salvar_alteracoes"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="@dimen/spacing_m" />
 
             <!-- Nota de segurança -->
             <TextView
+                style="@style/TextAppearance.CoParent.Form.Helper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_as_alteracoes_sao_registradas_no_historico_oficial"
-                android:textSize="12sp"
-                android:textColor="@color/gray_500"
                 android:gravity="center" />
         </LinearLayout>
     </LinearLayout>

@@ -22,9 +22,9 @@ import androidx.navigation.fragment.findNavController
 import com.example.chatapp.Child
 import com.example.chatapp.CreateChildRequest
 import com.example.chatapp.LoginActivity
-import com.example.chatapp.PdfDownloadHelper
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
+import com.example.chatapp.RemoteImageLoader
 import com.example.chatapp.RetrofitClient
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
@@ -107,31 +107,17 @@ class ProfileFragment : Fragment() {
             loadChildren()
         }
         loadChildren()
-
-        // Notificações
+        // NotificaÃ§Ãµes
         view.findViewById<View>(R.id.rowNotifications)?.setOnClickListener {
             try {
                 findNavController().navigate(R.id.notificationSettingsFragment)
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro ao abrir notificações", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.settings_open_notifications_error),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-        }
-
-        // Exportar dados
-        view.findViewById<View>(R.id.rowExport)?.setOnClickListener {
-            val authToken = PrefsHelper.getAuthToken(requireContext())
-            if (authToken.isEmpty()) {
-                Toast.makeText(requireContext(), "Faça login para exportar", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            val conversationId = PrefsHelper.getConversationId(requireContext())
-            Toast.makeText(requireContext(), "Iniciando download do PDF...", Toast.LENGTH_SHORT).show()
-            PdfDownloadHelper.downloadConversationPdf(
-                requireContext(),
-                authToken,
-                conversationId,
-                viewLifecycleOwner.lifecycleScope
-            )
         }
 
         // Privacidade
@@ -222,9 +208,11 @@ class ProfileFragment : Fragment() {
         container.visibility = View.VISIBLE
         container.removeAllViews()
 
-        // Atualizar subtítulo e prefs com nomes atualizados
-        if (children.isNotEmpty()) {
-            val names = children.joinToString(", ") { it.name }
+        // Atualizar subtítulo e prefs com nomes atualizados — só entram os filhos
+        // sob guarda (has_custody), já que criador e coparente podem ser responsáveis.
+        val childrenUnderCustody = children.filter { it.has_custody }
+        if (childrenUnderCustody.isNotEmpty()) {
+            val names = childrenUnderCustody.joinToString(", ") { it.name }
             PrefsHelper.saveChildrenNames(requireContext(), names)
             view?.findViewById<TextView>(R.id.tvUserSubtitle)?.text =
                 getString(R.string.profile_responsible_for, names)
@@ -295,6 +283,18 @@ class ProfileFragment : Fragment() {
                 marginEnd = dp(12)
             }
             background = ContextCompat.getDrawable(ctx, R.drawable.bg_avatar_child)
+            clipToOutline = true
+        }
+
+        val avatarImage = ImageView(ctx).apply {
+            layoutParams = android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+            )
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            visibility = View.GONE
+            contentDescription = null
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }
 
         val initial = if (child.name.isNotEmpty()) child.name.first().uppercase() else "?"
@@ -309,7 +309,9 @@ class ProfileFragment : Fragment() {
             setTypeface(typeface, android.graphics.Typeface.BOLD)
             setTextColor(ContextCompat.getColor(ctx, R.color.warning))
         }
+        avatarFrame.addView(avatarImage)
         avatarFrame.addView(avatarText)
+        loadChildAvatarPhoto(child.photo_url, avatarImage, avatarText)
         row.addView(avatarFrame)
 
         // Text container
@@ -361,6 +363,16 @@ class ProfileFragment : Fragment() {
         row.addView(btnDelete)
 
         return row
+    }
+
+    private fun loadChildAvatarPhoto(photoUrl: String?, imageView: ImageView, initialView: TextView) {
+        if (photoUrl.isNullOrBlank()) return
+        RemoteImageLoader.load(imageView, photoUrl) {
+            if (view != null) {
+                imageView.visibility = View.VISIBLE
+                initialView.visibility = View.GONE
+            }
+        }
     }
 
     private fun formatBirthDate(dateStr: String): String {
@@ -440,10 +452,10 @@ class ProfileFragment : Fragment() {
         }
 
         val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Adicionar filho(a)")
+            .setTitle(R.string.profile_add_child_title)
             .setView(dialogView)
-            .setPositiveButton("Salvar", null)
-            .setNegativeButton("Cancelar", null)
+            .setPositiveButton(R.string.action_save, null)
+            .setNegativeButton(R.string.action_cancel, null)
             .create()
 
         dialog.setOnShowListener {
@@ -491,11 +503,11 @@ class ProfileFragment : Fragment() {
                 
                 // Validar entrada
                 if (name.isBlank()) {
-                    Toast.makeText(requireContext(), "Nome é obrigatório", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.child_name_required), Toast.LENGTH_SHORT).show()
                     return@launch
                 }
                 if (name.length > 100) {
-                    Toast.makeText(requireContext(), "Nome máximo 100 caracteres", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.child_name_max_length), Toast.LENGTH_SHORT).show()
                     return@launch
                 }
                 
@@ -512,7 +524,7 @@ class ProfileFragment : Fragment() {
                 android.util.Log.d("ProfileFragment", "createChild: convId=$conversationId, name=$name, birthDate=$birthDate")
                 val result = RetrofitClient.api.createChild("Bearer $token", request)
                 android.util.Log.d("ProfileFragment", "createChild success: ${result.id} ${result.name}")
-                Toast.makeText(requireContext(), "Filho(a) adicionado(a)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.child_added_success), Toast.LENGTH_SHORT).show()
                 
                 // Recarregar lista após criação confirmada
                 val children = RetrofitClient.api.getChildren("Bearer $token", conversationId)
@@ -522,23 +534,31 @@ class ProfileFragment : Fragment() {
             } catch (e: retrofit2.HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
                 android.util.Log.e("ProfileFragment", "createChild HTTP ${e.code()}: $errorBody")
-                Toast.makeText(requireContext(), "Erro ${e.code()}: $errorBody", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), getString(R.string.child_add_http_error, e.code(), errorBody.orEmpty()), Toast.LENGTH_LONG).show()
             } catch (e: IllegalArgumentException) {
                 android.util.Log.e("ProfileFragment", "createChild validation error: ${e.message}")
-                Toast.makeText(requireContext(), "Validação falhou: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.child_add_validation_error, e.message.orEmpty()),
+                    Toast.LENGTH_SHORT
+                ).show()
             } catch (e: Exception) {
                 android.util.Log.e("ProfileFragment", "createChild error: ${e.message}")
-                Toast.makeText(requireContext(), "Erro ao adicionar: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.child_add_error, e.message.orEmpty()),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
     private fun confirmDeleteChild(child: Child) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Remover filho(a)")
-            .setMessage("Deseja remover ${child.name}?")
-            .setPositiveButton("Remover") { _, _ -> deleteChild(child.id) }
-            .setNegativeButton("Cancelar", null)
+            .setTitle(R.string.child_delete_title)
+            .setMessage(getString(R.string.child_delete_message, child.name))
+            .setPositiveButton(R.string.child_delete_confirm) { _, _ -> deleteChild(child.id) }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
@@ -554,7 +574,7 @@ class ProfileFragment : Fragment() {
         } catch (e: Exception) {
             Toast.makeText(
                 requireContext(),
-                "Erro ao abrir detalhes: ${e.message}",
+                getString(R.string.profile_open_child_error, e.message.orEmpty()),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -568,10 +588,14 @@ class ProfileFragment : Fragment() {
             try {
                 val conversationId = PrefsHelper.getConversationId(requireContext())
                 RetrofitClient.api.deleteChild("Bearer $token", childId)
-                Toast.makeText(requireContext(), "Removido", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.child_deleted), Toast.LENGTH_SHORT).show()
                 loadChildren()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro ao remover: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.child_delete_error, e.message.orEmpty()),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -592,9 +616,9 @@ class ProfileFragment : Fragment() {
 
             // Update UI
             view?.let { loadProfilePhoto(it) }
-            Toast.makeText(ctx, "Foto atualizada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, R.string.profile_photo_updated, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Erro ao salvar foto", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), R.string.profile_photo_save_error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -644,15 +668,15 @@ class ProfileFragment : Fragment() {
         }
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Editar perfil")
+            .setTitle(R.string.profile_edit_title)
             .setView(dialogView)
-            .setPositiveButton("Salvar") { _, _ ->
+            .setPositiveButton(R.string.action_save) { _, _ ->
                 val firstName = etFirstName.text?.toString()?.trim() ?: ""
                 val lastName = etLastName.text?.toString()?.trim() ?: ""
                 val email = etEmail.text?.toString()?.trim() ?: ""
                 updateProfile(firstName, lastName, email)
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(R.string.action_cancel, null)
             .show()
     }
 
@@ -679,9 +703,9 @@ class ProfileFragment : Fragment() {
                 }
                 view?.findViewById<TextView>(R.id.tvUserName)?.text = displayName
 
-                Toast.makeText(requireContext(), "Perfil atualizado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.profile_updated, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.profile_update_error, e.message.orEmpty()), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -694,9 +718,9 @@ class ProfileFragment : Fragment() {
             .inflate(R.layout.dialog_privacy, dialogRoot, false)
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Pol\u00edtica de Privacidade")
+            .setTitle(R.string.profile_privacy_title)
             .setView(dialogView)
-            .setPositiveButton("Fechar", null)
+            .setPositiveButton(R.string.action_close, null)
             .show()
     }
 
@@ -707,29 +731,23 @@ class ProfileFragment : Fragment() {
         val displayName = username.replaceFirstChar { it.uppercase() }
         val conversationId = PrefsHelper.getConversationId(requireContext())
 
-        val inviteText = """
-            |$displayName convidou você para o CoParent Lite!
-            |
-            |Baixe o app e entre com o código de convite: CONV-$conversationId
-            |
-            |CoParent Lite — Comunicação clara e confiável entre pais.
-        """.trimMargin()
+        val inviteText = getString(R.string.profile_invite_text, displayName, conversationId)
 
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Convite para CoParent Lite")
+            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.profile_invite_subject))
             putExtra(Intent.EXTRA_TEXT, inviteText)
         }
-        startActivity(Intent.createChooser(shareIntent, "Enviar convite via"))
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.profile_invite_chooser)))
     }
 
     // ── Logout ──────────────────────────────────────────────
 
     private fun confirmLogout() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Sair")
-            .setMessage("Deseja realmente sair da conta?")
-            .setPositiveButton("Sair") { _, _ ->
+            .setTitle(R.string.profile_logout_title)
+            .setMessage(R.string.profile_logout_message)
+            .setPositiveButton(R.string.profile_logout_confirm) { _, _ ->
                 PrefsHelper.clearAll(requireContext())
 
                 val intent = Intent(requireContext(), LoginActivity::class.java)
@@ -737,7 +755,7 @@ class ProfileFragment : Fragment() {
                 startActivity(intent)
                 requireActivity().finish()
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(R.string.action_cancel, null)
             .show()
     }
 }

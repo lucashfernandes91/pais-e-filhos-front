@@ -1,8 +1,6 @@
 package com.example.chatapp.ui
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -19,29 +17,33 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.ChatViewModel
 import com.example.chatapp.ChatViewModelFactory
-import com.example.chatapp.RetrofitClient
+import com.example.chatapp.ImageViewerActivity
 import com.example.chatapp.Message
 import com.example.chatapp.MessageAdapter
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
+import com.example.chatapp.RetrofitClient
 import com.example.chatapp.WsStatus
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment() {
     private lateinit var viewModel: ChatViewModel
     private lateinit var messagesRecyclerView: RecyclerView
-    private lateinit var messageInput: EditText
-    private lateinit var sendButton: FloatingActionButton
+    private lateinit var messageInput: TextInputEditText
+    private lateinit var sendButton: ImageButton
     private lateinit var attachButton: ImageButton
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var tvChatName: TextView
@@ -52,7 +54,6 @@ class ChatFragment : Fragment() {
     private var hasOtherParent = false
     private var currentUsername: String = ""
 
-    // Search
     private lateinit var headerNormal: LinearLayout
     private lateinit var searchBar: LinearLayout
     private lateinit var searchInput: EditText
@@ -65,8 +66,9 @@ class ChatFragment : Fragment() {
     private var currentMatchIndex = -1
     private var allMessages = listOf<Message>()
 
-    // Attachment
     private var pendingAttachmentUri: Uri? = null
+    private var typingStopJob: Job? = null
+    private var isLocalTyping = false
 
     private val filePickerLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
@@ -74,8 +76,12 @@ class ChatFragment : Fragment() {
         if (uri != null) {
             pendingAttachmentUri = uri
             val fileName = getFileName(uri)
-            Toast.makeText(requireContext(), "Anexo: $fileName", Toast.LENGTH_SHORT).show()
-            messageInput.hint = "📎 $fileName"
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.chat_attachment_selected_toast, fileName),
+                Toast.LENGTH_SHORT
+            ).show()
+            messageInput.hint = getString(R.string.chat_attachment_selected_hint, fileName)
         }
     }
 
@@ -92,8 +98,8 @@ class ChatFragment : Fragment() {
 
         initViewModel()
         initViews(view)
-        observeViewModel()
         setupRecyclerView()
+        observeViewModel()
         setupSendButton()
         setupSearch(view)
         loadActiveConversationParticipant()
@@ -117,7 +123,6 @@ class ChatFragment : Fragment() {
         btnSearchUp = view.findViewById(R.id.btnSearchUp)
         btnSearchDown = view.findViewById(R.id.btnSearchDown)
 
-        // Dados dinâmicos do outro pai
         val cachedName = PrefsHelper.getOtherParentName(requireContext())
         if (cachedName.isBlank()) renderNoCoparent() else renderChatParticipant(cachedName)
 
@@ -158,7 +163,8 @@ class ChatFragment : Fragment() {
         tvAvatarInitial.text = displayName.firstOrNull()?.uppercase()
             ?: getString(R.string.chat_avatar_fallback)
         setComposerAvailable(true)
-        view?.findViewById<TextView>(R.id.tvEmptyChatTitle)?.setText(R.string.ui_nenhuma_mensagem_ainda)
+        view?.findViewById<TextView>(R.id.tvEmptyChatTitle)
+            ?.setText(R.string.ui_nenhuma_mensagem_ainda)
         view?.findViewById<TextView>(R.id.tvEmptyChatMessage)
             ?.setText(R.string.ui_comece_uma_conversa_todas_as_mensagens_ficam_registradas)
         renderConnectionStatus(viewModel.wsStatus.value)
@@ -169,7 +175,7 @@ class ChatFragment : Fragment() {
         tvChatName.setText(R.string.chat_no_coparent_title)
         tvAvatarInitial.setText(R.string.chat_avatar_fallback)
         tvChatStatus.setText(R.string.chat_invite_coparent_status)
-        tvChatStatus.setTextColor(resources.getColor(R.color.gray_400, null))
+        tvChatStatus.setTextColor(requireColor(R.color.gray_500))
         pendingAttachmentUri = null
         messageInput.text?.clear()
         setComposerAvailable(false)
@@ -185,6 +191,9 @@ class ChatFragment : Fragment() {
         )
         attachButton.isEnabled = available
         attachButton.alpha = if (available) 1f else 0.42f
+        if (!available) {
+            stopLocalTyping()
+        }
         setSendEnabled(available)
     }
 
@@ -196,25 +205,25 @@ class ChatFragment : Fragment() {
     private fun renderConnectionStatus(status: WsStatus?) {
         if (!hasOtherParent) {
             tvChatStatus.setText(R.string.chat_invite_coparent_status)
-            tvChatStatus.setTextColor(resources.getColor(R.color.gray_400, null))
+            tvChatStatus.setTextColor(requireColor(R.color.gray_500))
             return
         }
         when (status) {
             WsStatus.CONNECTED -> {
                 tvChatStatus.setText(R.string.chat_status_connected)
-                tvChatStatus.setTextColor(resources.getColor(R.color.success, null))
+                tvChatStatus.setTextColor(requireColor(R.color.feedback_success_text))
             }
             WsStatus.RECONNECTING -> {
                 tvChatStatus.setText(R.string.chat_status_reconnecting)
-                tvChatStatus.setTextColor(resources.getColor(R.color.warning, null))
+                tvChatStatus.setTextColor(requireColor(R.color.warning_text))
             }
             WsStatus.ERROR -> {
                 tvChatStatus.setText(R.string.chat_status_error)
-                tvChatStatus.setTextColor(resources.getColor(R.color.error, null))
+                tvChatStatus.setTextColor(requireColor(R.color.feedback_error_text))
             }
             else -> {
                 tvChatStatus.setText(R.string.chat_status_disconnected)
-                tvChatStatus.setTextColor(resources.getColor(R.color.gray_400, null))
+                tvChatStatus.setTextColor(requireColor(R.color.gray_500))
             }
         }
     }
@@ -226,14 +235,16 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        messageAdapter = MessageAdapter(emptyList(), currentUsername)
+        messageAdapter = MessageAdapter(currentUsername) { imageUrl ->
+            ImageViewerActivity.start(requireContext(), imageUrl)
+        }
         messagesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context).apply {
-                stackFromEnd = true  // Coloca items do fim para o topo (scroll automático ao fim)
+                stackFromEnd = true
                 reverseLayout = false
             }
             adapter = messageAdapter
-            setHasFixedSize(false)  // Permite ajuste de tamanho quando novas mensagens chegam
+            setHasFixedSize(false)
         }
     }
 
@@ -243,11 +254,13 @@ class ChatFragment : Fragment() {
             if (pendingAttachmentUri != null) {
                 viewModel.sendMessageWithAttachment(text, pendingAttachmentUri!!, requireContext())
                 messageInput.text?.clear()
-                messageInput.hint = "Mensagem"
+                resetComposerHint()
                 pendingAttachmentUri = null
+                stopLocalTyping()
             } else if (text.isNotEmpty()) {
                 viewModel.sendMessage(text)
                 messageInput.text?.clear()
+                stopLocalTyping()
             }
         }
 
@@ -257,7 +270,7 @@ class ChatFragment : Fragment() {
     }
 
     private fun getFileName(uri: Uri): String {
-        var name = "arquivo"
+        var name = getString(R.string.chat_attachment_fallback_name)
         try {
             requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
                 val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -265,11 +278,18 @@ class ChatFragment : Fragment() {
                     name = cursor.getString(nameIndex)
                 }
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
         return name
     }
 
-    // ── Search ──────────────────────────────────────────────
+    private fun resetComposerHint() {
+        messageInput.hint = getString(R.string.ui_mensagem)
+    }
+
+    private fun requireColor(colorRes: Int): Int {
+        return ContextCompat.getColor(requireContext(), colorRes)
+    }
 
     private fun setupSearch(view: View) {
         val btnSearch = view.findViewById<ImageButton>(R.id.btnSearch)
@@ -295,7 +315,9 @@ class ChatFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 navigateMatch(1)
                 true
-            } else false
+            } else {
+                false
+            }
         }
     }
 
@@ -315,11 +337,9 @@ class ChatFragment : Fragment() {
         headerNormal.visibility = View.VISIBLE
         searchInput.text?.clear()
 
-        // Hide keyboard
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchInput.windowToken, 0)
 
-        // Reset highlights
         clearSearchHighlights()
     }
 
@@ -341,7 +361,7 @@ class ChatFragment : Fragment() {
         }
 
         if (searchMatchPositions.isNotEmpty()) {
-            currentMatchIndex = searchMatchPositions.size - 1 // start from last (most recent)
+            currentMatchIndex = searchMatchPositions.size - 1
             scrollToCurrentMatch()
         }
 
@@ -365,7 +385,10 @@ class ChatFragment : Fragment() {
 
     private fun scrollToCurrentMatch() {
         if (currentMatchIndex < 0 || currentMatchIndex >= searchMatchPositions.size) return
-        val position = searchMatchPositions[currentMatchIndex]
+        val position = messageAdapter.getAdapterPositionForMessage(
+            searchMatchPositions[currentMatchIndex]
+        )
+        if (position == -1) return
         (messagesRecyclerView.layoutManager as? LinearLayoutManager)
             ?.scrollToPositionWithOffset(position, messagesRecyclerView.height / 3)
     }
@@ -379,10 +402,16 @@ class ChatFragment : Fragment() {
         btnSearchDown.visibility = if (hasResults) View.VISIBLE else View.GONE
 
         tvSearchCount.text = if (hasResults) {
-            "${currentMatchIndex + 1} de ${searchMatchPositions.size}"
+            getString(
+                R.string.chat_search_result_count,
+                currentMatchIndex + 1,
+                searchMatchPositions.size
+            )
         } else if (hasQuery) {
-            "0 resultados"
-        } else ""
+            getString(R.string.chat_search_no_results)
+        } else {
+            ""
+        }
     }
 
     private fun updateAdapterHighlights(query: String) {
@@ -396,22 +425,17 @@ class ChatFragment : Fragment() {
     }
 
     private fun openExportSheet() {
-        val sheet = ExportBottomSheet.newInstance(allMessages.size)
+        val sheet = ExportBottomSheet.newInstance(allMessages.size, ExportBottomSheet.TYPE_MESSAGES)
         sheet.show(childFragmentManager, "ExportBottomSheet")
     }
-
-    // ── Observers ───────────────────────────────────────────
 
     private fun observeViewModel() {
         viewModel.messages.observe(viewLifecycleOwner) { messages ->
             allMessages = messages
-            messageAdapter = MessageAdapter(messages, currentUsername)
-            messagesRecyclerView.adapter = messageAdapter
+            messageAdapter.updateMessages(messages)
 
-            // Marcar mensagens não lidas como lidas
             markUnreadMessagesAsRead(messages)
 
-            // Empty state
             errorState.visibility = View.GONE
             if (messages.isEmpty()) {
                 messagesRecyclerView.visibility = View.GONE
@@ -419,16 +443,15 @@ class ChatFragment : Fragment() {
             } else {
                 messagesRecyclerView.visibility = View.VISIBLE
                 emptyState.visibility = View.GONE
-                // Scroll para a última mensagem de forma garantida
                 messagesRecyclerView.post {
-                    if (messages.isNotEmpty()) {
-                        messagesRecyclerView.smoothScrollToPosition(messages.size - 1)
-                        android.util.Log.d("ChatFragment", "scrollToPosition: ${messages.size - 1}")
+                    val lastAdapterPosition = messageAdapter.itemCount - 1
+                    if (lastAdapterPosition >= 0) {
+                        messagesRecyclerView.smoothScrollToPosition(lastAdapterPosition)
+                        android.util.Log.d("ChatFragment", "scrollToPosition: $lastAdapterPosition")
                     }
                 }
             }
 
-            // Re-apply search if active
             if (isSearchActive && searchInput.text?.isNotBlank() == true) {
                 performSearch(searchInput.text.toString())
             }
@@ -456,7 +479,6 @@ class ChatFragment : Fragment() {
             setSendEnabled(hasOtherParent && !isLoading)
         }
 
-        // Item 6: Typing indicator
         viewModel.typingUser.observe(viewLifecycleOwner) { username ->
             val tvTyping = view?.findViewById<TextView>(R.id.tvTypingIndicator)
             if (username != null) {
@@ -468,22 +490,36 @@ class ChatFragment : Fragment() {
             }
         }
 
-        // Send typing on text change
         messageInput.addTextChangedListener(object : TextWatcher {
-            private var typingTimer: java.util.Timer? = null
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
             override fun afterTextChanged(s: Editable?) {
-                viewModel.sendTyping(true)
-                typingTimer?.cancel()
-                typingTimer = java.util.Timer()
-                typingTimer?.schedule(object : java.util.TimerTask() {
-                    override fun run() {
-                        viewModel.sendTyping(false)
-                    }
-                }, 2000)
+                if (!hasOtherParent) return
+
+                val hasDraft = !s.isNullOrBlank()
+                if (!hasDraft) {
+                    stopLocalTyping()
+                    return
+                }
+
+                if (!isLocalTyping) {
+                    viewModel.sendTyping(true)
+                    isLocalTyping = true
+                }
+
+                typingStopJob?.cancel()
+                typingStopJob = viewLifecycleOwner.lifecycleScope.launch {
+                    delay(2000)
+                    stopLocalTyping()
+                }
             }
         })
+    }
+
+    override fun onDestroyView() {
+        stopLocalTyping()
+        super.onDestroyView()
     }
 
     private fun showSnackbar(message: String) {
@@ -498,7 +534,7 @@ class ChatFragment : Fragment() {
 
         val unread = messages.filter { msg ->
             msg.sender != currentUsername &&
-            msg.read_by?.any { it.reader_name == currentUsername } != true
+                msg.read_by?.any { it.reader_name == currentUsername } != true
         }
 
         if (unread.isEmpty()) return
@@ -507,8 +543,18 @@ class ChatFragment : Fragment() {
             unread.forEach { msg ->
                 try {
                     RetrofitClient.api.markMessageAsRead("Bearer $token", msg.id)
-                } catch (_: Exception) {}
+                } catch (_: Exception) {
+                }
             }
+        }
+    }
+
+    private fun stopLocalTyping() {
+        typingStopJob?.cancel()
+        typingStopJob = null
+        if (isLocalTyping) {
+            viewModel.sendTyping(false)
+            isLocalTyping = false
         }
     }
 }

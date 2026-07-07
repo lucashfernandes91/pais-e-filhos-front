@@ -24,13 +24,10 @@
 
         <!-- Outro Responsável Section -->
         <TextView
-            style="@style/TextStyle.Headline"
+            style="@style/TextAppearance.CoParent.Settings.SectionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ui_outro_responsavel"
-            android:textSize="11sp"
-            android:letterSpacing="0.05"
-            android:textColor="@color/gray_500"
             android:layout_marginTop="@dimen/spacing_l"
             android:layout_marginBottom="@dimen/spacing_m" />
 
@@ -52,13 +49,13 @@
 
                 <!-- Avatar -->
                 <FrameLayout
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="@dimen/avatar_size_ml"
+                    android:layout_height="@dimen/avatar_size_ml"
                     android:layout_marginEnd="@dimen/spacing_m">
 
                     <View
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="@dimen/avatar_size_ml"
+                        android:layout_height="@dimen/avatar_size_ml"
                         android:background="@drawable/bg_avatar_circle_outline" />
 
                     <TextView
@@ -69,7 +66,7 @@
                         android:gravity="center"
                         android:textColor="@color/gray_700"
                         android:textStyle="bold"
-                        android:textSize="18sp" />
+                        android:textSize="@dimen/text_size_ml" />
                 </FrameLayout>
 
                 <!-- Info -->
@@ -93,30 +90,29 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ui_pai_conectado"
-                        android:layout_marginTop="2dp" />
+                        android:layout_marginTop="@dimen/spacing_xs" />
                 </LinearLayout>
 
                 <!-- Status Badge -->
                 <LinearLayout
+                    style="@style/Widget.CoParent.Badge.Label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="4dp"
                     android:background="@drawable/bg_badge_active">
 
                     <View
-                        android:layout_width="6dp"
-                        android:layout_height="6dp"
+                        android:layout_width="@dimen/icon_dot_size_s"
+                        android:layout_height="@dimen/icon_dot_size_s"
                         android:background="@drawable/bg_dot_green"
-                        android:layout_marginEnd="6dp" />
+                        android:layout_marginEnd="@dimen/spacing_xs" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ui_ativo"
-                        android:textSize="11sp"
+                        android:textSize="@dimen/text_size_mini"
                         android:textColor="@color/secondary_green"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -132,28 +128,20 @@
             android:layout_marginBottom="@dimen/spacing_l"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?selectableItemBackground">
+                android:foreground="?selectableItemBackground">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/spacing_m"
-                android:gravity="center_vertical">
+                <LinearLayout
+                    style="@style/Widget.CoParent.Settings.Row">
 
-                <FrameLayout
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_icon_circle_green"
-                    android:layout_marginEnd="@dimen/spacing_m">
+                    <FrameLayout
+                        style="@style/Widget.CoParent.Settings.IconContainer"
+                        android:background="@drawable/bg_icon_circle_green">
 
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_person"
-                        app:tint="@color/secondary_green"
-                        android:contentDescription="@string/ui_convidar_2" />
+                        <ImageView
+                            style="@style/Widget.CoParent.Settings.Icon"
+                            android:src="@drawable/ic_person"
+                            app:tint="@color/secondary_green"
+                            android:contentDescription="@string/ui_convidar_2" />
                 </FrameLayout>
 
                 <TextView
@@ -164,8 +152,8 @@
                     android:text="@string/ui_convidar_outro_responsavel" />
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="@dimen/icon_badge_size"
+                    android:layout_height="@dimen/icon_badge_size"
                     android:src="@drawable/ic_chevron_right"
                     app:tint="@color/gray_400"
                     android:contentDescription="@string/ui_convidar_2" />
@@ -274,13 +262,10 @@
 
         <!-- Privacidade & Dados Section -->
         <TextView
-            style="@style/TextStyle.Headline"
+            style="@style/TextAppearance.CoParent.Settings.SectionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ui_privacidade_e_dados"
-            android:textSize="11sp"
-            android:letterSpacing="0.05"
-            android:textColor="@color/gray_500"
             android:layout_marginTop="@dimen/spacing_l"
             android:layout_marginBottom="@dimen/spacing_m" />
 
@@ -295,90 +280,16 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Exportar todos os dados -->
-                <LinearLayout
-                    android:id="@+id/btnExportData"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/spacing_m"
-                    android:gravity="center_vertical"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <FrameLayout
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginEnd="@dimen/spacing_m">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_download"
-                            app:tint="@color/primary_blue"
-                            android:contentDescription="@string/ui_exportar" />
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            style="@style/TextStyle.Body"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/ui_exportar_todos_os_dados"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            style="@style/TextStyle.Caption"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/ui_pdf_com_mensagens_e_eventos"
-                            android:layout_marginTop="2dp" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_400"
-                        android:contentDescription="@string/ui_ir_para" />
-                </LinearLayout>
-
-                <View
-                    style="@style/Divider"
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="72dp"
-                    android:layout_marginEnd="@dimen/spacing_m" />
-
                 <!-- Privacidade -->
                 <LinearLayout
                     android:id="@+id/btnPrivacy"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/spacing_m"
-                    android:gravity="center_vertical"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
+                    style="@style/Widget.CoParent.Settings.Row">
 
                     <FrameLayout
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginEnd="@dimen/spacing_m">
+                        style="@style/Widget.CoParent.Settings.IconContainer.Primary">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
+                            style="@style/Widget.CoParent.Settings.Icon"
                             android:src="@drawable/ic_lock"
                             app:tint="@color/primary_blue"
                             android:contentDescription="@string/ui_privacidade" />
@@ -402,45 +313,31 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/ui_como_tratamos_seus_dados"
-                            android:layout_marginTop="2dp" />
+                            android:layout_marginTop="@dimen/spacing_xs" />
                     </LinearLayout>
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="@dimen/icon_badge_size"
+                        android:layout_height="@dimen/icon_badge_size"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/gray_400"
                         android:contentDescription="@string/ui_privacidade" />
                 </LinearLayout>
 
                 <View
-                    style="@style/Divider"
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="72dp"
+                    style="@style/Widget.CoParent.Settings.Divider"
                     android:layout_marginEnd="@dimen/spacing_m" />
 
                 <!-- Validade jurídica -->
                 <LinearLayout
                     android:id="@+id/btnLegal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/spacing_m"
-                    android:gravity="center_vertical"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
+                    style="@style/Widget.CoParent.Settings.Row">
 
                     <FrameLayout
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginEnd="@dimen/spacing_m">
+                        style="@style/Widget.CoParent.Settings.IconContainer.Primary">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
+                            style="@style/Widget.CoParent.Settings.Icon"
                             android:src="@drawable/ic_shield"
                             app:tint="@color/primary_blue"
                             android:contentDescription="@string/ui_validade" />
@@ -464,45 +361,31 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/ui_como_funciona_o_registro_oficial"
-                            android:layout_marginTop="2dp" />
+                            android:layout_marginTop="@dimen/spacing_xs" />
                     </LinearLayout>
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="@dimen/icon_badge_size"
+                        android:layout_height="@dimen/icon_badge_size"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/gray_400"
                         android:contentDescription="@string/ui_validade" />
                 </LinearLayout>
 
                 <View
-                    style="@style/Divider"
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="72dp"
+                    style="@style/Widget.CoParent.Settings.Divider"
                     android:layout_marginEnd="@dimen/spacing_m" />
 
                 <!-- Ajuda & Suporte -->
                 <LinearLayout
                     android:id="@+id/btnSupport"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/spacing_m"
-                    android:gravity="center_vertical"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
+                    style="@style/Widget.CoParent.Settings.Row">
 
                     <FrameLayout
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginEnd="@dimen/spacing_m">
+                        style="@style/Widget.CoParent.Settings.IconContainer.Primary">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
+                            style="@style/Widget.CoParent.Settings.Icon"
                             android:src="@drawable/ic_info_circle"
                             app:tint="@color/primary_blue"
                             android:contentDescription="@string/ui_ajuda" />
@@ -517,8 +400,8 @@
                         android:textStyle="bold" />
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="@dimen/icon_badge_size"
+                        android:layout_height="@dimen/icon_badge_size"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/gray_400"
                         android:contentDescription="@string/ui_ajuda" />
@@ -533,24 +416,24 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:paddingVertical="16dp"
+            android:paddingVertical="@dimen/spacing_m"
             android:foreground="?selectableItemBackground"
             android:clickable="true"
             android:focusable="true">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="@dimen/icon_size_sm"
+                android:layout_height="@dimen/icon_size_sm"
                 android:src="@drawable/ic_logout"
                 app:tint="@color/gray_600"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="@dimen/spacing_s"
                 android:contentDescription="@string/ui_sair" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_sair_da_conta"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_size_s"
                 android:textColor="@color/gray_600" />
         </LinearLayout>
 
@@ -559,7 +442,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_coparent_lite_v1_0_2"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_xs"
             android:textColor="@color/gray_400"
             android:gravity="center"
             android:layout_marginBottom="@dimen/spacing_l" />

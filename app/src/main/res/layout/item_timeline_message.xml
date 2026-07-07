@@ -4,31 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingVertical="4dp">
+    android:paddingVertical="@dimen/spacing_xs">
 
     <!-- Timeline icon + line -->
     <LinearLayout
-        android:layout_width="32dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        style="@style/Widget.CoParent.Timeline.Gutter">
 
         <View
-            android:layout_width="1dp"
+            android:layout_width="@dimen/stroke_width_thin"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@color/divider" />
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="@dimen/icon_size_m"
+            android:layout_height="@dimen/icon_size_m"
             android:src="@drawable/ic_chat_outline"
             app:tint="@color/primary_blue_light"
             android:contentDescription="@null"
             android:importantForAccessibility="no" />
 
         <View
-            android:layout_width="1dp"
+            android:layout_width="@dimen/stroke_width_thin"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@color/divider" />
@@ -37,33 +34,27 @@
     <!-- Content -->
     <LinearLayout
         android:id="@+id/messageBubble"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingVertical="8dp"
-        android:paddingHorizontal="8dp">
+        style="@style/Widget.CoParent.Timeline.Content">
 
         <TextView
+            style="@style/TextAppearance.CoParent.List.Meta.Muted"
             android:id="@+id/messageTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="@color/gray_500"
-            android:layout_marginBottom="2dp" />
+            android:layout_marginBottom="@dimen/spacing_xs" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.Message.Body"
             android:id="@+id/messageContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
             android:textColor="@color/gray_900" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.Message.Time"
             android:id="@+id/senderName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="11sp"
             android:textColor="@color/gray_500"
             android:visibility="gone" />
     </LinearLayout>

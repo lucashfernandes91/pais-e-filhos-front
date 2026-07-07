@@ -4,32 +4,29 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingVertical="4dp">
+    android:paddingVertical="@dimen/spacing_xs">
 
     <!-- Timeline icon + line -->
     <LinearLayout
-        android:layout_width="32dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        style="@style/Widget.CoParent.Timeline.Gutter">
 
         <View
-            android:layout_width="1dp"
+            android:layout_width="@dimen/stroke_width_thin"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@color/divider" />
 
         <ImageView
             android:id="@+id/timelineDotIcon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="@dimen/icon_size_m"
+            android:layout_height="@dimen/icon_size_m"
             android:src="@drawable/ic_other"
             app:tint="@color/primary_blue_light"
             android:contentDescription="@null"
             android:importantForAccessibility="no" />
 
         <View
-            android:layout_width="1dp"
+            android:layout_width="@dimen/stroke_width_thin"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@color/divider" />
@@ -37,37 +34,28 @@
 
     <!-- Content -->
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingVertical="8dp"
-        android:paddingHorizontal="8dp">
+        style="@style/Widget.CoParent.Timeline.Content">
 
         <TextView
+            style="@style/TextAppearance.CoParent.List.Meta.Muted"
             android:id="@+id/eventDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="@color/gray_500"
-            android:layout_marginBottom="2dp" />
+            android:layout_marginBottom="@dimen/spacing_xs" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.List.Title"
             android:id="@+id/eventTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="@color/gray_900" />
+            android:layout_height="wrap_content" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.List.Meta.Muted"
             android:id="@+id/eventNotes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="@color/gray_600"
             android:visibility="gone"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="@dimen/spacing_xs" />
 
         <TextView
             android:id="@+id/eventType"

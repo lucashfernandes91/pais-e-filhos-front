@@ -18,22 +18,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="52dp"
+            android:minHeight="@dimen/height_action"
             android:orientation="horizontal"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="12dp">
+            android:paddingHorizontal="@dimen/spacing_sm"
+            android:paddingVertical="@dimen/spacing_sm">
 
             <ImageView
                 android:id="@+id/ivPickerIcon"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="@dimen/icon_notification_size"
+                android:layout_height="@dimen/icon_notification_size"
                 android:contentDescription="@null"
                 app:tint="@color/primary_blue" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="@dimen/spacing_sm"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -42,21 +42,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/gray_500"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/text_size_xs" />
 
                 <TextView
                     android:id="@+id/tvPickerValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="@dimen/stroke_width_emphasis"
                     android:textColor="@color/gray_900"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/text_size_m"
                     android:textStyle="bold" />
             </LinearLayout>
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="@dimen/icon_badge_size"
+                android:layout_height="@dimen/icon_badge_size"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_chevron_right"
                 app:tint="@color/gray_400" />
@@ -67,9 +67,9 @@
         android:id="@+id/tvPickerError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="@dimen/spacing_xs"
+        android:layout_marginTop="@dimen/spacing_xs"
         android:textColor="@color/error"
-        android:textSize="12sp"
+        android:textSize="@dimen/text_size_xs"
         android:visibility="gone" />
 </LinearLayout>

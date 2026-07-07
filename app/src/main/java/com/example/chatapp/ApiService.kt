@@ -89,7 +89,8 @@ interface ApiService {
     @GET("api/export/pdf/{conversationId}/")
     suspend fun exportConversationPdf(
         @Header("Authorization") token: String,
-        @Path("conversationId") conversationId: Int
+        @Path("conversationId") conversationId: Int,
+        @Query("type") type: String
     ): okhttp3.ResponseBody
 
     @POST("api/token/")
@@ -104,6 +105,21 @@ interface ApiService {
 
     @POST("api/register/")
     suspend fun registerUser(
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
+    @POST("api/password-reset/request/")
+    suspend fun requestPasswordReset(
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
+    @POST("api/password-reset/verify/")
+    suspend fun verifyPasswordResetCode(
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
+    @POST("api/password-reset/confirm/")
+    suspend fun confirmPasswordReset(
         @Body body: Map<String, String>
     ): Map<String, Any>
 

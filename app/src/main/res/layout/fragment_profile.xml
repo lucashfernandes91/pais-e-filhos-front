@@ -10,60 +10,60 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="80dp">
+        android:paddingHorizontal="@dimen/spacing_m"
+        android:paddingTop="@dimen/spacing_m"
+        android:paddingBottom="@dimen/screen_content_bottom_padding">
 
         <!-- Page Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ui_perfil"
-            android:textSize="28sp"
+            android:textSize="@dimen/text_size_xl"
             android:textStyle="bold"
             android:textColor="@color/gray_900"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="@dimen/spacing_sm" />
 
         <View
             style="@style/Widget.CoParent.Header.Divider"
-            android:layout_marginStart="-20dp"
-            android:layout_marginEnd="-20dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginStart="-16dp"
+            android:layout_marginEnd="-16dp"
+            android:layout_marginBottom="@dimen/spacing_l" />
 
         <!-- User Card — main profile with editable avatar -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.CoParent.Card.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
+            android:layout_marginBottom="@dimen/spacing_m"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="18dp"
+                android:padding="@dimen/spacing_m"
                 android:gravity="center_vertical">
 
                 <FrameLayout
                     android:id="@+id/avatarContainer"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_marginEnd="18dp"
+                    android:layout_width="@dimen/avatar_size_xl"
+                    android:layout_height="@dimen/avatar_size_xl"
+                    android:layout_marginEnd="@dimen/spacing_m"
                     android:clickable="true"
                     android:focusable="true"
                     android:contentDescription="@string/cd_avatar"
                     android:background="?selectableItemBackgroundBorderless">
 
                     <FrameLayout
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="@dimen/avatar_size_xl"
+                        android:layout_height="@dimen/avatar_size_xl"
                         android:background="@drawable/bg_avatar_user">
 
                         <ImageView
                             android:id="@+id/ivProfilePhoto"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"
+                            android:layout_width="@dimen/avatar_size_xl"
+                            android:layout_height="@dimen/avatar_size_xl"
                             android:scaleType="centerCrop"
                             android:visibility="gone"
                             android:contentDescription="@null"
@@ -74,7 +74,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:textSize="24sp"
+                            android:textSize="@dimen/text_size_xl"
                             android:textStyle="bold"
                             android:textColor="@color/primary_blue"
                             android:text="@string/ui_a" />
@@ -82,16 +82,16 @@
 
                     <!-- Camera badge — edit avatar -->
                     <FrameLayout
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="@dimen/icon_size_m"
+                        android:layout_height="@dimen/icon_size_m"
                         android:layout_gravity="bottom|end"
                         android:layout_marginEnd="-2dp"
                         android:layout_marginBottom="-2dp"
                         android:background="@drawable/bg_badge_camera">
 
                         <ImageView
-                            android:layout_width="14dp"
-                            android:layout_height="14dp"
+                            android:layout_width="@dimen/icon_size_xs"
+                            android:layout_height="@dimen/icon_size_xs"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_camera"
                             app:tint="@color/on_primary"
@@ -112,7 +112,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ui_ana"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_size_l"
                         android:textStyle="bold"
                         android:textColor="@color/gray_900"
                         android:maxLines="2"
@@ -123,9 +123,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ui_coparent_lite"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_size_s"
                         android:textColor="@color/gray_500"
-                        android:layout_marginTop="3dp" />
+                        android:layout_marginTop="@dimen/spacing_xs" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -135,24 +135,24 @@
             style="@style/Widget.CoParent.Card.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
+            android:layout_marginBottom="@dimen/spacing_m"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="@dimen/spacing_m">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ui_seu_coparental"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_size_xs"
                     android:textColor="@color/gray_500"
                     android:letterSpacing="0.05"
                     android:textStyle="bold"
-                    android:layout_marginBottom="14dp" />
+                    android:layout_marginBottom="@dimen/spacing_sm" />
 
                 <LinearLayout
                     android:id="@+id/coparentConnectedContent"
@@ -163,17 +163,17 @@
                     android:visibility="gone">
 
                     <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="@dimen/avatar_size_ml"
+                        android:layout_height="@dimen/avatar_size_ml"
                         android:background="@drawable/bg_avatar_coparent"
-                        android:layout_marginEnd="14dp">
+                        android:layout_marginEnd="@dimen/spacing_sm">
 
                         <TextView
                             android:id="@+id/tvCoparentAvatar"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:textSize="18sp"
+                            android:textSize="@dimen/text_size_l"
                             android:textStyle="bold"
                             android:textColor="@color/secondary_green"
                             android:text="@string/chat_avatar_fallback" />
@@ -191,7 +191,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/profile_no_coparent"
-                            android:textSize="15sp"
+                            android:textSize="@dimen/text_size_m"
                             android:textStyle="bold"
                             android:textColor="@color/gray_900"
                             android:maxLines="1"
@@ -202,13 +202,13 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:layout_marginTop="2dp">
+                            android:layout_marginTop="@dimen/spacing_xs">
 
                             <View
-                                android:layout_width="6dp"
-                                android:layout_height="6dp"
+                                android:layout_width="@dimen/icon_dot_size_s"
+                                android:layout_height="@dimen/icon_dot_size_s"
                                 android:background="@drawable/bg_dot_green"
-                                android:layout_marginEnd="6dp"
+                                android:layout_marginEnd="@dimen/spacing_s"
                                 android:elevation="0dp" />
 
                             <TextView
@@ -216,7 +216,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/ui_conectado"
-                                android:textSize="13sp"
+                                android:textSize="@dimen/text_size_s"
                                 android:textColor="@color/gray_500" />
                         </LinearLayout>
                     </LinearLayout>
@@ -227,7 +227,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/touch_target_min"
                         android:text="@string/ui_convidar"
-                        android:paddingHorizontal="14dp"
+                        android:paddingHorizontal="@dimen/spacing_sm"
                         android:minWidth="0dp"
                         android:visibility="gone"
                         />
@@ -245,7 +245,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_no_coparent"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/text_size_m"
                         android:textStyle="bold"
                         android:textColor="@color/gray_700" />
 
@@ -255,7 +255,7 @@
                         android:layout_marginTop="@dimen/spacing_s"
                         android:gravity="center"
                         android:text="@string/profile_invite_coparent"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_size_s"
                         android:textColor="@color/gray_500" />
 
                     <com.google.android.material.button.MaterialButton
@@ -265,7 +265,7 @@
                         android:layout_height="@dimen/touch_target_min"
                         android:layout_marginTop="@dimen/spacing_m"
                         android:text="@string/ui_convidar"
-                        android:paddingHorizontal="14dp"
+                        android:paddingHorizontal="@dimen/spacing_sm"
                         android:minWidth="0dp" />
                 </LinearLayout>
             </LinearLayout>
@@ -276,28 +276,28 @@
             style="@style/Widget.CoParent.Card.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
+            android:layout_marginBottom="@dimen/spacing_m"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="@dimen/spacing_m">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="14dp">
+                    android:layout_marginBottom="@dimen/spacing_sm">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/ui_seus_filhos"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/text_size_xs"
                         android:textColor="@color/gray_500"
                         android:letterSpacing="0.05"
                         android:textStyle="bold" />
@@ -308,7 +308,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/touch_target_min"
                         android:text="@string/ui_adicionar"
-                        android:paddingHorizontal="12dp"
+                        android:paddingHorizontal="@dimen/spacing_sm"
                         android:minWidth="0dp"
                         />
                 </LinearLayout>
@@ -332,31 +332,25 @@
 
                 <LinearLayout
                     android:id="@+id/errorStateChildren"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
+                    style="@style/Widget.CoParent.State.Container.Content"
                     android:paddingVertical="@dimen/spacing_m"
-                    android:visibility="gone"
                     android:accessibilityLiveRegion="polite"
                     android:contentDescription="@string/cd_error_children">
 
                     <ImageView
-                        android:layout_width="@dimen/icon_size_m"
-                        android:layout_height="@dimen/icon_size_m"
+                        style="@style/Widget.CoParent.State.Icon.Error.Compact"
                         android:src="@drawable/ic_error_circle"
                         app:tint="@color/error"
                         android:contentDescription="@null"
                         android:importantForAccessibility="no" />
 
                     <TextView
+                        style="@style/TextAppearance.CoParent.State.Body"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/spacing_s"
                         android:gravity="center"
-                        android:text="@string/children_error_message"
-                        android:textColor="@color/on_surface_variant"
-                        android:textSize="14sp" />
+                        android:text="@string/children_error_message" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRetryChildren"
@@ -374,196 +368,100 @@
             style="@style/Widget.CoParent.Card.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="@dimen/spacing_m"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingVertical="2dp">
+                android:paddingVertical="@dimen/stroke_width_thin">
 
                 <!-- Settings row: Notificações -->
                 <LinearLayout
                     android:id="@+id/rowNotifications"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
-                    android:background="?selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
+                    style="@style/Widget.CoParent.Settings.Row">
 
                     <FrameLayout
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_icon_blue"
-                        android:layout_marginEnd="14dp">
+                        style="@style/Widget.CoParent.Settings.IconContainer.Primary">
 
                         <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
+                            style="@style/Widget.CoParent.Settings.Icon"
                             android:src="@drawable/ic_notification_bell"
                             app:tint="@color/primary_blue"
                             android:contentDescription="@string/ui_notificacoes" />
                     </FrameLayout>
 
                     <TextView
+                        style="@style/TextAppearance.CoParent.SettingsItem"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="@string/ui_notificacoes"
-                        android:textSize="15sp"
-                        android:textColor="@color/gray_900" />
+                        android:text="@string/ui_notificacoes" />
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="@dimen/icon_badge_size"
+                        android:layout_height="@dimen/icon_badge_size"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/gray_400"
                         android:contentDescription="@string/ui_ir_para" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:layout_marginStart="66dp"
-                    android:background="@color/gray_100" />
-
-                <!-- Settings row: Exportar -->
-                <LinearLayout
-                    android:id="@+id/rowExport"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
-                    android:background="?selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <FrameLayout
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_icon_blue"
-                        android:layout_marginEnd="14dp">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_download"
-                            app:tint="@color/primary_blue"
-                            android:contentDescription="@string/ui_exportar" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ui_exportar_dados"
-                        android:textSize="15sp"
-                        android:textColor="@color/gray_900" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_400"
-                        android:contentDescription="@string/ui_ir_para" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:layout_marginStart="66dp"
-                    android:background="@color/gray_100" />
+                <View style="@style/Widget.CoParent.Settings.Divider" />
 
                 <!-- Settings row: Privacidade -->
                 <LinearLayout
                     android:id="@+id/rowPrivacy"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
-                    android:background="?selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
+                    style="@style/Widget.CoParent.Settings.Row">
 
                     <FrameLayout
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_icon_blue"
-                        android:layout_marginEnd="14dp">
+                        style="@style/Widget.CoParent.Settings.IconContainer.Primary">
 
                         <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
+                            style="@style/Widget.CoParent.Settings.Icon"
                             android:src="@drawable/ic_lock"
                             app:tint="@color/primary_blue"
                             android:contentDescription="@string/ui_privacidade" />
                     </FrameLayout>
 
                     <TextView
+                        style="@style/TextAppearance.CoParent.SettingsItem"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="@string/ui_privacidade_e_seguranca"
-                        android:textSize="15sp"
-                        android:textColor="@color/gray_900" />
+                        android:text="@string/ui_privacidade_e_seguranca" />
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="@dimen/icon_badge_size"
+                        android:layout_height="@dimen/icon_badge_size"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/gray_400"
                         android:contentDescription="@string/ui_ir_para" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:layout_marginStart="66dp"
-                    android:background="@color/gray_100" />
+                <View style="@style/Widget.CoParent.Settings.Divider" />
 
                 <!-- Settings row: Logout (destructive) -->
                 <LinearLayout
                     android:id="@+id/rowLogout"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
-                    android:background="?selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
+                    style="@style/Widget.CoParent.Settings.Row">
 
                     <FrameLayout
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_icon_red"
-                        android:layout_marginEnd="14dp">
+                        style="@style/Widget.CoParent.Settings.IconContainer.Danger">
 
                         <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
+                            style="@style/Widget.CoParent.Settings.Icon"
                             android:src="@drawable/ic_logout"
                             app:tint="@color/error"
                             android:contentDescription="@string/ui_sair" />
                     </FrameLayout>
 
                     <TextView
+                        style="@style/TextAppearance.CoParent.SettingsItem.Danger"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="@string/ui_sair_da_conta"
-                        android:textSize="15sp"
-                        android:textColor="@color/error" />
+                        android:text="@string/ui_sair_da_conta" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -573,9 +471,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_coparent_lite_v1_0"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_xs"
             android:textColor="@color/gray_400"
             android:gravity="center"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="@dimen/spacing_s" />
     </LinearLayout>
 </ScrollView>

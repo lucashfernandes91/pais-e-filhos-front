@@ -9,24 +9,17 @@
     <!-- Header Normal -->
     <LinearLayout
         android:id="@+id/headerNormal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
-        android:gravity="center_vertical"
-        android:background="@color/bg_primary"
-        android:elevation="2dp">
+        style="@style/Widget.CoParent.TopBar.Row.Primary">
 
         <!-- Avatar -->
         <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="12dp">
+            android:layout_width="@dimen/avatar_size_m"
+            android:layout_height="@dimen/avatar_size_m"
+            android:layout_marginEnd="@dimen/spacing_sm">
 
             <View
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/avatar_size_m"
+                android:layout_height="@dimen/avatar_size_m"
                 android:background="@drawable/bg_avatar_coparent" />
 
             <TextView
@@ -35,7 +28,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text=""
-                android:textSize="16sp"
+                android:textSize="@dimen/text_size_m"
                 android:textStyle="bold"
                 android:textColor="@color/secondary_green" />
         </FrameLayout>
@@ -52,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textSize="17sp"
+                android:textSize="@dimen/text_size_ml"
                 android:textStyle="bold"
                 android:textColor="@color/gray_900" />
 
@@ -61,8 +54,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/chat_invite_coparent_status"
-                android:textSize="12sp"
-                android:textColor="@color/gray_400" />
+                android:textSize="@dimen/text_size_xs"
+                android:textColor="@color/gray_500" />
         </LinearLayout>
 
         <!-- Search button -->
@@ -74,7 +67,7 @@
             android:src="@drawable/ic_search"
             app:tint="@color/gray_500"
             android:contentDescription="@string/cd_search_button"
-            android:layout_marginEnd="4dp" />
+            android:layout_marginEnd="@dimen/spacing_xs" />
 
         <!-- Export button -->
         <ImageButton
@@ -90,13 +83,7 @@
     <!-- Search Bar (hidden by default) -->
     <LinearLayout
         android:id="@+id/searchBar"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:orientation="horizontal"
-        android:paddingHorizontal="8dp"
-        android:gravity="center_vertical"
-        android:background="@color/bg_primary"
-        android:elevation="2dp"
+        style="@style/Widget.CoParent.TopBar.Row.Search"
         android:visibility="gone">
 
         <!-- Close button -->
@@ -115,7 +102,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginHorizontal="4dp"
+            android:layout_marginHorizontal="@dimen/spacing_xs"
             app:startIconDrawable="@drawable/ic_search"
             app:startIconTint="@color/icon_muted">
 
@@ -127,7 +114,7 @@
                 android:layout_height="@dimen/height_input"
                 android:hint="@string/ui_buscar_na_conversa"
                 android:gravity="center_vertical"
-                android:inputType="text"
+                android:inputType="text|textCapSentences|textAutoCorrect"
                 android:imeOptions="actionSearch"
                 android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -137,9 +124,9 @@
             android:id="@+id/tvSearchCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@color/gray_500"
-            android:layout_marginEnd="2dp"
+            android:textSize="@dimen/text_size_xs"
+            android:textColor="@color/gray_600"
+            android:layout_marginEnd="@dimen/stroke_width_emphasis"
             android:visibility="gone" />
 
         <!-- Navigate up -->
@@ -172,8 +159,8 @@
         android:id="@+id/infoBanner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="10dp"
+        android:paddingHorizontal="@dimen/spacing_m"
+        android:paddingVertical="@dimen/spacing_s"
         android:background="@color/bg_primary">
 
         <LinearLayout
@@ -185,11 +172,11 @@
             android:padding="@dimen/spacing_m">
 
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="@dimen/icon_size_s"
+                android:layout_height="@dimen/icon_size_s"
                 android:src="@drawable/ic_shield"
                 app:tint="@color/icon_info"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="@dimen/spacing_s"
                 android:contentDescription="@null"
                 android:importantForAccessibility="no" />
 
@@ -198,7 +185,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/ui_as_mensagens_sao_registro_oficial_e_nao_podem"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_size_xs"
                 android:textColor="@color/info_banner_text" />
         </LinearLayout>
     </FrameLayout>
@@ -209,50 +196,41 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
+        android:paddingHorizontal="@dimen/spacing_m"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingBottom="@dimen/spacing_sm"
         android:clipToPadding="false"
         android:background="@color/bg_primary" />
 
     <!-- Error State Chat -->
     <LinearLayout
         android:id="@+id/errorStateChat"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
+        style="@style/Widget.CoParent.State.Container.Fill"
         android:paddingHorizontal="@dimen/spacing_xl"
         android:background="@color/bg_primary"
-        android:visibility="gone"
         android:accessibilityLiveRegion="polite">
 
         <ImageView
-            android:layout_width="@dimen/icon_size_l"
-            android:layout_height="@dimen/icon_size_l"
+            style="@style/Widget.CoParent.State.Icon.Error"
             android:src="@drawable/ic_error_circle"
             app:tint="@color/error"
             android:contentDescription="@null"
             android:importantForAccessibility="no" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_m"
-            android:text="@string/state_error_title"
-            android:textColor="@color/on_surface"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:text="@string/state_error_title" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_s"
             android:gravity="center"
-            android:text="@string/chat_error_message"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="14sp" />
+            android:text="@string/chat_error_message" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRetryChat"
@@ -268,10 +246,10 @@
         android:id="@+id/tvTypingIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="6dp"
-        android:textSize="13sp"
-        android:textColor="@color/gray_500"
+        android:paddingHorizontal="@dimen/spacing_m"
+        android:paddingVertical="@dimen/spacing_s"
+        android:textSize="@dimen/text_size_xs_plus"
+        android:textColor="@color/gray_600"
         android:textStyle="italic"
         android:background="@color/bg_primary"
         android:accessibilityLiveRegion="polite"
@@ -280,55 +258,46 @@
     <!-- Empty State Chat -->
     <LinearLayout
         android:id="@+id/emptyStateChat"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:paddingHorizontal="40dp"
+        style="@style/Widget.CoParent.State.Container.Fill"
+        android:paddingHorizontal="@dimen/spacing_xl"
         android:background="@color/bg_primary"
-        android:visibility="gone"
         android:accessibilityLiveRegion="polite"
         android:contentDescription="@string/cd_empty_chat">
 
         <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            style="@style/Widget.CoParent.State.Icon.Empty"
             android:src="@drawable/ic_chat"
             app:tint="@color/gray_300"
-            android:layout_marginBottom="16dp"
             android:contentDescription="@null"
             android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/tvEmptyChatTitle"
+            style="@style/TextAppearance.CoParent.State.EmptyTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ui_nenhuma_mensagem_ainda"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/gray_700"
-            android:layout_marginBottom="6dp" />
+            android:layout_marginBottom="@dimen/spacing_xs" />
 
         <TextView
             android:id="@+id/tvEmptyChatMessage"
+            style="@style/TextAppearance.CoParent.State.EmptyBody"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ui_comece_uma_conversa_todas_as_mensagens_ficam_registradas"
-            android:textSize="14sp"
-            android:textColor="@color/gray_400"
             android:gravity="center"
-            android:lineSpacingExtra="2dp" />
+            android:lineSpacingExtra="@dimen/spacing_xs" />
     </LinearLayout>
 
     <!-- Message Input Bar -->
     <LinearLayout
         android:id="@+id/inputBar"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="wrap_content"
         android:background="@color/bg_primary"
-        android:elevation="4dp"
-        android:paddingHorizontal="12dp"
+        android:elevation="@dimen/elevation_medium"
+        android:paddingHorizontal="@dimen/spacing_sm"
+        android:paddingVertical="@dimen/spacing_s"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -339,37 +308,40 @@
             android:layout_width="@dimen/touch_target_min"
             android:layout_height="@dimen/touch_target_min"
             android:src="@drawable/ic_attach"
-            app:tint="@color/gray_500"
+            app:tint="@color/icon_muted"
             android:contentDescription="@string/cd_attach_button"
-            android:layout_marginEnd="4dp" />
+            android:layout_marginEnd="@dimen/spacing_xs" />
 
-        <EditText
-            android:id="@+id/messageInput"
-            android:importantForAutofill="no"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/messageInputLayout"
+            style="@style/Widget.CoParent.TextInputLayout.Outlined"
             android:layout_width="0dp"
-            android:layout_height="@dimen/height_input"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:hint="@string/ui_mensagem"
-            android:textSize="15sp"
-            android:textColor="@color/gray_900"
-            android:textColorHint="@color/gray_400"
-            android:background="@drawable/bg_input_rounded"
-            android:paddingHorizontal="16dp"
-            android:gravity="center_vertical"
-            android:inputType="text|textMultiLine"
-            android:maxLines="3"
-            android:singleLine="false" />
+            android:layout_marginEnd="@dimen/spacing_s"
+            app:hintEnabled="false">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/messageInput"
+                style="@style/Widget.CoParent.TextInputEditText"
+                android:importantForAutofill="no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ui_mensagem"
+                android:gravity="center_vertical"
+                android:inputType="textCapSentences|textMultiLine|textAutoCorrect"
+                android:maxLines="3"
+                android:singleLine="false"
+                android:contentDescription="@string/cd_chat_message_field" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
             android:id="@+id/sendButton"
-            android:layout_width="@dimen/touch_target_min"
-            android:layout_height="@dimen/touch_target_min"
+            style="@style/Widget.CoParent.TouchTarget.Icon.Primary"
+            android:layout_width="@dimen/height_action"
+            android:layout_height="@dimen/height_action"
             android:src="@drawable/ic_send"
-            app:tint="@color/primary_blue"
-            app:backgroundTint="@color/send_button_bg"
-            app:elevation="0dp"
-            app:maxImageSize="20dp"
+            app:tint="@color/on_primary"
             android:contentDescription="@string/cd_send_button"
             android:scaleType="centerInside" />
     </LinearLayout>

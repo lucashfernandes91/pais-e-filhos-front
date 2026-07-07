@@ -1,7 +1,15 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+}
+
+// Carrega local.properties (gitignored, por dev). Fallback se ausente.
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
@@ -20,6 +28,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Host do backend em dev. Sobrescreva em local.properties:
+        //   dev.host=localhost       (celular físico via adb reverse)
+        //   dev.host=192.168.x.x     (celular na mesma WiFi)
+        // Default = 10.0.2.2 (emulador).
+        val devHost = localProps.getProperty("dev.host", "10.0.2.2")
+        val devPort = localProps.getProperty("dev.port", "8000")
+        buildConfigField("String", "API_BASE_URL", "\"http://$devHost:$devPort/\"")
+        buildConfigField("String", "WS_BASE_URL", "\"ws://$devHost:$devPort/\"")
     }
 
     buildTypes {
@@ -37,6 +54,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -59,6 +77,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")

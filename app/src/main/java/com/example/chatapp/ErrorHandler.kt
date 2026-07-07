@@ -2,9 +2,9 @@ package com.example.chatapp
 
 import android.content.Context
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
-import android.view.View
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.ConnectException
@@ -20,21 +20,19 @@ object ErrorHandler {
     fun handleException(
         context: Context,
         exception: Exception,
-        onRetry: (() -> Unit)? = null
+        @Suppress("UNUSED_PARAMETER") onRetry: (() -> Unit)? = null
     ): String {
         Log.e(TAG, "Exception: ${exception.javaClass.simpleName}: ${exception.message}", exception)
 
         val message = when (exception) {
-            // Network errors
-            is ConnectException -> "Sem conexão com o servidor"
-            is SocketTimeoutException -> "Tempo de conexão expirou. Tente novamente"
-            is IOException -> "Erro de conexão. Verifique sua internet"
-
-            // HTTP errors
-            is HttpException -> handleHttpException(exception)
-
-            // Other errors
-            else -> "Erro inesperado: ${exception.localizedMessage ?: "Desconhecido"}"
+            is ConnectException -> context.getString(R.string.error_no_server_connection)
+            is SocketTimeoutException -> context.getString(R.string.error_connection_timeout)
+            is IOException -> context.getString(R.string.error_check_internet)
+            is HttpException -> handleHttpException(context, exception)
+            else -> context.getString(
+                R.string.error_unexpected,
+                exception.localizedMessage ?: context.getString(R.string.error_unknown)
+            )
         }
 
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
@@ -44,16 +42,20 @@ object ErrorHandler {
     /**
      * Handle HTTP exceptions with specific status codes
      */
-    private fun handleHttpException(exception: HttpException): String {
+    private fun handleHttpException(context: Context, exception: HttpException): String {
         return when (exception.code()) {
-            400 -> "Dados inválidos. Verifique e tente novamente"
-            401 -> "Sessão expirada. Faça login novamente"
-            403 -> "Você não tem permissão para isso"
-            404 -> "Recurso não encontrado"
-            409 -> "Conflito de dados. Tente novamente"
-            429 -> "Muitas requisições. Aguarde um momento"
-            500, 502, 503 -> "Servidor indisponível. Tente novamente em alguns momentos"
-            else -> "Erro ${exception.code()}: ${exception.message()}"
+            400 -> context.getString(R.string.error_invalid_data)
+            401 -> context.getString(R.string.error_session_expired_login)
+            403 -> context.getString(R.string.error_no_permission)
+            404 -> context.getString(R.string.error_resource_not_found)
+            409 -> context.getString(R.string.error_data_conflict)
+            429 -> context.getString(R.string.error_too_many_requests)
+            500, 502, 503 -> context.getString(R.string.error_server_unavailable)
+            else -> context.getString(
+                R.string.error_http_generic,
+                exception.code(),
+                exception.message().orEmpty()
+            )
         }
     }
 
@@ -66,7 +68,7 @@ object ErrorHandler {
         onRetry: () -> Unit
     ) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG)
-            .setAction("Tentar novamente") { onRetry() }
+            .setAction(R.string.action_try_again) { onRetry() }
             .show()
     }
 

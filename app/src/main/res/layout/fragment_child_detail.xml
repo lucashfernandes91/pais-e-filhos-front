@@ -9,12 +9,7 @@
 
     <!-- Top Bar -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:background="@color/bg_primary">
+        style="@style/Widget.CoParent.TopBar.Row.Surface">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -26,32 +21,25 @@
             android:contentDescription="@string/cd_back_button" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.TopBar.Title"
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/ui_detalhes_do_filho"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/gray_900"
-            android:layout_marginStart="12dp" />
+            android:layout_marginStart="@dimen/spacing_sm" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEdit"
-            style="@style/Widget.CoParent.Button.Text"
+            style="@style/Widget.CoParent.Button.Text.Compact"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/touch_target_min"
             android:text="@string/ui_editar"
-            android:textSize="14sp"
             android:textColor="@color/primary_blue"
             android:textAllCaps="false"
-            android:minWidth="0dp"
-            android:paddingHorizontal="12dp"
             app:icon="@drawable/ic_edit"
             app:iconTint="@color/primary_blue"
-            app:iconSize="16dp"
-            app:iconGravity="textStart"
-            app:iconPadding="4dp" />
+            app:iconGravity="textStart" />
     </LinearLayout>
 
     <View style="@style/Widget.CoParent.Header.Divider" />
@@ -65,14 +53,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="@dimen/spacing_l">
 
             <!-- Header card: avatar + nome + idade -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="@dimen/spacing_m"
                 >
 
                 <LinearLayout
@@ -80,20 +68,20 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
-                    android:padding="24dp">
+                    android:padding="@dimen/spacing_l">
 
                     <FrameLayout
                         android:id="@+id/btnChildPhoto"
-                        android:layout_width="108dp"
-                        android:layout_height="108dp"
-                        android:layout_marginBottom="12dp"
+                        android:layout_width="@dimen/avatar_frame_size_xxl"
+                        android:layout_height="@dimen/avatar_frame_size_xxl"
+                        android:layout_marginBottom="@dimen/spacing_sm"
                         android:clickable="true"
                         android:focusable="true"
                         android:contentDescription="@string/cd_add_child_photo">
 
                         <FrameLayout
-                            android:layout_width="96dp"
-                            android:layout_height="96dp"
+                            android:layout_width="@dimen/avatar_size_xxl"
+                            android:layout_height="@dimen/avatar_size_xxl"
                             android:layout_gravity="center"
                             android:background="@drawable/bg_avatar_child"
                             android:clipToOutline="true">
@@ -111,22 +99,22 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:gravity="center"
-                                android:text="?"
-                                android:textSize="36sp"
+                                android:text="@string/chat_avatar_fallback"
+                                android:textSize="@dimen/text_size_display"
                                 android:textStyle="bold"
                                 android:textColor="@color/warning"
                                 tools:text="L" />
                         </FrameLayout>
 
                         <FrameLayout
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="@dimen/icon_container_size_xs"
+                            android:layout_height="@dimen/icon_container_size_xs"
                             android:layout_gravity="bottom|end"
                             android:background="@drawable/bg_badge_camera">
 
                             <ImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
+                                android:layout_width="@dimen/icon_size_xs"
+                                android:layout_height="@dimen/icon_size_xs"
                                 android:layout_gravity="center"
                                 android:src="@drawable/ic_camera"
                                 app:tint="@color/on_primary"
@@ -139,7 +127,7 @@
                         android:id="@+id/tvChildName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="22sp"
+                        android:textSize="@dimen/text_size_l_plus"
                         android:textStyle="bold"
                         android:textColor="@color/gray_900"
                         tools:text="Lara Silva" />
@@ -148,8 +136,8 @@
                         android:id="@+id/tvChildAge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textSize="14sp"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:textSize="@dimen/text_size_s"
                         android:textColor="@color/gray_500"
                         tools:text="8 anos" />
 
@@ -161,23 +149,23 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="@dimen/spacing_sm"
                         android:background="@drawable/bg_badge_active"
                         android:visibility="gone">
 
                         <ImageView
-                            android:layout_width="14dp"
-                            android:layout_height="14dp"
+                            android:layout_width="@dimen/icon_size_xs"
+                            android:layout_height="@dimen/icon_size_xs"
                             android:src="@drawable/ic_shield"
                             app:tint="@color/secondary_green"
-                            android:layout_marginEnd="6dp"
+                            android:layout_marginEnd="@dimen/spacing_xs"
                             android:contentDescription="@string/ui_guarda" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/ui_sob_sua_guarda"
-                            android:textSize="12sp"
+                            android:textSize="@dimen/text_size_xs"
                             android:textStyle="bold"
                             android:textColor="@color/secondary_green" />
                     </LinearLayout>
@@ -186,49 +174,37 @@
 
             <!-- Section: Informações pessoais -->
             <TextView
+                style="@style/TextAppearance.CoParent.Detail.SectionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_informacoes"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="@color/gray_500"
                 android:textAllCaps="true"
-                android:letterSpacing="0.05"
-                android:layout_marginStart="4dp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginStart="@dimen/spacing_xs"
+                android:layout_marginBottom="@dimen/spacing_s" />
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="@dimen/spacing_m"
                 >
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="4dp">
+                    android:padding="@dimen/spacing_xs">
 
                     <!-- Data de nascimento -->
                     <LinearLayout
                         android:id="@+id/rowBirthDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="14dp">
+                        style="@style/Widget.CoParent.Detail.Row">
 
                         <FrameLayout
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/bg_icon_circle_blue"
-                            android:layout_marginEnd="14dp">
+                            style="@style/Widget.CoParent.Detail.IconFrame">
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_gravity="center"
+                                style="@style/Widget.CoParent.Settings.Icon"
                                 android:src="@drawable/ic_calendar"
                                 app:tint="@color/primary_blue"
                                 android:contentDescription="@string/ui_data_de_nascimento" />
@@ -241,19 +217,17 @@
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.CoParent.List.Meta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/ui_data_de_nascimento"
-                                android:textSize="12sp"
-                                android:textColor="@color/gray_500" />
+                                android:text="@string/ui_data_de_nascimento" />
 
                             <TextView
                                 android:id="@+id/tvBirthDate"
+                                style="@style/TextAppearance.CoParent.Detail.Value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="15sp"
-                                android:textColor="@color/gray_900"
-                                android:layout_marginTop="2dp"
+                                android:layout_marginTop="@dimen/spacing_xs"
                                 tools:text="15/03/2017" />
                         </LinearLayout>
                     </LinearLayout>
@@ -261,29 +235,20 @@
                     <View
                         android:id="@+id/dividerCpf"
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="64dp"
+                        android:layout_height="@dimen/stroke_width_thin"
+                        android:layout_marginStart="@dimen/divider_inset_detail"
                         android:background="@color/divider" />
 
                     <!-- CPF -->
                     <LinearLayout
                         android:id="@+id/rowCpf"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="14dp">
+                        style="@style/Widget.CoParent.Detail.Row">
 
                         <FrameLayout
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/bg_icon_circle_blue"
-                            android:layout_marginEnd="14dp">
+                            style="@style/Widget.CoParent.Detail.IconFrame">
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_gravity="center"
+                                style="@style/Widget.CoParent.Settings.Icon"
                                 android:src="@drawable/ic_person"
                                 app:tint="@color/primary_blue"
                                 android:contentDescription="@string/ui_cpf" />
@@ -296,19 +261,17 @@
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.CoParent.List.Meta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/ui_cpf"
-                                android:textSize="12sp"
-                                android:textColor="@color/gray_500" />
+                                android:text="@string/ui_cpf" />
 
                             <TextView
                                 android:id="@+id/tvCpf"
+                                style="@style/TextAppearance.CoParent.Detail.Value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="15sp"
-                                android:textColor="@color/gray_900"
-                                android:layout_marginTop="2dp"
+                                android:layout_marginTop="@dimen/spacing_xs"
                                 tools:text="123.456.789-00" />
                         </LinearLayout>
                     </LinearLayout>
@@ -316,29 +279,20 @@
                     <View
                         android:id="@+id/dividerRg"
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="64dp"
+                        android:layout_height="@dimen/stroke_width_thin"
+                        android:layout_marginStart="@dimen/divider_inset_detail"
                         android:background="@color/divider" />
 
                     <!-- RG -->
                     <LinearLayout
                         android:id="@+id/rowRg"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="14dp">
+                        style="@style/Widget.CoParent.Detail.Row">
 
                         <FrameLayout
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/bg_icon_circle_blue"
-                            android:layout_marginEnd="14dp">
+                            style="@style/Widget.CoParent.Detail.IconFrame">
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_gravity="center"
+                                style="@style/Widget.CoParent.Settings.Icon"
                                 android:src="@drawable/ic_info_circle"
                                 app:tint="@color/primary_blue"
                                 android:contentDescription="@string/ui_rg" />
@@ -351,47 +305,36 @@
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.CoParent.List.Meta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/ui_rg"
-                                android:textSize="12sp"
-                                android:textColor="@color/gray_500" />
+                                android:text="@string/ui_rg" />
 
                             <TextView
                                 android:id="@+id/tvRg"
+                                style="@style/TextAppearance.CoParent.Detail.Value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="15sp"
-                                android:textColor="@color/gray_900"
-                                android:layout_marginTop="2dp"
+                                android:layout_marginTop="@dimen/spacing_xs"
                                 tools:text="12.345.678-9" />
                         </LinearLayout>
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="64dp"
+                        android:layout_height="@dimen/stroke_width_thin"
+                        android:layout_marginStart="@dimen/divider_inset_detail"
                         android:background="@color/divider" />
 
                     <LinearLayout
                         android:id="@+id/rowCustody"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="14dp">
+                        style="@style/Widget.CoParent.Detail.Row">
 
                         <FrameLayout
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/bg_icon_circle_blue"
-                            android:layout_marginEnd="14dp">
+                            style="@style/Widget.CoParent.Detail.IconFrame">
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_gravity="center"
+                                style="@style/Widget.CoParent.Settings.Icon"
                                 android:src="@drawable/ic_shield"
                                 app:tint="@color/primary_blue"
                                 android:contentDescription="@string/ui_guarda" />
@@ -404,19 +347,17 @@
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.CoParent.List.Meta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/ui_guarda"
-                                android:textSize="12sp"
-                                android:textColor="@color/gray_500" />
+                                android:text="@string/ui_guarda" />
 
                             <TextView
                                 android:id="@+id/tvCustodyValue"
+                                style="@style/TextAppearance.CoParent.Detail.Value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="15sp"
-                                android:textColor="@color/gray_900"
-                                android:layout_marginTop="2dp" />
+                                android:layout_marginTop="@dimen/spacing_xs" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -428,11 +369,11 @@
                 style="@style/Widget.CoParent.Button.Danger"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="@dimen/spacing_s"
                 android:text="@string/ui_remover_filho"
                 app:icon="@drawable/ic_close"
                 app:iconTint="@color/error"
-                app:iconSize="18dp"
+                app:iconSize="@dimen/icon_size_sm"
                 app:iconGravity="textStart" />
 
         </LinearLayout>

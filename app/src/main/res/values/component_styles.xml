@@ -63,12 +63,12 @@
         <item name="android:paddingEnd">@dimen/spacing_sm</item>
         <item name="android:textColor">@color/on_surface</item>
         <item name="android:textColorHint">@color/on_surface_variant</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
     </style>
 
     <style name="TextAppearance.CoParent.InputLabel" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textColor">@color/input_label_text_color</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">@dimen/text_size_s</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -86,7 +86,7 @@
 
     <style name="Widget.CoParent.Card.Primary" parent="Widget.MaterialComponents.CardView">
         <item name="cardBackgroundColor">@color/primary_blue</item>
-        <item name="cardCornerRadius">20dp</item>
+        <item name="cardCornerRadius">@dimen/corner_radius_xxl</item>
         <item name="cardElevation">@dimen/elevation_low</item>
         <item name="strokeWidth">@dimen/elevation_none</item>
     </style>
@@ -146,6 +146,588 @@
         <item name="android:minHeight">@dimen/touch_target_min</item>
         <item name="android:padding">@dimen/spacing_sm</item>
         <item name="android:background">?selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Widget.CoParent.TouchTarget.Icon.Primary" parent="Widget.CoParent.TouchTarget.Icon">
+        <item name="android:background">@drawable/bg_icon_primary</item>
+    </style>
+
+    <style name="Widget.CoParent.TopBar.Row" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/spacing_m</item>
+        <item name="android:paddingEnd">@dimen/spacing_m</item>
+    </style>
+
+    <style name="Widget.CoParent.TopBar.Row.Surface" parent="Widget.CoParent.TopBar.Row">
+        <item name="android:layout_height">@dimen/bottom_nav_height</item>
+        <item name="android:background">@color/surface_container</item>
+        <item name="android:elevation">@dimen/elevation_low</item>
+    </style>
+
+    <style name="Widget.CoParent.TopBar.Row.Primary" parent="Widget.CoParent.TopBar.Row">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/spacing_sm</item>
+        <item name="android:paddingBottom">@dimen/spacing_sm</item>
+        <item name="android:background">@color/bg_primary</item>
+        <item name="android:elevation">@dimen/elevation_low</item>
+    </style>
+
+    <style name="Widget.CoParent.TopBar.Row.Search" parent="Widget.CoParent.TopBar.Row">
+        <item name="android:layout_height">@dimen/icon_size_xl</item>
+        <item name="android:paddingStart">@dimen/spacing_s</item>
+        <item name="android:paddingEnd">@dimen/spacing_s</item>
+        <item name="android:background">@color/bg_primary</item>
+        <item name="android:elevation">@dimen/elevation_low</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.TopBar.Title" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">@dimen/text_size_ml</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.TopBar.Meta" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="android:textColor">@color/gray_500</item>
+    </style>
+
+    <style name="Widget.CoParent.Button.Text.Compact" parent="Widget.CoParent.Button.Text">
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingStart">@dimen/spacing_sm</item>
+        <item name="android:paddingEnd">@dimen/spacing_sm</item>
+        <item name="android:textSize">@dimen/text_size_s</item>
+        <item name="iconPadding">@dimen/spacing_xs</item>
+        <item name="iconSize">@dimen/icon_size_s</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.Content" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/spacing_l</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.Content.Compact" parent="Widget.CoParent.Form.Content">
+        <item name="android:paddingBottom">@dimen/spacing_m</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.Header.Row" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_l</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Form.HeaderTitle" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">@dimen/text_size_l</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Form.Helper" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="android:textColor">@color/gray_500</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Form.Subtitle" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textColor">@color/gray_600</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Form.SectionLabel" parent="TextAppearance.CoParent.InputLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_xs</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Form.SectionLabel.Emphasis" parent="TextAppearance.CoParent.Form.SectionLabel">
+        <item name="android:layout_marginBottom">@dimen/spacing_s</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Form.PickerGroupTitle" parent="TextAppearance.CoParent.InputLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_s</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.FieldLayout" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_m</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.FieldLayout.Spaced" parent="Widget.CoParent.Form.FieldLayout">
+        <item name="android:layout_marginBottom">@dimen/spacing_l</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.TextInputLayout" parent="Widget.CoParent.TextInputLayout.Outlined">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_m</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.TextInputLayout.Spaced" parent="Widget.CoParent.Form.TextInputLayout">
+        <item name="android:layout_marginBottom">@dimen/spacing_l</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.TextInputLayout.Event" parent="Widget.CoParent.TextInputLayout.Event">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_m</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.TextInputLayout.Event.Spaced" parent="Widget.CoParent.Form.TextInputLayout.Event">
+        <item name="android:layout_marginBottom">@dimen/spacing_l</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.PickerColumn.Start" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_s</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.PickerColumn.End" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginStart">@dimen/spacing_s</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.PickerFrame" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_action</item>
+        <item name="android:background">@drawable/bg_input_outlined</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.PickerInput" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingStart">@dimen/spacing_m</item>
+        <item name="android:paddingEnd">@dimen/touch_target_min</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/text_size_s_plus</item>
+        <item name="android:textColor">@color/gray_900</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.PickerTrailingIcon" parent="">
+        <item name="android:layout_width">@dimen/icon_badge_size</item>
+        <item name="android:layout_height">@dimen/icon_badge_size</item>
+        <item name="android:layout_gravity">center_vertical|end</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_sm</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.FeedbackBanner" parent="Widget.CoParent.Feedback.Container">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_sm</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="Widget.CoParent.List.CardItem" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_s</item>
+    </style>
+
+    <style name="Widget.CoParent.List.Card.Outlined" parent="Widget.CoParent.Card.Outlined">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_s</item>
+    </style>
+
+    <style name="Widget.CoParent.List.Row" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/spacing_m</item>
+    </style>
+
+    <style name="Widget.CoParent.List.Row.Clickable" parent="Widget.CoParent.List.Row">
+        <item name="android:minHeight">@dimen/list_item_min_height</item>
+        <item name="android:paddingStart">@dimen/spacing_m</item>
+        <item name="android:paddingEnd">@dimen/spacing_m</item>
+        <item name="android:paddingTop">@dimen/spacing_sm</item>
+        <item name="android:paddingBottom">@dimen/spacing_sm</item>
+        <item name="android:foreground">?selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="Widget.CoParent.List.IconFrame" parent="">
+        <item name="android:layout_width">@dimen/icon_container_size_m</item>
+        <item name="android:layout_height">@dimen/icon_container_size_m</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_sm</item>
+        <item name="android:background">@drawable/bg_icon_circle_blue</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.List.Title" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">@dimen/text_size_s_plus</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.List.Meta" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">@dimen/text_size_xs_plus</item>
+        <item name="android:textColor">@color/gray_500</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.List.Meta.Muted" parent="TextAppearance.CoParent.List.Meta">
+        <item name="android:textColor">@color/gray_600</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.List.Time" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">@dimen/text_size_mini</item>
+        <item name="android:textColor">@color/gray_400</item>
+    </style>
+
+    <style name="Widget.CoParent.Message.Media" parent="">
+        <item name="android:layout_width">@dimen/message_media_width</item>
+        <item name="android:layout_height">@dimen/message_media_height</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_s</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="Widget.CoParent.Message.DocBadge" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/spacing_sm</item>
+        <item name="android:paddingEnd">@dimen/spacing_sm</item>
+        <item name="android:paddingTop">@dimen/spacing_s</item>
+        <item name="android:paddingBottom">@dimen/spacing_s</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_s</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Message.Body" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">@dimen/text_size_s_plus</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Message.Time" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">@dimen/text_size_mini</item>
+    </style>
+
+    <style name="Widget.CoParent.Timeline.Gutter" parent="">
+        <item name="android:layout_width">@dimen/timeline_gutter_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="Widget.CoParent.Timeline.Content" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">@dimen/spacing_s</item>
+        <item name="android:paddingBottom">@dimen/spacing_s</item>
+        <item name="android:paddingStart">@dimen/spacing_s</item>
+        <item name="android:paddingEnd">@dimen/spacing_s</item>
+    </style>
+
+    <style name="Widget.CoParent.Divider.Labeled.Row" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">@dimen/spacing_sm</item>
+        <item name="android:paddingBottom">@dimen/spacing_sm</item>
+    </style>
+
+    <style name="Widget.CoParent.Divider.Labeled.Row.Compact" parent="Widget.CoParent.Divider.Labeled.Row">
+        <item name="android:paddingTop">@dimen/spacing_s</item>
+        <item name="android:paddingBottom">@dimen/spacing_s</item>
+    </style>
+
+    <style name="Widget.CoParent.Divider.Labeled.Line" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/stroke_width_thin</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.DividerLabel" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="android:textColor">@color/gray_500</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.DividerLabel.Highlight" parent="TextAppearance.CoParent.DividerLabel">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primary_blue_light</item>
+    </style>
+
+    <style name="Widget.CoParent.Skeleton.List" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/spacing_m</item>
+    </style>
+
+    <style name="Widget.CoParent.Skeleton.Row" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingTop">@dimen/spacing_sm</item>
+        <item name="android:paddingBottom">@dimen/spacing_sm</item>
+    </style>
+
+    <style name="Widget.CoParent.Skeleton.Circle" parent="">
+        <item name="android:layout_width">@dimen/avatar_size_m</item>
+        <item name="android:layout_height">@dimen/avatar_size_m</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_sm</item>
+        <item name="android:background">@drawable/bg_skeleton_circle</item>
+    </style>
+
+    <style name="Widget.CoParent.Skeleton.Line.Title" parent="">
+        <item name="android:layout_height">@dimen/text_size_s</item>
+        <item name="android:background">@drawable/bg_skeleton_rect</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_s</item>
+    </style>
+
+    <style name="Widget.CoParent.Skeleton.Line.Meta" parent="">
+        <item name="android:layout_height">10dp</item>
+        <item name="android:background">@drawable/bg_skeleton_rect</item>
+    </style>
+
+    <style name="Widget.CoParent.Sheet.Handle" parent="">
+        <item name="android:layout_width">@dimen/sheet_handle_width</item>
+        <item name="android:layout_height">@dimen/sheet_handle_height</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/spacing_sm</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_l</item>
+        <item name="android:background">@drawable/bg_handle_bar</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Sheet.Title" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">@dimen/text_size_l</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Sheet.Body" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">@dimen/text_size_xs_plus</item>
+        <item name="android:textColor">@color/gray_500</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Sheet.Info" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">@dimen/text_size_xs_plus</item>
+        <item name="android:textColor">@color/gray_700</item>
+    </style>
+
+    <style name="Widget.CoParent.Onboarding.PageContent" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@color/surface_container</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingStart">@dimen/entry_content_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/entry_content_padding_horizontal</item>
+    </style>
+
+    <style name="Widget.CoParent.Onboarding.Hero" parent="">
+        <item name="android:layout_width">@dimen/onboarding_hero_icon_container_size</item>
+        <item name="android:layout_height">@dimen/onboarding_hero_icon_container_size</item>
+        <item name="android:layout_marginBottom">@dimen/onboarding_hero_icon_title_gap</item>
+        <item name="android:background">@drawable/bg_icon_circle_blue</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Onboarding.Title" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textSize">@dimen/text_size_xl</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Onboarding.Body" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">@dimen/text_size_s_plus</item>
+        <item name="android:textColor">@color/gray_600</item>
+    </style>
+
+    <style name="Widget.CoParent.Onboarding.BottomActions" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:elevation">@dimen/elevation_high</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingStart">@dimen/entry_content_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/entry_content_padding_horizontal</item>
+        <item name="android:paddingTop">@dimen/onboarding_bottom_actions_padding_top</item>
+        <item name="android:paddingBottom">@dimen/onboarding_bottom_actions_padding_bottom</item>
+    </style>
+
+    <style name="Widget.CoParent.Onboarding.Skip" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/touch_target_min</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">@dimen/spacing_sm</item>
+        <item name="android:paddingEnd">@dimen/spacing_sm</item>
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="android:textSize">@dimen/text_size_s_plus</item>
+    </style>
+
+    <style name="Widget.CoParent.Settings.Row" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/bottom_nav_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/spacing_m</item>
+        <item name="android:paddingEnd">@dimen/spacing_m</item>
+        <item name="android:background">?selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="Widget.CoParent.Settings.IconContainer" parent="">
+        <item name="android:layout_width">@dimen/icon_container_size_s</item>
+        <item name="android:layout_height">@dimen/icon_container_size_s</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_sm</item>
+    </style>
+
+    <style name="Widget.CoParent.Settings.IconContainer.Primary" parent="Widget.CoParent.Settings.IconContainer">
+        <item name="android:background">@drawable/bg_icon_blue</item>
+    </style>
+
+    <style name="Widget.CoParent.Settings.IconContainer.Danger" parent="Widget.CoParent.Settings.IconContainer">
+        <item name="android:background">@drawable/bg_icon_red</item>
+    </style>
+
+    <style name="Widget.CoParent.Settings.Icon" parent="">
+        <item name="android:layout_width">@dimen/icon_size_sm</item>
+        <item name="android:layout_height">@dimen/icon_size_sm</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.SettingsItem" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.SettingsItem.Danger" parent="TextAppearance.CoParent.SettingsItem">
+        <item name="android:textColor">@color/error</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Settings.SectionLabel" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">@dimen/text_size_mini</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_500</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <style name="Widget.CoParent.Settings.Divider" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/stroke_width_thin</item>
+        <item name="android:layout_marginStart">@dimen/divider_inset_settings</item>
+        <item name="android:background">@color/gray_100</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Detail.SectionLabel" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">@dimen/text_size_xs_plus</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_500</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <style name="Widget.CoParent.Detail.Row" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/spacing_sm</item>
+    </style>
+
+    <style name="Widget.CoParent.Detail.IconFrame" parent="">
+        <item name="android:layout_width">@dimen/icon_container_size_s</item>
+        <item name="android:layout_height">@dimen/icon_container_size_s</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_sm</item>
+        <item name="android:background">@drawable/bg_icon_circle_blue</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.Detail.Value" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">@dimen/text_size_s_plus</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="Widget.CoParent.State.Container" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="Widget.CoParent.State.Container.Fill" parent="Widget.CoParent.State.Container">
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Widget.CoParent.State.Container.Content" parent="Widget.CoParent.State.Container">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="Widget.CoParent.State.Icon.Error" parent="">
+        <item name="android:layout_width">@dimen/icon_size_l</item>
+        <item name="android:layout_height">@dimen/icon_size_l</item>
+    </style>
+
+    <style name="Widget.CoParent.State.Icon.Error.Compact" parent="">
+        <item name="android:layout_width">@dimen/icon_size_m</item>
+        <item name="android:layout_height">@dimen/icon_size_m</item>
+    </style>
+
+    <style name="Widget.CoParent.State.Icon.Empty" parent="">
+        <item name="android:layout_width">@dimen/icon_size_xl</item>
+        <item name="android:layout_height">@dimen/icon_size_xl</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_m</item>
+    </style>
+
+    <style name="Widget.CoParent.State.IconFrame.Empty" parent="">
+        <item name="android:layout_width">@dimen/icon_size_xl</item>
+        <item name="android:layout_height">@dimen/icon_size_xl</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_m</item>
+        <item name="android:background">@drawable/bg_icon_circle_blue</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.State.Title" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">@dimen/text_size_l</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/on_surface</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.State.Body" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">@dimen/text_size_s</item>
+        <item name="android:textColor">@color/on_surface_variant</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.State.EmptyTitle" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_700</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.State.EmptyTitle.Emphasis" parent="TextAppearance.CoParent.State.EmptyTitle">
+        <item name="android:textSize">@dimen/text_size_l</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="TextAppearance.CoParent.State.EmptyBody" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">@dimen/text_size_s</item>
+        <item name="android:textColor">@color/gray_500</item>
     </style>
 
     <style name="Widget.CoParent.Header.Divider" parent="">

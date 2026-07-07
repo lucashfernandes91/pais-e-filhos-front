@@ -60,6 +60,10 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
+        findViewById<TextView>(R.id.tvForgotPasswordLink)?.setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+        }
+
         val existingToken = PrefsHelper.getAuthToken(this)
         if (existingToken.isNotEmpty()) {
             validateStoredSession(existingToken)

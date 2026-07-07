@@ -76,7 +76,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
                 .toRequestBody("application/json; charset=utf-8".toMediaType())
 
             val refreshRequest = Request.Builder()
-                .url("http://10.0.2.2:8000/api/token/refresh/")
+                .url("${BuildConfig.API_BASE_URL}api/token/refresh/")
                 .post(body)
                 .addHeader("Content-Type", "application/json")
                 .build()

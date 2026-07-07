@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.chatapp.AppEventType
 import com.example.chatapp.Child
 import com.example.chatapp.Event
 import com.example.chatapp.PrefsHelper
@@ -253,7 +254,7 @@ class HomeFragment : Fragment() {
         tvCustodyHeaderLabel?.setText(R.string.ui_guarda_atual)
         tvNextSwapLabel?.setText(R.string.ui_proxima_troca)
 
-        val custodyEvents = events.filter { it.event_type.uppercase() == "CUSTODY" }
+        val custodyEvents = events.filter { AppEventType.fromRaw(it.event_type).isCustody }
 
         if (custodyEvents.isEmpty()) {
             custodyLegalBadge?.visibility = View.GONE
@@ -267,6 +268,7 @@ class HomeFragment : Fragment() {
 
         // Encontrar evento de custódia ativo (agora está entre start e end)
         var currentCustody: Event? = null
+        var currentCustodyEnd: Date? = null
         for (event in custodyEvents) {
             val start = parseEventDate(event.event_date) ?: continue
             val end = if (!event.event_date_end.isNullOrEmpty()) {
@@ -278,6 +280,7 @@ class HomeFragment : Fragment() {
 
             if (end != null && !now.before(start) && now.before(end)) {
                 currentCustody = event
+                currentCustodyEnd = end
                 break
             }
         }
@@ -286,8 +289,9 @@ class HomeFragment : Fragment() {
         val otherParentName = PrefsHelper.getOtherParentName(ctx)
             .replaceFirstChar { it.uppercase() }.ifEmpty { ctx.getString(R.string.home_other_parent) }
 
+        val isWithMe = currentCustody?.created_by_name == username
+
         if (currentCustody != null) {
-            val isWithMe = currentCustody.created_by_name == username
             tvCustodyStatus?.text = if (isWithMe) {
                 ctx.getString(R.string.home_with_you)
             } else {
@@ -297,15 +301,29 @@ class HomeFragment : Fragment() {
             tvCustodyStatus?.setText(R.string.home_no_active_custody)
         }
 
-        // Próxima troca: próximo evento de custódia futuro
-        val nextCustody = custodyEvents
-            .mapNotNull { event -> parseEventDate(event.event_date)?.let { date -> event to date } }
-            .filter { it.second.after(now) }
-            .minByOrNull { it.second }
+        // Próxima troca: se está com a guarda agora, é o fim do período atual;
+        // se não está, é o início do próximo período do próprio usuário.
+        val nextSwapDate: Date? = if (currentCustody != null) {
+            if (isWithMe) {
+                currentCustodyEnd
+            } else {
+                custodyEvents
+                    .mapNotNull { event -> parseEventDate(event.event_date)?.let { date -> event to date } }
+                    .filter { it.second.after(now) && it.first.created_by_name == username }
+                    .minByOrNull { it.second }
+                    ?.second
+            }
+        } else {
+            custodyEvents
+                .mapNotNull { event -> parseEventDate(event.event_date)?.let { date -> event to date } }
+                .filter { it.second.after(now) }
+                .minByOrNull { it.second }
+                ?.second
+        }
 
-        if (nextCustody != null) {
+        if (nextSwapDate != null) {
             val dateFormat = SimpleDateFormat("EEEE, dd 'de' MMMM", Locale.forLanguageTag("pt-BR"))
-            tvNextSwapDate?.text = dateFormat.format(nextCustody.second)
+            tvNextSwapDate?.text = dateFormat.format(nextSwapDate)
                 .replaceFirstChar { it.uppercase() }
         } else {
             tvNextSwapDate?.setText(R.string.home_no_scheduled_exchange)
@@ -520,12 +538,7 @@ class HomeFragment : Fragment() {
             background = ContextCompat.getDrawable(ctx, R.drawable.bg_icon_circle_blue)
         }
 
-        val iconRes = when (eventType.uppercase()) {
-            "SCHOOL" -> R.drawable.ic_school
-            "MEDICAL" -> R.drawable.ic_health
-            "CUSTODY" -> R.drawable.ic_custody
-            else -> R.drawable.ic_other
-        }
+        val iconRes = AppEventType.fromRaw(eventType).iconRes
 
         val icon = android.widget.ImageView(ctx).apply {
             val size = dp(20)

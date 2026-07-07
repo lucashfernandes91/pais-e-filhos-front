@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
 import com.example.chatapp.TimelineAdapter
+import com.example.chatapp.TimelineItem
 import com.example.chatapp.TimelineViewModel
 import com.example.chatapp.TimelineViewModelFactory
 
@@ -22,6 +23,7 @@ class TimelineFragment : Fragment() {
     private var emptyState: View? = null
     private var errorState: View? = null
     private var progressLoading: View? = null
+    private var eventCount: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,7 +35,6 @@ class TimelineFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val token = PrefsHelper.getAuthToken(requireContext())
-        val username = PrefsHelper.getUsername(requireContext())
         val conversationId = PrefsHelper.getConversationId(requireContext())
 
         recyclerView = view.findViewById(R.id.timelineRecyclerView)
@@ -45,22 +46,34 @@ class TimelineFragment : Fragment() {
         viewModel = ViewModelProvider(this, factory)[TimelineViewModel::class.java]
 
         setupRecyclerView()
-        observeTimeline(username)
+        observeTimeline()
 
         view.findViewById<View>(R.id.btnRetryTimeline).setOnClickListener {
             showLoadingState()
             viewModel.loadTimeline()
         }
+        view.findViewById<View>(R.id.btnExportTimeline).setOnClickListener {
+            openExportSheet()
+        }
         showLoadingState()
         viewModel.loadTimeline()
     }
 
-    private fun setupRecyclerView() {
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    private fun openExportSheet() {
+        val sheet = ExportBottomSheet.newInstance(eventCount, ExportBottomSheet.TYPE_EVENTS)
+        sheet.show(childFragmentManager, "ExportBottomSheet")
     }
 
-    private fun observeTimeline(username: String) {
+    private fun setupRecyclerView() {
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = TimelineAdapter()
+        recyclerView.adapter = adapter
+    }
+
+    private fun observeTimeline() {
         viewModel.items.observe(viewLifecycleOwner) { items ->
+            eventCount = items?.count { it is TimelineItem.EventItem } ?: 0
+
             if (items.isNullOrEmpty()) {
                 recyclerView.visibility = View.GONE
                 progressLoading?.visibility = View.GONE
@@ -71,8 +84,7 @@ class TimelineFragment : Fragment() {
                 progressLoading?.visibility = View.GONE
                 errorState?.visibility = View.GONE
                 emptyState?.visibility = View.GONE
-                adapter = TimelineAdapter(items, currentUsername = username)
-                recyclerView.adapter = adapter
+                adapter.updateItems(items)
             }
         }
 

@@ -47,29 +47,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_organize_a_guarda_compartilhada_sem_conflitos"
-            android:textSize="15sp"
+            android:textSize="@dimen/text_size_s_plus"
             android:gravity="center"
             android:textColor="@color/gray_600"
-            android:lineSpacingExtra="3dp"
+            android:lineSpacingExtra="@dimen/spacing_xs"
             android:layout_marginBottom="@dimen/auth_header_form_gap"
             android:maxLines="2"
             android:ellipsize="end" />
 
         <!-- Email/Username Field -->
         <TextView
-            style="@style/TextAppearance.CoParent.InputLabel"
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_usuario_ou_email"
-            android:layout_marginBottom="6dp"
-            />
+            android:text="@string/ui_usuario_ou_email" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.TextInputLayout.Outlined"
+            style="@style/Widget.CoParent.Form.TextInputLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
-            >
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
@@ -83,18 +79,15 @@
 
         <!-- Password Field -->
         <TextView
-            style="@style/TextAppearance.CoParent.InputLabel"
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_senha"
-            android:layout_marginBottom="6dp"
-            />
+            android:text="@string/ui_senha" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.TextInputLayout.Outlined"
+            style="@style/Widget.CoParent.Form.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             app:endIconMode="password_toggle"
             >
 
@@ -109,13 +102,28 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
+            android:id="@+id/tvForgotPasswordLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/ui_esqueci_minha_senha"
+            android:textColor="@color/primary_blue"
+            android:textSize="@dimen/text_size_s_plus"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/spacing_xs"
+            android:layout_marginBottom="@dimen/spacing_s" />
+
+        <TextView
             android:id="@+id/tvLoginError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="@dimen/spacing_m"
             android:background="@drawable/bg_form_feedback_error"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="12dp"
+            android:paddingHorizontal="@dimen/spacing_sm"
+            android:paddingVertical="@dimen/spacing_sm"
             android:text="@string/login_error_invalid_credentials"
             android:textColor="@color/feedback_error_text"
             android:textSize="@dimen/text_size_s"
@@ -128,34 +136,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_entrar"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="@dimen/spacing_m" />
 
         <!-- Divider with text -->
         <LinearLayout
+            style="@style/Widget.CoParent.Divider.Labeled.Row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginVertical="20dp">
+            android:layout_marginTop="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <View
-                android:layout_width="0dp"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
+                style="@style/Widget.CoParent.Divider.Labeled.Line"
                 android:background="@color/gray_300" />
 
             <TextView
+                style="@style/TextAppearance.CoParent.DividerLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_ou"
-                android:textSize="13sp"
-                android:textColor="@color/gray_500"
-                android:paddingHorizontal="12dp" />
+                android:paddingHorizontal="@dimen/spacing_sm" />
 
             <View
-                android:layout_width="0dp"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
+                style="@style/Widget.CoParent.Divider.Labeled.Line"
                 android:background="@color/gray_300" />
         </LinearLayout>
 

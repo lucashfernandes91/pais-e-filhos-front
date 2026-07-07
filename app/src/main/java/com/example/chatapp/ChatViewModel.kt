@@ -201,8 +201,7 @@ class ChatViewModel(
                 val bearerToken = "Bearer $token"
 
                 val contentResolver = context.contentResolver
-                val inputStream = contentResolver.openInputStream(uri) ?: return@launch
-                val mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
+                var mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
 
                 // Get filename
                 var fileName = "attachment"
@@ -213,8 +212,21 @@ class ChatViewModel(
                     }
                 }
 
-                val bytes = inputStream.readBytes()
-                inputStream.close()
+                // Fotos são comprimidas antes do upload (igual WhatsApp); documentos vão intocados.
+                val compressed = if (mimeType.startsWith("image/")) {
+                    ImageCompressor.compress(context, uri)
+                } else {
+                    null
+                }
+
+                val bytes: ByteArray
+                if (compressed != null) {
+                    bytes = compressed
+                    mimeType = "image/jpeg"
+                    fileName = fileName.substringBeforeLast('.', fileName) + ".jpg"
+                } else {
+                    bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() } ?: return@launch
+                }
 
                 val requestFile = okhttp3.RequestBody.create(
                     mimeType.toMediaType(), bytes

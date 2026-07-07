@@ -33,7 +33,7 @@ object RetrofitClient {
             .build()
 
         retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8000/")
+            .baseUrl(BuildConfig.API_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -59,7 +59,7 @@ object RetrofitClient {
                     .build()
 
                 apiService = Retrofit.Builder()
-                    .baseUrl("http://10.0.2.2:8000/")
+                    .baseUrl(BuildConfig.API_BASE_URL)
                     .client(fallbackClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()

@@ -111,7 +111,7 @@ class RegisterActivity : AppCompatActivity() {
                 val text = s?.toString() ?: ""
                 when {
                     text.isEmpty() -> clearState(tilPassword)
-                    text.length < 8 -> setWarning(tilPassword, "Mínimo 8 caracteres")
+                    text.length < 8 -> setWarning(tilPassword, getString(R.string.register_password_min_length))
                     else -> setValid(tilPassword)
                 }
                 // Re-validate confirm if it has content
@@ -128,10 +128,10 @@ class RegisterActivity : AppCompatActivity() {
     private fun validateUsernameField(): Boolean {
         val text = etUsername.text.toString().trim()
         return when {
-            text.isEmpty() -> { setError(tilUsername, "Nome de usuário obrigatório"); false }
+            text.isEmpty() -> { setError(tilUsername, getString(R.string.register_username_required)); false }
             text.length < 5 -> { setError(tilUsername, getString(R.string.register_username_min_length)); false }
             !text.matches(Regex("^[a-zA-Z0-9._]+$")) -> {
-                setError(tilUsername, "Use apenas letras, números, . ou _"); false
+                setError(tilUsername, getString(R.string.register_username_allowed_chars)); false
             }
             else -> { setValid(tilUsername); true }
         }
@@ -145,14 +145,14 @@ class RegisterActivity : AppCompatActivity() {
         }
         val result = InputValidator.validateEmail(text)
         return if (result.isValid) { setValid(tilEmail); true }
-        else { setError(tilEmail, result.errorMessage ?: "Email inválido"); false }
+        else { setError(tilEmail, result.errorMessage ?: getString(R.string.register_email_invalid)); false }
     }
 
     private fun validatePasswordField(): Boolean {
         val text = etPassword.text.toString()
         return when {
-            text.isEmpty() -> { setError(tilPassword, "Senha obrigatória"); false }
-            text.length < 8 -> { setError(tilPassword, "Mínimo 8 caracteres"); false }
+            text.isEmpty() -> { setError(tilPassword, getString(R.string.register_password_required)); false }
+            text.length < 8 -> { setError(tilPassword, getString(R.string.register_password_min_length)); false }
             else -> { setValid(tilPassword); true }
         }
     }
@@ -185,8 +185,8 @@ class RegisterActivity : AppCompatActivity() {
         val password = etPassword.text.toString()
         val confirm = etPasswordConfirm.text.toString()
         return when {
-            confirm.isEmpty() -> { setError(tilPasswordConfirm, "Confirme a senha"); false }
-            confirm != password -> { setError(tilPasswordConfirm, "As senhas não correspondem"); false }
+            confirm.isEmpty() -> { setError(tilPasswordConfirm, getString(R.string.register_confirm_password_required)); false }
+            confirm != password -> { setError(tilPasswordConfirm, getString(R.string.register_password_mismatch)); false }
             else -> { setValid(tilPasswordConfirm); true }
         }
     }
@@ -246,17 +246,17 @@ class RegisterActivity : AppCompatActivity() {
                     PrefsHelper.saveConversationId(this@RegisterActivity, conversationId)
                     RetrofitClient.init(this@RegisterActivity)
 
-                    Toast.makeText(this@RegisterActivity, "Conta criada!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RegisterActivity, getString(R.string.register_account_created), Toast.LENGTH_SHORT).show()
 
                     val intent = Intent(this@RegisterActivity, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                     finish()
                 } else {
-                    showError("Erro ao iniciar a conversa da conta")
+                    showError(getString(R.string.register_conversation_start_error))
                 }
             } catch (e: Exception) {
-                showError("Erro: ${e.message}")
+                showError(getString(R.string.register_generic_error, e.message.orEmpty()))
             }
         }
     }

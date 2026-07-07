@@ -10,21 +10,39 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:padding="@dimen/spacing_m"
         android:layout_marginBottom="@dimen/spacing_s">
 
-        <TextView
-            style="@style/TextStyle.Headline"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/ui_linha_do_tempo" />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            style="@style/TextStyle.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ui_tudo_em_ordem_cronologica" />
+            <TextView
+                style="@style/TextStyle.Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_linha_do_tempo" />
+
+            <TextView
+                style="@style/TextStyle.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_tudo_em_ordem_cronologica" />
+        </LinearLayout>
+
+        <!-- Export button -->
+        <ImageButton
+            android:id="@+id/btnExportTimeline"
+            style="@style/Widget.CoParent.TouchTarget.Icon"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:src="@drawable/ic_export"
+            app:tint="@color/icon_muted"
+            android:contentDescription="@string/cd_export_timeline_button" />
     </LinearLayout>
 
     <View style="@style/Widget.CoParent.Header.Divider" />
@@ -87,41 +105,32 @@
     <!-- Error State -->
     <LinearLayout
         android:id="@+id/errorStateTimeline"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
+        style="@style/Widget.CoParent.State.Container.Fill"
         android:paddingHorizontal="@dimen/spacing_xl"
-        android:visibility="gone"
         android:accessibilityLiveRegion="polite"
         android:contentDescription="@string/cd_error_timeline">
 
         <ImageView
-            android:layout_width="@dimen/icon_size_l"
-            android:layout_height="@dimen/icon_size_l"
+            style="@style/Widget.CoParent.State.Icon.Error"
             android:src="@drawable/ic_error_circle"
             app:tint="@color/error"
             android:contentDescription="@null"
             android:importantForAccessibility="no" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_m"
-            android:text="@string/state_error_title"
-            android:textColor="@color/on_surface"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:text="@string/state_error_title" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_s"
             android:gravity="center"
-            android:text="@string/timeline_error_message"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="14sp" />
+            android:text="@string/timeline_error_message" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRetryTimeline"
@@ -135,41 +144,31 @@
     <!-- Empty State -->
     <LinearLayout
         android:id="@+id/emptyStateTimeline"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:paddingHorizontal="40dp"
-        android:visibility="gone"
+        style="@style/Widget.CoParent.State.Container.Fill"
+        android:paddingHorizontal="@dimen/spacing_xl"
         android:accessibilityLiveRegion="polite"
         android:contentDescription="@string/cd_empty_timeline">
 
         <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            style="@style/Widget.CoParent.State.Icon.Empty"
             android:src="@drawable/ic_schedule"
             app:tint="@color/gray_300"
-            android:layout_marginBottom="16dp"
             android:contentDescription="@null"
             android:importantForAccessibility="no" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.EmptyTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ui_linha_do_tempo_vazia"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/gray_700"
-            android:layout_marginBottom="6dp" />
+            android:layout_marginBottom="@dimen/spacing_xs" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.EmptyBody"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ui_mensagens_e_eventos_aparecerao_aqui_em_ordem_cronologica"
-            android:textSize="14sp"
-            android:textColor="@color/gray_400"
             android:gravity="center"
-            android:lineSpacingExtra="2dp" />
+            android:lineSpacingExtra="@dimen/spacing_xs" />
     </LinearLayout>
 </LinearLayout>

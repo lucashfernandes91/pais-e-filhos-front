@@ -48,7 +48,7 @@ class WebSocketManager(
 
     fun connect() {
         scope.launch {
-            val url = "ws://10.0.2.2:8000/ws/chat/$conversationId/?token=$token"
+            val url = "${BuildConfig.WS_BASE_URL}ws/chat/$conversationId/?token=$token"
             val request = Request.Builder().url(url).build()
 
             webSocket = client.newWebSocket(request, ChatWebSocketListener())

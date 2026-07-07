@@ -50,13 +50,12 @@
 
         <!-- Subtitle with benefits -->
         <TextView
+            style="@style/TextAppearance.CoParent.Form.Subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_comece_a_organizar_a_parentalidade_compartilhada_de_forma"
-            android:textSize="15sp"
-            android:textColor="@color/gray_600"
             android:gravity="center"
-            android:lineSpacingExtra="3dp"
+            android:lineSpacingExtra="@dimen/spacing_xs"
             android:layout_marginBottom="@dimen/auth_header_form_gap"
             android:maxLines="3"
             android:ellipsize="end" />
@@ -75,24 +74,20 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/TextAppearance.CoParent.InputLabel"
+                    style="@style/TextAppearance.CoParent.Form.SectionLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/ui_nome"
-                    android:layout_marginBottom="6dp" />
+                    android:text="@string/ui_nome" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.CoParent.TextInputLayout.Outlined"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="18dp">
+                    style="@style/Widget.CoParent.Form.TextInputLayout">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etRegFirstName"
                         style="@style/Widget.CoParent.TextInputEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
+                        android:inputType="textPersonName|textCapWords|textAutoCorrect"
                         android:imeOptions="actionNext" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -105,24 +100,20 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/TextAppearance.CoParent.InputLabel"
+                    style="@style/TextAppearance.CoParent.Form.SectionLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/ui_sobrenome"
-                    android:layout_marginBottom="6dp" />
+                    android:text="@string/ui_sobrenome" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.CoParent.TextInputLayout.Outlined"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="18dp">
+                    style="@style/Widget.CoParent.Form.TextInputLayout">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etRegLastName"
                         style="@style/Widget.CoParent.TextInputEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
+                        android:inputType="textPersonName|textCapWords|textAutoCorrect"
                         android:imeOptions="actionNext" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -130,19 +121,13 @@
 
         <!-- Username Field -->
         <TextView
-            style="@style/TextAppearance.CoParent.InputLabel"
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_nome_de_usuario"
-            android:layout_marginBottom="6dp"
-            />
+            android:text="@string/ui_nome_de_usuario" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.TextInputLayout.Outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
-            >
+            style="@style/Widget.CoParent.Form.TextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etRegUsername"
@@ -156,17 +141,13 @@
 
         <!-- Birth Date Field -->
         <TextView
-            style="@style/TextAppearance.CoParent.InputLabel"
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_data_de_nascimento"
-            android:layout_marginBottom="6dp" />
+            android:text="@string/ui_data_de_nascimento" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.TextInputLayout.Outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp">
+            style="@style/Widget.CoParent.Form.TextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etRegBirthDate"
@@ -181,19 +162,13 @@
 
         <!-- Email Field -->
         <TextView
-            style="@style/TextAppearance.CoParent.InputLabel"
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_email"
-            android:layout_marginBottom="6dp"
-            />
+            android:text="@string/ui_email" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.TextInputLayout.Outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
-            >
+            style="@style/Widget.CoParent.Form.TextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etRegEmail"
@@ -207,18 +182,13 @@
 
         <!-- Password Field -->
         <TextView
-            style="@style/TextAppearance.CoParent.InputLabel"
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_senha"
-            android:layout_marginBottom="6dp"
-            />
+            android:text="@string/ui_senha" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.TextInputLayout.Outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
+            style="@style/Widget.CoParent.Form.TextInputLayout"
             app:endIconMode="password_toggle"
             >
 
@@ -234,18 +204,13 @@
 
         <!-- Confirm Password Field -->
         <TextView
-            style="@style/TextAppearance.CoParent.InputLabel"
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_confirmar_senha"
-            android:layout_marginBottom="6dp"
-            />
+            android:text="@string/ui_confirmar_senha" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.TextInputLayout.Outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="28dp"
+            style="@style/Widget.CoParent.Form.TextInputLayout.Spaced"
             app:endIconMode="password_toggle"
             >
 
@@ -266,17 +231,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_criar_conta"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="@dimen/spacing_m" />
 
         <!-- Terms disclaimer -->
         <TextView
+            style="@style/TextAppearance.CoParent.Form.Helper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_ao_criar_uma_conta_voce_concorda_com_nossos"
-            android:textSize="12sp"
-            android:textColor="@color/gray_500"
             android:gravity="center"
-            android:lineSpacingExtra="2dp"
+            android:lineSpacingExtra="@dimen/spacing_xs"
             android:maxLines="3"
             android:ellipsize="end" />
     </LinearLayout>

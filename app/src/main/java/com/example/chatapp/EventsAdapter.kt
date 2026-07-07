@@ -92,7 +92,7 @@ class EventsAdapter(
                 .replaceFirstChar { it.titlecase(ptBr) }
             val dayMonth = "$day de $month"
             val timeOnly = SimpleDateFormat("HH:mm", Locale.getDefault())
-            if (event.event_type.uppercase() == "CUSTODY" && !event.event_date_end.isNullOrEmpty()) {
+            if (AppEventType.fromRaw(event.event_type).isCustody && !event.event_date_end.isNullOrEmpty()) {
                 val endDate = try { dateFormat.parse(event.event_date_end) ?: dateFormatAlt.parse(event.event_date_end) } catch (e: Exception) { null }
                 if (endDate != null) {
                     val startStr = SimpleDateFormat("dd/MM HH:mm", Locale.forLanguageTag("pt-BR")).format(date)

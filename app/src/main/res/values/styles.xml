@@ -210,10 +210,9 @@
     </style>
 
     <!-- Event form — labels acima + placeholders nos campos -->
-    <style name="TextStyle.EventFormLabel" parent="TextAppearance.CoParent.InputLabel">
+    <style name="TextStyle.EventFormLabel" parent="TextAppearance.CoParent.Form.SectionLabel">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">6dp</item>
     </style>
 
     <style name="Widget.CoParent.TextInputLayout.Event" parent="Widget.CoParent.TextInputLayout.Outlined">

@@ -1,29 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="14dp"
-    android:gravity="center_vertical"
-    android:foreground="?selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
-    android:minHeight="72dp">
+    style="@style/Widget.CoParent.List.Row.Clickable">
 
     <!-- Icon -->
     <FrameLayout
         android:id="@+id/iconFrame"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:background="@drawable/bg_icon_circle_blue"
-        android:layout_marginEnd="14dp">
+        style="@style/Widget.CoParent.List.IconFrame">
 
         <ImageView
             android:id="@+id/ivIcon"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="@dimen/icon_notification_size"
+            android:layout_height="@dimen/icon_notification_size"
             android:layout_gravity="center"
             app:tint="@color/primary_blue"
             android:contentDescription="@null"
@@ -38,22 +26,19 @@
         android:orientation="vertical">
 
         <TextView
+            style="@style/TextAppearance.CoParent.List.Title"
             android:id="@+id/tvNotifTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="@color/gray_900"
             android:maxLines="2"
             android:ellipsize="end" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.List.Meta"
             android:id="@+id/tvNotifMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="@color/gray_500"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="@dimen/stroke_width_emphasis"
             android:maxLines="2"
             android:ellipsize="end" />
     </LinearLayout>
@@ -64,20 +49,19 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="end"
-        android:layout_marginStart="10dp">
+        android:layout_marginStart="@dimen/spacing_s">
 
         <TextView
+            style="@style/TextAppearance.CoParent.List.Time"
             android:id="@+id/tvNotifTime"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="11sp"
-            android:textColor="@color/gray_400" />
+            android:layout_height="wrap_content" />
 
         <View
             android:id="@+id/dotUnread"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginTop="6dp"
+            android:layout_width="@dimen/spacing_s"
+            android:layout_height="@dimen/spacing_s"
+            android:layout_marginTop="@dimen/icon_dot_size_s"
             android:layout_gravity="end"
             android:background="@drawable/bg_dot_blue"
             android:visibility="gone" />

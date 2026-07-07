@@ -8,13 +8,7 @@
 
     <!-- Top Bar -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:background="@color/surface_container"
-        android:elevation="2dp">
+        style="@style/Widget.CoParent.TopBar.Row.Surface">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -26,56 +20,36 @@
             android:contentDescription="@string/cd_back_button" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.TopBar.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/ui_notificacoes"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/gray_900"
-            android:layout_marginStart="12dp" />
+            android:layout_marginStart="@dimen/spacing_sm" />
+
+        <ImageView
+            android:id="@+id/btnMarkAllRead"
+            style="@style/Widget.CoParent.TouchTarget.Icon"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:src="@drawable/ic_check"
+            app:tint="@color/gray_900"
+            android:contentDescription="@string/cd_mark_all_read_button" />
+
+        <ImageView
+            android:id="@+id/btnDeleteAllNotifications"
+            style="@style/Widget.CoParent.TouchTarget.Icon"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:padding="11dp"
+            android:src="@drawable/ic_delete"
+            android:scaleType="centerInside"
+            app:tint="@color/primary_blue"
+            android:contentDescription="@string/cd_clear_all_notifications_button" />
 
     </LinearLayout>
 
     <View style="@style/Widget.CoParent.Header.Divider" />
-
-    <LinearLayout
-        android:id="@+id/notificationActions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="8dp"
-        android:background="@color/surface_container"
-        android:visibility="gone">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMarkAllRead"
-            style="@style/Widget.CoParent.Button.Outlined"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/touch_target_min"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="@string/ui_marcar_todas_como_lidas"
-            android:textAllCaps="false"
-            app:icon="@drawable/ic_check_circle"
-            app:iconGravity="textStart"
-            app:iconSize="18dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDeleteAllNotifications"
-            style="@style/Widget.CoParent.Button.Danger"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/touch_target_min"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="@string/ui_apagar_todas"
-            android:textAllCaps="false"
-            app:icon="@drawable/ic_close"
-            app:iconGravity="textStart"
-            app:iconSize="18dp" />
-    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressLoading"
@@ -93,46 +67,38 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingVertical="8dp" />
+        android:paddingVertical="@dimen/spacing_s" />
 
     <!-- Error State -->
     <LinearLayout
         android:id="@+id/errorStateNotifications"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
+        style="@style/Widget.CoParent.State.Container.Fill"
         android:visibility="gone"
         android:padding="@dimen/spacing_xl"
         android:accessibilityLiveRegion="polite"
         android:contentDescription="@string/cd_error_notifications">
 
         <ImageView
-            android:layout_width="@dimen/icon_size_l"
-            android:layout_height="@dimen/icon_size_l"
+            style="@style/Widget.CoParent.State.Icon.Error"
             android:src="@drawable/ic_error_circle"
             app:tint="@color/error"
             android:contentDescription="@null"
             android:importantForAccessibility="no" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_m"
-            android:text="@string/state_error_title"
-            android:textColor="@color/on_surface"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:text="@string/state_error_title" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_s"
             android:gravity="center"
-            android:text="@string/notifications_error_message"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="14sp" />
+            android:text="@string/notifications_error_message" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRetryNotifications"
@@ -146,25 +112,18 @@
     <!-- Empty State -->
     <LinearLayout
         android:id="@+id/emptyState"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
+        style="@style/Widget.CoParent.State.Container.Fill"
         android:visibility="gone"
-        android:padding="32dp"
+        android:padding="@dimen/spacing_xl"
         android:accessibilityLiveRegion="polite"
         android:contentDescription="@string/cd_empty_notifications">
 
         <FrameLayout
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:background="@drawable/bg_icon_circle_blue"
-            android:layout_marginBottom="16dp">
+            style="@style/Widget.CoParent.State.IconFrame.Empty">
 
             <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="@dimen/icon_size_l"
+                android:layout_height="@dimen/icon_size_l"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_notifications"
                 app:tint="@color/primary_blue"
@@ -173,19 +132,16 @@
         </FrameLayout>
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.EmptyTitle.Emphasis"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ui_tudo_em_dia"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/gray_900"
-            android:layout_marginBottom="6dp" />
+            android:layout_marginBottom="@dimen/spacing_xs" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.State.EmptyBody"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ui_nenhuma_notificacao_no_momento"
-            android:textSize="14sp"
-            android:textColor="@color/gray_500" />
+            android:text="@string/ui_nenhuma_notificacao_no_momento" />
     </LinearLayout>
 </LinearLayout>

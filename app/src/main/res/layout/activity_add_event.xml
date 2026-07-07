@@ -7,18 +7,13 @@
     android:fillViewport="true">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        style="@style/Widget.CoParent.Form.Content"
+        android:padding="@dimen/spacing_m">
 
         <!-- Header -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="12dp">
+            style="@style/Widget.CoParent.Form.Header.Row"
+            android:layout_marginBottom="@dimen/spacing_xs">
 
             <ImageButton
                 android:id="@+id/btnBack"
@@ -30,41 +25,35 @@
                 android:contentDescription="@string/cd_back_button" />
 
             <TextView
+                style="@style/TextAppearance.CoParent.Form.HeaderTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_novo_evento"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/gray_900"
-                android:layout_marginStart="8dp" />
+                android:layout_marginStart="@dimen/spacing_s" />
         </LinearLayout>
 
         <!-- Título -->
         <View
             style="@style/Widget.CoParent.Header.Divider"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="@dimen/spacing_m" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ui_titulo"
-            android:textSize="14sp"
-            android:textColor="@color/gray_700"
-            android:layout_marginBottom="6dp" />
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
+            android:text="@string/ui_titulo" />
 
         <EditText
             android:id="@+id/etEventTitle"
             android:importantForAutofill="no"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="@dimen/height_action"
             android:hint="@string/ui_ex_consulta_medica"
-            android:textSize="15sp"
+            android:textSize="@dimen/text_size_m"
             android:textColor="@color/gray_900"
             android:textColorHint="@color/gray_400"
             android:background="@drawable/bg_input_outlined"
-            android:paddingHorizontal="16dp"
-            android:inputType="text"
-            android:layout_marginBottom="20dp" />
+            android:paddingHorizontal="@dimen/spacing_m"
+            android:inputType="textCapSentences|textAutoCorrect"
+            android:layout_marginBottom="@dimen/spacing_m" />
 
         <!-- Data e Hora (padrão - visível quando NÃO é convivência) -->
         <LinearLayout
@@ -72,49 +61,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginEnd="10dp">
+                style="@style/Widget.CoParent.Form.PickerColumn.Start">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.CoParent.Form.SectionLabel"
                     android:text="@string/ui_data"
-                    android:textSize="14sp"
-                    android:textColor="@color/gray_700"
-                    android:layout_marginBottom="6dp" />
+                    android:textColor="@color/gray_700" />
 
                 <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="@drawable/bg_input_outlined">
+                    style="@style/Widget.CoParent.Form.PickerFrame">
 
                     <EditText
                         android:id="@+id/etEventDate"
+                        style="@style/Widget.CoParent.Form.PickerInput"
                         android:importantForAutofill="no"
                         android:inputType="date"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textSize="15sp"
-                        android:textColor="@color/gray_900"
                         android:hint="@string/ui_dd_mm_aaaa"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="44dp"
-                        android:gravity="center_vertical"
-                        android:background="@android:color/transparent"
-                        android:focusable="true"
-                        android:clickable="true" />
+                        />
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center_vertical|end"
-                        android:layout_marginEnd="14dp"
+                        style="@style/Widget.CoParent.Form.PickerTrailingIcon"
                         android:src="@drawable/ic_calendar"
                         app:tint="@color/gray_500"
                         android:contentDescription="@string/ui_data" />
@@ -122,46 +91,26 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="10dp">
+                style="@style/Widget.CoParent.Form.PickerColumn.End">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.CoParent.Form.SectionLabel"
                     android:text="@string/ui_hora"
-                    android:textSize="14sp"
-                    android:textColor="@color/gray_700"
-                    android:layout_marginBottom="6dp" />
+                    android:textColor="@color/gray_700" />
 
                 <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="@drawable/bg_input_outlined">
+                    style="@style/Widget.CoParent.Form.PickerFrame">
 
                     <EditText
                         android:id="@+id/etEventTime"
+                        style="@style/Widget.CoParent.Form.PickerInput"
                         android:importantForAutofill="no"
                         android:inputType="time"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textSize="15sp"
-                        android:textColor="@color/gray_900"
                         android:hint="@string/ui_18_00"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="44dp"
-                        android:gravity="center_vertical"
-                        android:background="@android:color/transparent"
-                        android:focusable="true"
-                        android:clickable="true" />
+                        />
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center_vertical|end"
-                        android:layout_marginEnd="14dp"
+                        style="@style/Widget.CoParent.Form.PickerTrailingIcon"
                         android:src="@drawable/ic_clock"
                         app:tint="@color/gray_500"
                         android:contentDescription="@string/ui_hora" />
@@ -176,16 +125,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/TextAppearance.CoParent.Form.PickerGroupTitle"
                 android:text="@string/ui_inicio_da_convivencia"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/gray_700"
-                android:layout_marginBottom="8dp" />
+                android:textColor="@color/gray_700" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -193,46 +138,26 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="10dp">
+                    style="@style/Widget.CoParent.Form.PickerColumn.Start">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/TextAppearance.CoParent.Form.SectionLabel"
                         android:text="@string/ui_data"
-                        android:textSize="14sp"
-                        android:textColor="@color/gray_700"
-                        android:layout_marginBottom="6dp" />
+                        android:textColor="@color/gray_700" />
 
                     <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_input_outlined">
+                        style="@style/Widget.CoParent.Form.PickerFrame">
 
                         <EditText
                             android:id="@+id/etStartDate"
+                            style="@style/Widget.CoParent.Form.PickerInput"
                             android:importantForAutofill="no"
                             android:inputType="date"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:textSize="15sp"
-                            android:textColor="@color/gray_900"
                             android:hint="@string/ui_dd_mm_aaaa"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="44dp"
-                            android:gravity="center_vertical"
-                            android:background="@android:color/transparent"
-                            android:focusable="true"
-                            android:clickable="true" />
+                            />
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center_vertical|end"
-                            android:layout_marginEnd="14dp"
+                            style="@style/Widget.CoParent.Form.PickerTrailingIcon"
                             android:src="@drawable/ic_calendar"
                             app:tint="@color/gray_500"
                             android:contentDescription="@string/ui_data_inicio" />
@@ -240,46 +165,26 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginStart="10dp">
+                    style="@style/Widget.CoParent.Form.PickerColumn.End">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/TextAppearance.CoParent.Form.SectionLabel"
                         android:text="@string/ui_hora"
-                        android:textSize="14sp"
-                        android:textColor="@color/gray_700"
-                        android:layout_marginBottom="6dp" />
+                        android:textColor="@color/gray_700" />
 
                     <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_input_outlined">
+                        style="@style/Widget.CoParent.Form.PickerFrame">
 
                         <EditText
                             android:id="@+id/etStartTime"
+                            style="@style/Widget.CoParent.Form.PickerInput"
                             android:importantForAutofill="no"
                             android:inputType="time"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:textSize="15sp"
-                            android:textColor="@color/gray_900"
                             android:hint="@string/ui_18_00"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="44dp"
-                            android:gravity="center_vertical"
-                            android:background="@android:color/transparent"
-                            android:focusable="true"
-                            android:clickable="true" />
+                            />
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center_vertical|end"
-                            android:layout_marginEnd="14dp"
+                            style="@style/Widget.CoParent.Form.PickerTrailingIcon"
                             android:src="@drawable/ic_clock"
                             app:tint="@color/gray_500"
                             android:contentDescription="@string/ui_hora_inicio" />
@@ -295,16 +200,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/TextAppearance.CoParent.Form.PickerGroupTitle"
                 android:text="@string/ui_fim_da_convivencia"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/gray_700"
-                android:layout_marginBottom="8dp" />
+                android:textColor="@color/gray_700" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -312,46 +213,26 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="10dp">
+                    style="@style/Widget.CoParent.Form.PickerColumn.Start">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/TextAppearance.CoParent.Form.SectionLabel"
                         android:text="@string/ui_data"
-                        android:textSize="14sp"
-                        android:textColor="@color/gray_700"
-                        android:layout_marginBottom="6dp" />
+                        android:textColor="@color/gray_700" />
 
                     <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_input_outlined">
+                        style="@style/Widget.CoParent.Form.PickerFrame">
 
                         <EditText
                             android:id="@+id/etEndDate"
+                            style="@style/Widget.CoParent.Form.PickerInput"
                             android:importantForAutofill="no"
                             android:inputType="date"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:textSize="15sp"
-                            android:textColor="@color/gray_900"
                             android:hint="@string/ui_dd_mm_aaaa"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="44dp"
-                            android:gravity="center_vertical"
-                            android:background="@android:color/transparent"
-                            android:focusable="true"
-                            android:clickable="true" />
+                            />
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center_vertical|end"
-                            android:layout_marginEnd="14dp"
+                            style="@style/Widget.CoParent.Form.PickerTrailingIcon"
                             android:src="@drawable/ic_calendar"
                             app:tint="@color/gray_500"
                             android:contentDescription="@string/ui_data_fim" />
@@ -359,46 +240,26 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginStart="10dp">
+                    style="@style/Widget.CoParent.Form.PickerColumn.End">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/TextAppearance.CoParent.Form.SectionLabel"
                         android:text="@string/ui_hora"
-                        android:textSize="14sp"
-                        android:textColor="@color/gray_700"
-                        android:layout_marginBottom="6dp" />
+                        android:textColor="@color/gray_700" />
 
                     <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_input_outlined">
+                        style="@style/Widget.CoParent.Form.PickerFrame">
 
                         <EditText
                             android:id="@+id/etEndTime"
+                            style="@style/Widget.CoParent.Form.PickerInput"
                             android:importantForAutofill="no"
                             android:inputType="time"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:textSize="15sp"
-                            android:textColor="@color/gray_900"
                             android:hint="@string/ui_18_00"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="44dp"
-                            android:gravity="center_vertical"
-                            android:background="@android:color/transparent"
-                            android:focusable="true"
-                            android:clickable="true" />
+                            />
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center_vertical|end"
-                            android:layout_marginEnd="14dp"
+                            style="@style/Widget.CoParent.Form.PickerTrailingIcon"
                             android:src="@drawable/ic_clock"
                             app:tint="@color/gray_500"
                             android:contentDescription="@string/ui_hora_fim" />
@@ -409,12 +270,8 @@
 
         <!-- Tipo -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ui_tipo"
-            android:textSize="14sp"
-            android:textColor="@color/gray_700"
-            android:layout_marginBottom="8dp" />
+            style="@style/TextAppearance.CoParent.Form.SectionLabel.Emphasis"
+            android:text="@string/ui_tipo" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroupType"
@@ -422,8 +279,8 @@
             android:layout_height="wrap_content"
             app:singleSelection="true"
             app:selectionRequired="true"
-            app:chipSpacingHorizontal="8dp"
-            android:layout_marginBottom="20dp">
+            app:chipSpacingHorizontal="@dimen/spacing_s"
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSchool"
@@ -464,28 +321,24 @@
 
         <!-- Notas -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ui_notas_opcional"
-            android:textSize="14sp"
-            android:textColor="@color/gray_700"
-            android:layout_marginBottom="6dp" />
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
+            android:text="@string/ui_notas_opcional" />
 
         <EditText
             android:id="@+id/etEventNotes"
             android:importantForAutofill="no"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="@dimen/input_height_multiline"
             android:hint="@string/ui_detalhes_endereco_observacoes"
-            android:textSize="15sp"
+            android:textSize="@dimen/text_size_m"
             android:textColor="@color/gray_900"
             android:textColorHint="@color/gray_400"
             android:background="@drawable/bg_input_outlined"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="14dp"
-            android:inputType="textMultiLine"
+            android:paddingHorizontal="@dimen/spacing_m"
+            android:paddingTop="@dimen/spacing_sm"
+            android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
             android:gravity="top"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="@dimen/spacing_m" />
 
         <!-- Salvar -->
         <com.google.android.material.button.MaterialButton
@@ -497,12 +350,11 @@
             />
 
         <TextView
+            style="@style/TextAppearance.CoParent.Form.Helper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_o_evento_e_registrado_no_historico_oficial"
-            android:textSize="12sp"
-            android:textColor="@color/gray_500"
             android:gravity="center"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="@dimen/spacing_sm" />
     </LinearLayout>
 </ScrollView>

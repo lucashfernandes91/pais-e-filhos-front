@@ -54,15 +54,9 @@ class ChatMessagingService : FirebaseMessagingService() {
      * - Night mode (suppress between 22h and 7h)
      */
     private fun shouldShowNotification(): Boolean {
-        val prefs = getSharedPreferences("coparent", Context.MODE_PRIVATE)
+        if (!PrefsHelper.isPushEnabled(this)) return false
 
-        // Check if push notifications are disabled
-        val pushEnabled = prefs.getBoolean("pref_push_enabled", true)
-        if (!pushEnabled) return false
-
-        // Check night mode (22h-7h)
-        val nightMode = prefs.getBoolean("pref_night_mode", false)
-        if (nightMode) {
+        if (PrefsHelper.isNightModeEnabled(this)) {
             val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
             if (hour >= 22 || hour < 7) return false
         }

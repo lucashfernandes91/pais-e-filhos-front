@@ -2,7 +2,6 @@ package com.example.chatapp.ui
 
 import android.app.DatePickerDialog
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -19,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.chatapp.Child
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
+import com.example.chatapp.RemoteImageLoader
 import com.example.chatapp.RetrofitClient
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -33,7 +33,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.net.URL
 
 /**
  * Tela full-screen de edição dos dados de um filho.
@@ -76,7 +75,7 @@ class EditChildFragment : Fragment() {
 
         val c = child
         if (c == null) {
-            Toast.makeText(requireContext(), "Dados não encontrados", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.child_data_not_found), Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
             return
         }
@@ -130,14 +129,11 @@ class EditChildFragment : Fragment() {
 
     private fun loadRemotePhoto(view: View, photoUrl: String?) {
         if (photoUrl.isNullOrBlank()) return
-        lifecycleScope.launch {
-            val bitmap = withContext(Dispatchers.IO) {
-                runCatching {
-                    URL(photoUrl).openStream().use { BitmapFactory.decodeStream(it) }
-                }.getOrNull()
-            }
-            if (bitmap != null && selectedPhotoUri == null) {
-                showBitmapPhoto(view, bitmap)
+        val imageView = view.findViewById<ImageView>(R.id.ivChildPhoto) ?: return
+        RemoteImageLoader.load(imageView, photoUrl) {
+            if (selectedPhotoUri == null) {
+                imageView.visibility = View.VISIBLE
+                view.findViewById<TextView>(R.id.tvChildInitial)?.visibility = View.GONE
             }
         }
     }
@@ -213,13 +209,13 @@ class EditChildFragment : Fragment() {
 
             if (name.isNullOrBlank()) {
                 view.findViewById<TextInputEditText>(R.id.etChildName)
-                    .error = "Nome é obrigatório"
+                    .error = getString(R.string.child_name_required)
                 return@setOnClickListener
             }
 
             if (selectedBirthDate.isNullOrBlank()) {
                 view.findViewById<TextInputEditText>(R.id.etBirthDate)
-                    .error = "Data de nascimento é obrigatória"
+                    .error = getString(R.string.child_birth_date_required)
                 return@setOnClickListener
             }
 
@@ -241,7 +237,7 @@ class EditChildFragment : Fragment() {
     ) {
         val token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty()) {
-            Toast.makeText(requireContext(), "Sessão expirada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.child_session_expired), Toast.LENGTH_SHORT).show()
             btnSave.isEnabled = true
             btnSave.setText(R.string.action_save_changes)
             return
@@ -262,7 +258,7 @@ class EditChildFragment : Fragment() {
                     photoPart
                 )
 
-                Toast.makeText(requireContext(), "Dados atualizados", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.child_update_success), Toast.LENGTH_SHORT).show()
 
                 // Passa o resultado para o fragment anterior via savedStateHandle
                 findNavController()
@@ -275,7 +271,7 @@ class EditChildFragment : Fragment() {
                 val errorBody = e.response()?.errorBody()?.string()
                 Toast.makeText(
                     requireContext(),
-                    "Erro ${e.code()}: ${errorBody ?: "Falha ao salvar"}",
+                    getString(R.string.child_update_http_error, e.code(), errorBody ?: e.message.orEmpty()),
                     Toast.LENGTH_LONG
                 ).show()
                 btnSave.isEnabled = true
@@ -283,7 +279,7 @@ class EditChildFragment : Fragment() {
             } catch (e: Exception) {
                 Toast.makeText(
                     requireContext(),
-                    "Erro: ${e.message}",
+                    getString(R.string.child_update_error, e.message.orEmpty()),
                     Toast.LENGTH_SHORT
                 ).show()
                 btnSave.isEnabled = true
@@ -297,9 +293,9 @@ class EditChildFragment : Fragment() {
         return withContext(Dispatchers.IO) {
             val resolver = requireContext().contentResolver
             val bytes = resolver.openInputStream(uri)?.use { it.readBytes() }
-                ?: throw IllegalArgumentException("N\u00e3o foi poss\u00edvel ler a foto selecionada")
+                ?: throw IllegalArgumentException(getString(R.string.child_photo_read_error))
             if (bytes.size > 5 * 1024 * 1024) {
-                throw IllegalArgumentException("A foto deve ter no m\u00e1ximo 5 MB")
+                throw IllegalArgumentException(getString(R.string.child_photo_size_error))
             }
             var filename = "child_photo.jpg"
             resolver.query(uri, null, null, null, null)?.use { cursor ->

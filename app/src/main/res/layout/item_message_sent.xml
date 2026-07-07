@@ -3,49 +3,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="4dp">
+    android:paddingBottom="@dimen/spacing_xs">
 
     <LinearLayout
         android:id="@+id/bubbleContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginStart="64dp"
+        android:layout_marginStart="@dimen/message_bubble_side_margin"
         android:orientation="vertical"
         android:background="@drawable/bubble_sent"
-        android:paddingHorizontal="14dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="8dp">
+        android:paddingHorizontal="@dimen/spacing_sm"
+        android:paddingTop="@dimen/spacing_s"
+        android:paddingBottom="@dimen/spacing_s">
 
         <!-- Attachment Image -->
         <ImageView
+            style="@style/Widget.CoParent.Message.Media"
             android:id="@+id/ivAttachment"
-            android:layout_width="200dp"
-            android:layout_height="150dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:layout_marginBottom="6dp"
             android:contentDescription="@string/ui_anexo" />
 
         <!-- Attachment Document Badge -->
         <LinearLayout
+            style="@style/Widget.CoParent.Message.DocBadge"
             android:id="@+id/layoutDocBadge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
             android:background="@drawable/bg_doc_badge"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="8dp"
-            android:layout_marginBottom="6dp"
-            android:visibility="gone">
+            >
 
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="@dimen/icon_size_s"
+                android:layout_height="@dimen/icon_size_s"
                 android:src="@drawable/ic_download"
                 app:tint="@color/message_sent_text"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="@dimen/icon_dot_size_s"
                 android:contentDescription="@string/ui_documento" />
 
             <TextView
@@ -53,17 +43,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_documento"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_size_xs"
                 android:textColor="@color/message_sent_text" />
         </LinearLayout>
 
         <TextView
+            style="@style/TextAppearance.CoParent.Message.Body"
             android:id="@+id/tvMessageContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/message_sent_text"
-            android:textSize="15sp"
-            android:lineSpacingExtra="2dp" />
+            android:lineSpacingExtra="@dimen/stroke_width_emphasis" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -71,23 +61,23 @@
             android:layout_gravity="end"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="3dp">
+            android:layout_marginTop="@dimen/spacing_xs">
 
             <TextView
+                style="@style/TextAppearance.CoParent.Message.Time"
                 android:id="@+id/tvMessageTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/message_time_sent"
-                android:textSize="11sp" />
+                android:textColor="@color/message_time_sent" />
 
             <TextView
+                style="@style/TextAppearance.CoParent.Message.Time"
                 android:id="@+id/tvReadStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_texto"
                 android:textColor="@color/message_time_sent"
-                android:textSize="11sp"
-                android:layout_marginStart="2dp" />
+                android:layout_marginStart="@dimen/spacing_xs" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

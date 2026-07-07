@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_secondary"
+    android:fillViewport="true">
+
+    <LinearLayout
+        style="@style/Widget.CoParent.Form.Content"
+        android:padding="@dimen/spacing_m">
+
+        <!-- Header -->
+        <LinearLayout
+            style="@style/Widget.CoParent.Form.Header.Row"
+            android:layout_marginBottom="@dimen/spacing_xs">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                style="@style/Widget.CoParent.TouchTarget.Icon"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:src="@drawable/ic_back"
+                app:tint="@color/gray_900"
+                android:contentDescription="@string/cd_back_button" />
+
+            <TextView
+                style="@style/TextAppearance.CoParent.Form.HeaderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_verificar_codigo"
+                android:layout_marginStart="@dimen/spacing_s" />
+        </LinearLayout>
+
+        <View
+            style="@style/Widget.CoParent.Header.Divider"
+            android:layout_marginBottom="@dimen/spacing_m" />
+
+        <TextView
+            style="@style/TextAppearance.CoParent.Form.Subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ui_digite_o_codigo_enviado"
+            android:layout_marginBottom="@dimen/spacing_l" />
+
+        <TextView
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ui_codigo" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilCode"
+            style="@style/Widget.CoParent.Form.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCode"
+                style="@style/Widget.CoParent.TextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ui_000000"
+                android:inputType="number"
+                android:maxLength="6"
+                android:letterSpacing="0.3"
+                android:imeOptions="actionDone" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tvVerifyError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_m"
+            android:background="@drawable/bg_form_feedback_error"
+            android:paddingHorizontal="@dimen/spacing_sm"
+            android:paddingVertical="@dimen/spacing_sm"
+            android:textColor="@color/feedback_error_text"
+            android:textSize="@dimen/text_size_s"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVerifyCode"
+            style="@style/Widget.CoParent.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ui_verificar"
+            android:layout_marginBottom="@dimen/spacing_m" />
+
+        <TextView
+            android:id="@+id/tvResendCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/ui_reenviar_codigo"
+            android:textColor="@color/primary_blue"
+            android:textSize="@dimen/text_size_s_plus"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/spacing_sm" />
+    </LinearLayout>
+</ScrollView>

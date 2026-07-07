@@ -9,15 +9,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_primary"
-    android:paddingBottom="80dp"
+    android:paddingBottom="@dimen/screen_content_bottom_padding"
     android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="16dp">
+        android:paddingHorizontal="@dimen/spacing_m"
+        android:paddingTop="@dimen/spacing_m">
 
         <!-- Header -->
         <LinearLayout
@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="@dimen/spacing_sm">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ui_ola_ana"
-                    android:textSize="26sp"
+                    android:textSize="@dimen/text_size_xl"
                     android:textStyle="bold"
                     android:textColor="@color/gray_900"
                     android:maxLines="1"
@@ -49,9 +49,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ui_domingo_26_de_abril"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_size_s"
                     android:textColor="@color/gray_500"
-                    android:layout_marginTop="2dp" />
+                    android:layout_marginTop="@dimen/spacing_xs" />
             </LinearLayout>
 
             <!-- Notification Button -->
@@ -66,8 +66,8 @@
                 android:contentDescription="@string/cd_notification_button">
 
                 <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="@dimen/icon_notification_size"
+                    android:layout_height="@dimen/icon_notification_size"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_notification_bell"
                     android:contentDescription="@null"
@@ -76,15 +76,18 @@
                 <!-- Badge com contador (visível apenas quando houver notificações) -->
                 <TextView
                     android:id="@+id/tvNotificationBadge"
-                    style="@style/Widget.CoParent.Badge.Label"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="@dimen/notification_badge_size"
+                    android:minHeight="@dimen/notification_badge_size"
                     android:layout_gravity="top|end"
                     android:layout_marginTop="-2dp"
                     android:layout_marginEnd="-2dp"
+                    android:paddingStart="3dp"
+                    android:paddingEnd="3dp"
                     android:background="@drawable/bg_badge_red"
                     android:gravity="center"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textColor="@color/on_error"
                     android:textStyle="bold"
                     android:visibility="gone" />
@@ -93,23 +96,23 @@
 
         <View
             style="@style/Widget.CoParent.Header.Divider"
-            android:layout_marginStart="-20dp"
-            android:layout_marginEnd="-20dp"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginStart="-16dp"
+            android:layout_marginEnd="-16dp"
+            android:layout_marginBottom="@dimen/spacing_m" />
 
         <!-- Current Care Card -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.CoParent.Card.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/spacing_m"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="@dimen/spacing_m">
 
                 <!-- Header com registro legal -->
                 <LinearLayout
@@ -124,7 +127,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/ui_guarda_atual"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/text_size_xs"
                         android:textColor="@color/on_primary"
                         android:alpha="0.8"
                         android:letterSpacing="0.08" />
@@ -136,24 +139,24 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
+                        android:paddingHorizontal="@dimen/spacing_sm"
+                        android:paddingVertical="@dimen/spacing_xs"
                         android:background="@drawable/bg_badge_legal"
                         android:visibility="gone">
 
                         <ImageView
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
+                            android:layout_width="@dimen/icon_size_xxs"
+                            android:layout_height="@dimen/icon_size_xxs"
                             android:src="@drawable/ic_shield"
                             app:tint="@color/on_primary"
-                            android:layout_marginEnd="4dp"
+                            android:layout_marginEnd="@dimen/spacing_xs"
                             android:contentDescription="@string/ui_registro" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/ui_registro_legal"
-                            android:textSize="12sp"
+                            android:textSize="@dimen/text_size_xs"
                             android:textColor="@color/on_primary"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -164,20 +167,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/home_custody_loading"
-                    android:textSize="24sp"
+                    android:textSize="@dimen/text_size_xl"
                     android:textStyle="bold"
                     android:textColor="@color/on_primary"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="@dimen/spacing_s"
                     android:maxLines="2"
                     android:ellipsize="end" />
 
                 <!-- Linha divisória -->
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="@dimen/stroke_width_thin"
                     android:background="@color/on_primary"
                     android:alpha="0.15"
-                    android:layout_marginVertical="12dp" />
+                    android:layout_marginVertical="@dimen/spacing_sm" />
 
                 <!-- Seção Próxima Troca -->
                 <TextView
@@ -185,7 +188,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ui_proxima_troca"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_size_xs"
                     android:textColor="@color/on_primary"
                     android:alpha="0.7"
                     android:letterSpacing="0.08" />
@@ -195,14 +198,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="4dp">
+                    android:layout_marginTop="@dimen/spacing_xs">
 
                     <TextView
                     android:id="@+id/tvNextSwapDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/home_custody_loading_detail"
-                    android:textSize="17sp"
+                    android:textSize="@dimen/text_size_m"
                     android:textStyle="bold"
                     android:textColor="@color/on_primary"
                     android:maxLines="2"
@@ -216,7 +219,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnNewMessage"
@@ -224,7 +227,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="@dimen/spacing_s"
                 android:clickable="true"
                 android:focusable="true"
                 android:contentDescription="@string/cd_quick_action_message"
@@ -235,19 +238,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp"
+                    android:padding="@dimen/spacing_m"
                     android:gravity="start">
 
                     <!-- Ícone de mensagem em azul -->
                     <FrameLayout
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="@dimen/touch_target_min"
+                        android:layout_height="@dimen/touch_target_min"
                         android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginBottom="12dp">
+                        android:layout_marginBottom="@dimen/spacing_sm">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_size_m"
+                            android:layout_height="@dimen/icon_size_m"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_nav_messages_source"
                             app:tint="@color/primary_blue"
@@ -259,10 +262,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ui_enviar_mensagem"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/text_size_m"
                         android:textStyle="bold"
                         android:textColor="@color/gray_900"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginBottom="@dimen/spacing_xs"
                         android:maxLines="2"
                         android:ellipsize="end" />
 
@@ -271,9 +274,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/home_invite_parent"
-                        android:textSize="13sp"
+                        android:textSize="@dimen/text_size_s"
                         android:textColor="@color/gray_500"
-                        android:lineSpacingExtra="2dp" />
+                        android:lineSpacingExtra="@dimen/spacing_xs" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -283,7 +286,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="@dimen/spacing_s"
                 android:clickable="true"
                 android:focusable="true"
                 android:contentDescription="@string/cd_quick_action_event"
@@ -294,19 +297,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp"
+                    android:padding="@dimen/spacing_m"
                     android:gravity="start">
 
                     <!-- Ícone de calendário em azul -->
                     <FrameLayout
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="@dimen/touch_target_min"
+                        android:layout_height="@dimen/touch_target_min"
                         android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginBottom="12dp">
+                        android:layout_marginBottom="@dimen/spacing_sm">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_size_m"
+                            android:layout_height="@dimen/icon_size_m"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_calendar_add_outline"
                             app:tint="@color/primary_blue_light"
@@ -318,20 +321,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ui_agendar_evento"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/text_size_m"
                         android:textStyle="bold"
                         android:textColor="@color/gray_900"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginBottom="@dimen/spacing_xs"
                         android:maxLines="2"
                         android:ellipsize="end" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:lineSpacingExtra="2dp"
+                        android:lineSpacingExtra="@dimen/spacing_xs"
                         android:text="@string/ui_escola_saude_custodia"
                         android:textColor="@color/gray_500"
-                        android:textSize="13sp" />
+                        android:textSize="@dimen/text_size_s" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -342,14 +345,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="@dimen/spacing_sm">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/ui_proximos_eventos"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_size_l"
                 android:textStyle="bold"
                 android:textColor="@color/gray_900" />
 
@@ -358,7 +361,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_ver_agenda"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_size_s"
                 android:textColor="@color/primary_blue"
                 android:clickable="true"
                 android:focusable="true"
@@ -374,7 +377,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="@dimen/spacing_m" />
 
         <!-- Skeleton Loading -->
         <include

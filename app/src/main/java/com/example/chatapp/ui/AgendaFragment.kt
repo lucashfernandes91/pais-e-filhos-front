@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.chatapp.ApiService
+import com.example.chatapp.AppEventType
 import com.example.chatapp.CreateEventRequest
 import com.example.chatapp.Event
 import com.example.chatapp.EventsAdapter
@@ -47,7 +48,7 @@ class AgendaFragment : Fragment() {
     private var progressLoading: View? = null
     private var btnRetry: MaterialButton? = null
     private var apiService: ApiService? = null
-    private var conversationId: Int = 1
+    private var conversationId: Int = PrefsHelper.NO_CONVERSATION_ID
     private var token: String = ""
     private var currentUsername: String = ""
 
@@ -120,7 +121,11 @@ class AgendaFragment : Fragment() {
 
             loadEvents()
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Erro ao inicializar: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.agenda_init_error, e.message.orEmpty()),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -220,7 +225,7 @@ class AgendaFragment : Fragment() {
                     val d = parseEventDate(event.event_date) ?: return@filter false
                     val evtCal = Calendar.getInstance().apply { time = d }
 
-                    if (event.event_type.uppercase() == "CUSTODY" && !event.event_date_end.isNullOrEmpty()) {
+                    if (AppEventType.fromRaw(event.event_type).isCustody && !event.event_date_end.isNullOrEmpty()) {
                         val endDate = parseEventDate(event.event_date_end) ?: d
                         val startCal = Calendar.getInstance().apply { time = d }
                         val endCal = Calendar.getInstance().apply { time = endDate }
@@ -271,8 +276,7 @@ class AgendaFragment : Fragment() {
         val currentMonth = displayedCalendar.get(Calendar.MONTH)
 
         for (event in allEvents) {
-            val isCustody = event.event_type.uppercase() == "CUSTODY"
-            if (isCustody) {
+            if (AppEventType.fromRaw(event.event_type).isCustody) {
                 processCustodyEvent(event, currentYear, currentMonth)
             } else {
                 processGenericEvent(event, currentYear, currentMonth)
@@ -288,8 +292,7 @@ class AgendaFragment : Fragment() {
             null
         }
 
-        val isCurrentUser = event.created_by_name == currentUsername
-        val owner = if (isCurrentUser) CustodyOwner.FATHER else CustodyOwner.MOTHER
+        val owner = resolveCustodyOwner(event)
 
         val startCal = Calendar.getInstance().apply { time = startDate }
         val endCal = if (endDate != null) {
@@ -306,6 +309,16 @@ class AgendaFragment : Fragment() {
             }
             iterCal.add(Calendar.DAY_OF_MONTH, 1)
         }
+    }
+
+    private fun resolveCustodyOwner(event: Event): CustodyOwner {
+        val createdBy = event.created_by_name.trim()
+        if (createdBy.isBlank()) {
+            return CustodyOwner.NONE
+        }
+
+        // Backend ainda não expõe o owner de custódia como campo de domínio dedicado.
+        return if (createdBy == currentUsername) CustodyOwner.FATHER else CustodyOwner.MOTHER
     }
 
     private fun processGenericEvent(event: Event, year: Int, month: Int) {
@@ -510,7 +523,7 @@ class AgendaFragment : Fragment() {
 
         val dayEvents = allEvents.filter { event ->
             val start = parseEventDate(event.event_date) ?: return@filter false
-            val isCustody = event.event_type.uppercase() == "CUSTODY"
+            val isCustody = AppEventType.fromRaw(event.event_type).isCustody
 
             if (isCustody) {
                 val end = if (!event.event_date_end.isNullOrEmpty())
@@ -543,7 +556,7 @@ class AgendaFragment : Fragment() {
             val startDate = parseEventDate(event.event_date)
             val endDate = if (!event.event_date_end.isNullOrEmpty()) parseEventDate(event.event_date_end) else null
             val timeStr = when {
-                event.event_type.uppercase() == "CUSTODY" && endDate != null -> {
+                AppEventType.fromRaw(event.event_type).isCustody && endDate != null -> {
                     val endDayFmt = SimpleDateFormat("d MMM", ptBrLocale)
                     "At\u00e9 ${endDayFmt.format(endDate)}"
                 }
@@ -683,11 +696,17 @@ class AgendaFragment : Fragment() {
         sheetView.addView(headerRow)
 
         sheetView.addView(detailDivider(dp))
-        sheetView.addView(detailRow("Quando", eventDateDetailText(event), dp))
-        sheetView.addView(detailRow("Criado por", event.created_by_name.ifBlank { "Não informado" }, dp))
+        sheetView.addView(detailRow(getString(R.string.event_detail_when), eventDateDetailText(event), dp))
+        sheetView.addView(
+            detailRow(
+                getString(R.string.event_detail_created_by),
+                event.created_by_name.ifBlank { getString(R.string.event_detail_not_informed) },
+                dp
+            )
+        )
 
         if (event.notes.isNotBlank()) {
-            sheetView.addView(detailRow("Notas", event.notes, dp))
+            sheetView.addView(detailRow(getString(R.string.event_detail_notes), event.notes, dp))
         }
 
         dialog.setContentView(sheetView)
@@ -695,34 +714,24 @@ class AgendaFragment : Fragment() {
     }
 
     private fun eventIconRes(event: Event): Int =
-        when (event.event_type.uppercase()) {
-            "SCHOOL" -> R.drawable.ic_school
-            "MEDICAL" -> R.drawable.ic_health
-            "CUSTODY" -> R.drawable.ic_custody
-            else -> R.drawable.ic_other
-        }
+        AppEventType.fromRaw(event.event_type).iconRes
 
     private fun eventTypeLabel(event: Event): String =
-        when (event.event_type.uppercase()) {
-            "SCHOOL" -> "Escola"
-            "MEDICAL" -> "Saúde"
-            "CUSTODY" -> "Convivência"
-            else -> "Outro"
-        }
+        getString(AppEventType.fromRaw(event.event_type).labelRes)
 
     private fun eventDateDetailText(event: Event): String {
         val start = parseEventDate(event.event_date) ?: return event.event_date
-        val dateTimeFmt = SimpleDateFormat("dd 'de' MMMM 'às' HH:mm", ptBrLocale)
-        val dateOnlyFmt = SimpleDateFormat("dd 'de' MMMM", ptBrLocale)
+        val dateTimeFmt = SimpleDateFormat(getString(R.string.event_detail_time_pattern), ptBrLocale)
+        val dateOnlyFmt = SimpleDateFormat(getString(R.string.event_detail_date_pattern), ptBrLocale)
         val startText = dateTimeFmt.format(start).replaceFirstChar { it.uppercase() }
         val end = event.event_date_end?.takeIf { it.isNotBlank() }?.let { parseEventDate(it) }
             ?: return startText
-        val endText = if (event.event_type.uppercase() == "CUSTODY") {
+        val endText = if (AppEventType.fromRaw(event.event_type).isCustody) {
             dateOnlyFmt.format(end).replaceFirstChar { it.uppercase() }
         } else {
             dateTimeFmt.format(end).replaceFirstChar { it.uppercase() }
         }
-        return "$startText até $endText"
+        return "$startText ${getString(R.string.event_detail_until)} $endText"
     }
 
     private fun detailDivider(dp: (Int) -> Int): View =
@@ -763,7 +772,7 @@ class AgendaFragment : Fragment() {
     private fun showDayEventsSheetForEvent(event: Event) {
         val eventDate = parseEventDate(event.event_date)
         if (eventDate == null) {
-            Toast.makeText(requireContext(), "Não foi possível abrir os dados deste evento", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.event_open_error), Toast.LENGTH_SHORT).show()
             return
         }
         val eventCal = Calendar.getInstance().apply { time = eventDate }
@@ -806,7 +815,11 @@ class AgendaFragment : Fragment() {
         lifecycleScope.launch {
             showLoadingState()
             try {
-                if (token.isEmpty() || apiService == null) {
+                if (
+                    token.isEmpty() ||
+                    apiService == null ||
+                    conversationId <= PrefsHelper.NO_CONVERSATION_ID
+                ) {
                     showErrorState()
                     return@launch
                 }
@@ -820,7 +833,11 @@ class AgendaFragment : Fragment() {
                 filterEventsForDisplayedMonth()
 
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro ao carregar eventos: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.event_load_error, e.message.orEmpty()),
+                    Toast.LENGTH_SHORT
+                ).show()
                 showErrorState()
             } finally {
                 progressLoading?.visibility = View.GONE
@@ -858,10 +875,10 @@ class AgendaFragment : Fragment() {
 
     private fun confirmDeleteEvent(event: Event) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Excluir evento")
-            .setMessage("Deseja excluir \"${event.title}\"?")
-            .setPositiveButton("Excluir") { _, _ -> deleteEvent(event.id) }
-            .setNegativeButton("Cancelar", null)
+            .setTitle(R.string.event_delete_title)
+            .setMessage(getString(R.string.event_delete_message, event.title))
+            .setPositiveButton(R.string.event_delete_confirm) { _, _ -> deleteEvent(event.id) }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
@@ -946,27 +963,27 @@ class AgendaFragment : Fragment() {
         btnSave.setOnClickListener {
             val title = titleInput?.text?.toString()?.trim() ?: ""
             val notes = notesInput?.text?.toString()?.trim() ?: ""
-            val type = when (chipGroup.checkedChipId) {
-                R.id.chipSchool -> "SCHOOL"
-                R.id.chipMedical -> "MEDICAL"
-                R.id.chipCustody -> "CUSTODY"
-                R.id.chipOther -> "OTHER"
-                else -> "OTHER"
-            }
+            val type = AppEventType.fromRaw(eventTypeFromSegment(chipGroup.checkedChipId))
 
             if (title.isEmpty()) {
-                Toast.makeText(requireContext(), "Título é obrigatório", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.event_error_title_required, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (type == "CUSTODY") {
+            if (type.isCustody) {
                 if (endCalendar.before(startCalendar)) {
-                    Toast.makeText(requireContext(), "A data de fim deve ser após o início", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.event_error_custody_range, Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-                createEvent(title, apiDateFormat.format(startCalendar.time), type, notes, apiDateFormat.format(endCalendar.time))
+                createEvent(
+                    title,
+                    apiDateFormat.format(startCalendar.time),
+                    type.rawValue,
+                    notes,
+                    apiDateFormat.format(endCalendar.time)
+                )
             } else {
-                createEvent(title, apiDateFormat.format(selectedCalendar.time), type, notes, null)
+                createEvent(title, apiDateFormat.format(selectedCalendar.time), type.rawValue, notes, null)
             }
             dialog.dismiss()
         }
@@ -1020,12 +1037,18 @@ class AgendaFragment : Fragment() {
 
             val title = form.etTitle.text?.toString()?.trim().orEmpty()
             val notes = form.etNotes.text?.toString()?.trim().orEmpty()
-            val type = eventTypeFromSegment(form.segmentType.checkedChipId)
+            val type = AppEventType.fromRaw(eventTypeFromSegment(form.segmentType.checkedChipId))
 
-            if (type == "CUSTODY") {
-                createEvent(title, apiDateFormat.format(startCalendar.time), type, notes, apiDateFormat.format(endCalendar.time))
+            if (type.isCustody) {
+                createEvent(
+                    title,
+                    apiDateFormat.format(startCalendar.time),
+                    type.rawValue,
+                    notes,
+                    apiDateFormat.format(endCalendar.time)
+                )
             } else {
-                createEvent(title, apiDateFormat.format(selectedCalendar.time), type, notes, null)
+                createEvent(title, apiDateFormat.format(selectedCalendar.time), type.rawValue, notes, null)
             }
             dialog.dismiss()
         }
@@ -1087,11 +1110,10 @@ class AgendaFragment : Fragment() {
 
     private fun eventTypeFromSegment(checkedChipId: Int): String =
         when (checkedChipId) {
-            R.id.chipSchool -> "SCHOOL"
-            R.id.chipMedical -> "MEDICAL"
-            R.id.chipCustody -> "CUSTODY"
-            R.id.chipOther -> "OTHER"
-            else -> "OTHER"
+            R.id.chipSchool -> AppEventType.SCHOOL.rawValue
+            R.id.chipMedical -> AppEventType.MEDICAL.rawValue
+            R.id.chipCustody -> AppEventType.CUSTODY.rawValue
+            else -> AppEventType.OTHER.rawValue
         }
 
     private fun fitBottomSheetToContent(dialog: BottomSheetDialog) {
@@ -1130,7 +1152,7 @@ class AgendaFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 if (token.isEmpty() || apiService == null) {
-                    Toast.makeText(requireContext(), "Token não encontrado", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.event_token_missing, Toast.LENGTH_SHORT).show()
                     return@launch
                 }
                 val eventBody = CreateEventRequest(
@@ -1142,10 +1164,14 @@ class AgendaFragment : Fragment() {
                     notes = notes
                 )
                 apiService!!.createEvent("Bearer $token", eventBody)
-                Toast.makeText(requireContext(), "Evento criado!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.event_created, Toast.LENGTH_SHORT).show()
                 loadEvents()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro ao criar evento: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.event_create_error, e.message.orEmpty()),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -1155,15 +1181,19 @@ class AgendaFragment : Fragment() {
             try {
                 if (token.isEmpty() || apiService == null) return@launch
                 apiService!!.deleteEvent("Bearer $token", eventId)
-                Toast.makeText(requireContext(), "Evento excluído", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.event_deleted, Toast.LENGTH_SHORT).show()
                 loadEvents()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro ao excluir evento: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.event_delete_error, e.message.orEmpty()),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
-    // ── Edit Event ────────────────────────────────────────
+    // â”€â”€ Edit Event â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     @Suppress("unused")
     private fun showEditEventDialog(event: Event) {
@@ -1182,8 +1212,8 @@ class AgendaFragment : Fragment() {
         val dateInput = dialogView.findViewById<TextInputEditText>(R.id.etEventDate)
         val timeInput = dialogView.findViewById<TextInputEditText>(R.id.etEventTime)
 
-        tvDialogTitle?.text = "Editar Evento"
-        btnSave.text = "Salvar alterações"
+        tvDialogTitle?.setText(R.string.event_edit_title)
+        btnSave.setText(R.string.action_save_changes)
 
         titleInput?.setText(event.title)
         notesInput?.setText(event.notes)
@@ -1224,7 +1254,7 @@ class AgendaFragment : Fragment() {
                 else -> "OTHER"
             }
             if (title.isEmpty()) {
-                Toast.makeText(requireContext(), "Título é obrigatório", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.event_error_title_required, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             updateEvent(event.id, title, apiDateFormat.format(selectedCalendar.time), type, notes)
@@ -1252,8 +1282,8 @@ class AgendaFragment : Fragment() {
         val layoutDateTimeStart = dialogView.findViewById<LinearLayout>(R.id.layoutDateTimeStart)
         val layoutDateTimeEnd = dialogView.findViewById<LinearLayout>(R.id.layoutDateTimeEnd)
 
-        tvDialogTitle?.text = "Editar Evento"
-        btnSave.setText(R.string.ui_salvar_alteracoes)
+        tvDialogTitle?.setText(R.string.event_edit_title)
+        btnSave.setText(R.string.action_save_changes)
         form.etTitle.setText(event.title)
         form.etNotes.setText(event.notes)
         layoutDateTimeSingle?.visibility = View.VISIBLE
@@ -1320,10 +1350,10 @@ class AgendaFragment : Fragment() {
                     "notes" to notes
                 )
                 apiService!!.updateEvent("Bearer $token", eventId, body)
-                Toast.makeText(requireContext(), "Evento atualizado!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.event_updated, Toast.LENGTH_SHORT).show()
                 loadEvents()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro ao atualizar: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.event_update_error, Toast.LENGTH_SHORT).show()
             }
         }
     }
