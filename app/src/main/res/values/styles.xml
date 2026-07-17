@@ -1,28 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base App Theme -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/primary_blue</item>
-        <item name="colorPrimaryVariant">@color/primary_blue_dark</item>
-        <item name="colorSecondary">@color/secondary_green</item>
-        <item name="colorSecondaryVariant">@color/secondary_green_light</item>
-        <item name="colorSurface">@color/surface_container</item>
-        <item name="colorOnPrimary">@color/on_primary</item>
-        <item name="colorOnSecondary">@color/on_secondary</item>
-        <item name="colorOnSurface">@color/on_surface</item>
-        <item name="android:colorBackground">@color/bg_primary</item>
-        <item name="android:windowBackground">@color/bg_primary</item>
-        <item name="android:windowDisablePreview">true</item>
-        <item name="android:forceDarkAllowed">false</item>
-        <item name="android:windowSplashScreenBackground">@color/bg_primary</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">@color/bg_primary</item>
-        <item name="android:textColorPrimary">@color/on_surface</item>
-        <item name="android:textColorSecondary">@color/on_surface_variant</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">@color/bg_primary</item>
-        <item name="android:navigationBarColor">@color/primary_blue_dark</item>
-    </style>
-
     <!-- Theme for ChatApp -->
     <style name="Theme.ChatApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_blue</item>

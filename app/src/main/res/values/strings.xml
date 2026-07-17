@@ -155,7 +155,6 @@
     <string name="settings_push_disabled">Notificações push desativadas</string>
     <string name="settings_email_enabled">Email ativado</string>
     <string name="settings_email_disabled">Email desativado</string>
-    <string name="settings_invite_soon">Convite em breve!</string>
     <string name="settings_logged_out">Desconectado</string>
     <string name="child_not_found">Filho não encontrado</string>
     <string name="child_session_expired">Sessão expirada</string>
