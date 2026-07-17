@@ -33,7 +33,9 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        // Navegação manual — garante que sempre volta para Home
+        // Navegação manual — garante que sempre volta para Home.
+        // Listener único: marcar isChecked programaticamente não o dispara,
+        // então a sincronização abaixo não precisa desanexar nada.
         bottomNav.setOnItemSelectedListener { item ->
             val navOptions = NavOptions.Builder()
                 .setPopUpTo(R.id.homeFragment, false)
@@ -65,25 +67,7 @@ class MainActivity : AppCompatActivity() {
                 View.GONE
             }
 
-            // Atualizar item selecionado sem disparar listener
-            val menuItem = bottomNav.menu.findItem(destination.id)
-            if (menuItem != null) {
-                bottomNav.setOnItemSelectedListener(null)
-                menuItem.isChecked = true
-                // Reattach listener
-                bottomNav.setOnItemSelectedListener { item ->
-                    val opts = NavOptions.Builder()
-                        .setPopUpTo(R.id.homeFragment, false)
-                        .setLaunchSingleTop(true)
-                        .build()
-                    try {
-                        navController.navigate(item.itemId, null, opts)
-                        true
-                    } catch (e: Exception) {
-                        false
-                    }
-                }
-            }
+            bottomNav.menu.findItem(destination.id)?.isChecked = true
         }
 
         // Register Firebase token

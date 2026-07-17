@@ -16,6 +16,7 @@ import com.example.chatapp.AppEventType
 import com.example.chatapp.Child
 import com.example.chatapp.Event
 import com.example.chatapp.PrefsHelper
+import com.example.chatapp.dpToPx
 import com.example.chatapp.R
 import com.example.chatapp.RetrofitClient
 import com.example.chatapp.SkeletonAnimator
@@ -514,7 +515,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun createEmptyEventsCard(ctx: Context): View {
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val dp = { value: Int -> ctx.dpToPx(value) }
 
         val card = com.google.android.material.card.MaterialCardView(ctx).apply {
             layoutParams = LinearLayout.LayoutParams(
@@ -525,7 +526,7 @@ class HomeFragment : Fragment() {
             cardElevation = 0f
             strokeColor = ContextCompat.getColor(ctx, R.color.gray_200)
             strokeWidth = dp(1)
-            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.white))
+            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.surface_container))
         }
 
         val innerLayout = LinearLayout(ctx).apply {
@@ -555,7 +556,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun createEventsErrorCard(ctx: Context, view: View, token: String): View {
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val dp = { value: Int -> ctx.dpToPx(value) }
 
         val card = com.google.android.material.card.MaterialCardView(ctx).apply {
             layoutParams = LinearLayout.LayoutParams(
@@ -566,7 +567,7 @@ class HomeFragment : Fragment() {
             cardElevation = 0f
             strokeColor = ContextCompat.getColor(ctx, R.color.gray_200)
             strokeWidth = dp(1)
-            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.white))
+            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.surface_container))
         }
 
         val content = LinearLayout(ctx).apply {
@@ -604,7 +605,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun createEventRow(ctx: Context, title: String, subtitle: String, eventType: String = ""): View {
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val dp = { value: Int -> ctx.dpToPx(value) }
 
         val card = com.google.android.material.card.MaterialCardView(ctx).apply {
             layoutParams = LinearLayout.LayoutParams(
@@ -615,7 +616,7 @@ class HomeFragment : Fragment() {
             cardElevation = 0f
             strokeColor = ContextCompat.getColor(ctx, R.color.gray_200)
             strokeWidth = dp(1)
-            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.white))
+            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.surface_container))
         }
 
         val row = LinearLayout(ctx).apply {

@@ -42,29 +42,7 @@ object RetrofitClient {
     }
 
     val api: ApiService
-        get() {
-            if (apiService == null) {
-                // Fallback sem AuthInterceptor (para antes do init)
-                val fallbackClient = OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .addInterceptor { chain ->
-                        val request = chain.request().newBuilder()
-                            .addHeader("Accept-Charset", "UTF-8")
-                            .addHeader("Accept", "application/json; charset=utf-8")
-                            .build()
-                        chain.proceed(request)
-                    }
-                    .build()
-
-                apiService = Retrofit.Builder()
-                    .baseUrl(BuildConfig.API_BASE_URL)
-                    .client(fallbackClient)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                    .create(ApiService::class.java)
-            }
-            return apiService!!
+        get() = checkNotNull(apiService) {
+            "RetrofitClient.init() não foi chamado — CoParentApplication cuida disso no onCreate."
         }
 }

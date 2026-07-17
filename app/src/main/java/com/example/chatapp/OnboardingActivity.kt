@@ -142,7 +142,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun setupDots() {
         dotsContainer.removeAllViews()
-        val dp = { v: Int -> (v * resources.displayMetrics.density).toInt() }
+        val dp = { v: Int -> dpToPx(v) }
         for (i in pages.indices) {
             val dot = View(this).apply {
                 val size = dp(8)

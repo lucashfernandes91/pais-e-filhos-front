@@ -93,7 +93,6 @@
     <string name="ui_email">Email</string>
     <string name="ui_politica_de_privacidade_coparent_lite_n_nultima_atualizacao" tools:ignore="Typos">Pol&#237;tica de Privacidade &#8212; CoParent Lite\n\n&#218;ltima atualiza&#231;&#227;o: Abril 2026\n\n1. Coleta de Dados\nColetamos apenas os dados necess&#225;rios para o funcionamento do app: nome, email, mensagens e eventos. N&#227;o coletamos dados de localiza&#231;&#227;o, contatos ou fotos (exceto quando enviadas voluntariamente como anexo).\n\n2. Uso dos Dados\nSeus dados s&#227;o usados exclusivamente para:\n&#8226; Comunica&#231;&#227;o entre coparentais\n&#8226; Registro oficial de mensagens e eventos\n&#8226; Gera&#231;&#227;o de relat&#243;rios PDF para fins legais\n&#8226; Notifica&#231;&#245;es sobre mensagens e eventos\n\n3. Armazenamento\nAs mensagens e eventos s&#227;o armazenados de forma segura em nossos servidores. Os dados s&#227;o criptografados em tr&#226;nsito (HTTPS/WSS) e em repouso.\n\n4. Compartilhamento\nN&#227;o compartilhamos, vendemos ou transferimos seus dados pessoais a terceiros, exceto quando exigido por ordem judicial.\n\n5. Imutabilidade\nAs mensagens enviadas pelo app s&#227;o imut&#225;veis &#8212; n&#227;o podem ser editadas ou apagadas. Isso garante a integridade do registro para fins legais.\n\n6. Exclus&#227;o de Conta\nVoc&#234; pode solicitar a exclus&#227;o da sua conta e todos os dados associados a qualquer momento atrav&#233;s do email suporte@coparent.app.\n\n7. Menores de Idade\nO app &#233; destinado a pais/respons&#225;veis legais maiores de 18 anos. N&#227;o coletamos dados de menores.\n\n8. Altera&#231;&#245;es\nReserva-se o direito de atualizar esta pol&#237;tica. Altera&#231;&#245;es significativas ser&#227;o comunicadas por email ou notifica&#231;&#227;o no app.\n\n9. Contato\nD&#250;vidas: suporte@coparent.app</string>
     <string name="ui_novo">Novo</string>
-    <string name="ui_ana">Ana</string>
     <string name="ui_evento">Evento</string>
     <string name="ui_d">D</string>
     <string name="ui_s">S</string>
@@ -122,8 +121,6 @@
     <string name="ui_numero_do_rg">N&#250;mero do RG</string>
     <string name="ui_salvar_alteracoes">Salvar altera&#231;&#245;es</string>
     <string name="ui_as_alteracoes_sao_registradas_no_historico_oficial">As altera&#231;&#245;es s&#227;o registradas no hist&#243;rico oficial.</string>
-    <string name="ui_ola_ana">Ol&#225;, Ana</string>
-    <string name="ui_domingo_26_de_abril">domingo, 26 de abril</string>
     <string name="ui_guarda_atual">GUARDA ATUAL</string>
     <string name="ui_registro_legal">Registro legal</string>
     <string name="ui_proxima_troca">PR&#211;XIMA TROCA</string>
@@ -158,13 +155,10 @@
     <string name="ui_coparent_lite_v1_0">CoParent Lite &#183; v1.0</string>
     <string name="ui_configuracoes">Configura&#231;&#245;es</string>
     <string name="ui_outro_responsavel">OUTRO RESPONS&#193;VEL</string>
+    <string name="ui_outro_responsavel_nome">Outro respons&#225;vel</string>
     <string name="ui_l">L</string>
-    <string name="ui_lucas">Lucas</string>
-    <string name="ui_pai_conectado">Pai &#183; Conectado</string>
     <string name="ui_ativo">Ativo</string>
-    <string name="ui_convidar_2">Convidar</string>
     <string name="ui_convidar_outro_responsavel">Convidar outro respons&#225;vel</string>
-    <string name="ui_notificacoes_push_2">Notifica&#231;&#245;es Push</string>
     <string name="ui_mensagens_em_tempo_real">Mensagens em tempo real</string>
     <string name="ui_notificacoes_por_email">Notifica&#231;&#245;es por Email</string>
     <string name="ui_resumo_diario">Resumo di&#225;rio</string>
@@ -175,7 +169,6 @@
     <string name="ui_como_funciona_o_registro_oficial">Como funciona o registro oficial</string>
     <string name="ui_ajuda">Ajuda</string>
     <string name="ui_ajuda_e_suporte">Ajuda &amp; Suporte</string>
-    <string name="ui_coparent_lite_v1_0_2">CoParent Lite &#183; v1.0</string>
     <string name="ui_linha_do_tempo">Linha do tempo</string>
     <string name="ui_tudo_em_ordem_cronologica">Tudo em ordem cronol&#243;gica</string>
     <string name="ui_todas_as_mensagens_e_eventos_tem_registro_oficial">Todas as mensagens e eventos t&#234;m registro oficial e podem ser exportados em PDF.</string>

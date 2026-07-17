@@ -21,8 +21,6 @@
     <!-- Component Heights -->
     <dimen name="button_height">48dp</dimen>
     <dimen name="input_height">48dp</dimen>
-    <dimen name="height_button">48dp</dimen>
-    <dimen name="height_input">48dp</dimen>
     <dimen name="height_action">52dp</dimen>
     <dimen name="height_control_compact">40dp</dimen>
     <dimen name="touch_target_min">48dp</dimen>
@@ -94,7 +92,6 @@
     <dimen name="text_size_xxxl">32sp</dimen>
     <dimen name="text_size_display">36sp</dimen>
     <dimen name="text_size_mini">11sp</dimen>
-    <dimen name="text_size_micro">9sp</dimen>
 
     <!-- Form controls -->
     <dimen name="input_height_multiline">100dp</dimen>

@@ -18,12 +18,6 @@ interface ApiService {
         @Body body: Map<String, Any>
     )
 
-    @GET("api/messages/{messageId}/detail/")
-    suspend fun getMessageDetail(
-        @Header("Authorization") token: String,
-        @Path("messageId") messageId: Int
-    ): Map<String, Any>
-
     @POST("api/messages/{messageId}/read/")
     suspend fun markMessageAsRead(
         @Header("Authorization") token: String,
@@ -97,11 +91,6 @@ interface ApiService {
 
     @POST("api/token/")
     suspend fun obtainToken(
-        @Body body: Map<String, String>
-    ): Map<String, Any>
-
-    @POST("api/token/refresh/")
-    suspend fun refreshToken(
         @Body body: Map<String, String>
     ): Map<String, Any>
 

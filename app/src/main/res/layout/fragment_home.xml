@@ -83,7 +83,6 @@
                     android:id="@+id/tvGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/ui_ola_ana"
                     android:textSize="@dimen/text_size_xl"
                     android:textStyle="bold"
                     android:textColor="@color/gray_900"
@@ -94,7 +93,6 @@
                     android:id="@+id/tvDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/ui_domingo_26_de_abril"
                     android:textSize="@dimen/text_size_s"
                     android:textColor="@color/gray_500"
                     android:layout_marginTop="@dimen/spacing_xs" />
@@ -133,7 +131,7 @@
                     android:paddingEnd="3dp"
                     android:background="@drawable/bg_badge_red"
                     android:gravity="center"
-                    android:textSize="10sp"
+                    android:textSize="@dimen/text_size_mini"
                     android:textColor="@color/on_error"
                     android:textStyle="bold"
                     android:visibility="gone" />
@@ -298,7 +296,7 @@
                             android:layout_width="@dimen/icon_size_m"
                             android:layout_height="@dimen/icon_size_m"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_nav_messages_source"
+                            android:src="@drawable/ic_chat"
                             app:tint="@color/primary_blue"
                             android:contentDescription="@null"
                             android:importantForAccessibility="no" />

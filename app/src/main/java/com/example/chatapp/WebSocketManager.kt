@@ -48,8 +48,12 @@ class WebSocketManager(
 
     fun connect() {
         scope.launch {
-            val url = "${BuildConfig.WS_BASE_URL}ws/chat/$conversationId/?token=$token"
-            val request = Request.Builder().url(url).build()
+            // Token via header: não vaza em logs de servidor/proxy (C8).
+            val url = "${BuildConfig.WS_BASE_URL}ws/chat/$conversationId/"
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $token")
+                .build()
 
             webSocket = client.newWebSocket(request, ChatWebSocketListener())
         }

@@ -28,8 +28,6 @@ class MessageAdapter(
         private const val VIEW_TYPE_RECEIVED = 1
         private const val VIEW_TYPE_DATE_DIVIDER = 2
         private const val VIEW_TYPE_UNREAD_DIVIDER = 3
-        private const val HIGHLIGHT_COLOR = 0xFFFDE68A.toInt()
-        private const val ACTIVE_HIGHLIGHT_COLOR = 0xFFFBBF24.toInt()
     }
 
     private var chatItems: List<ChatItem> = emptyList()
@@ -190,10 +188,18 @@ class MessageAdapter(
         return items
     }
 
-    private fun highlightText(content: String, originalIndex: Int): CharSequence {
+    private fun highlightText(
+        context: android.content.Context,
+        content: String,
+        originalIndex: Int
+    ): CharSequence {
         if (searchQuery.isBlank()) {
             return content
         }
+
+        val highlight = androidx.core.content.ContextCompat.getColor(context, R.color.search_highlight)
+        val activeHighlight = androidx.core.content.ContextCompat.getColor(context, R.color.search_highlight_active)
+        val highlightText = androidx.core.content.ContextCompat.getColor(context, R.color.search_highlight_text)
 
         val spannable = SpannableString(content)
         val lowerContent = content.lowercase(Locale.getDefault())
@@ -208,7 +214,7 @@ class MessageAdapter(
                 break
             }
 
-            val bgColor = if (isActiveMatch) ACTIVE_HIGHLIGHT_COLOR else HIGHLIGHT_COLOR
+            val bgColor = if (isActiveMatch) activeHighlight else highlight
             spannable.setSpan(
                 BackgroundColorSpan(bgColor),
                 index,
@@ -216,7 +222,7 @@ class MessageAdapter(
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             spannable.setSpan(
-                ForegroundColorSpan(Color.BLACK),
+                ForegroundColorSpan(highlightText),
                 index,
                 index + lowerQuery.length,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -319,7 +325,7 @@ class MessageAdapter(
         private val tvDocName: TextView? = itemView.findViewById(R.id.tvDocName)
 
         fun bind(message: Message, originalIndex: Int) {
-            tvContent.text = highlightText(message.content, originalIndex)
+            tvContent.text = highlightText(tvContent.context, message.content, originalIndex)
             tvTime.text = formatTime(message.created_at)
             tvReadStatus.text = if (message.read_by?.isNotEmpty() == true) " \u2713\u2713" else " \u2713"
             tvReadStatus.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
@@ -344,7 +350,7 @@ class MessageAdapter(
         private val tvDocName: TextView? = itemView.findViewById(R.id.tvDocName)
 
         fun bind(message: Message, originalIndex: Int) {
-            tvContent.text = highlightText(message.content, originalIndex)
+            tvContent.text = highlightText(tvContent.context, message.content, originalIndex)
             tvTime.text = formatTime(message.created_at)
             bindAttachment(message, ivAttachment, layoutDocBadge, tvDocName, tvContent)
             itemView.contentDescription = buildMessageAnnouncement(

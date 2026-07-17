@@ -9,11 +9,9 @@
     <color name="bg_primary">#F5F7FA</color>
     <color name="bg_secondary">#F5F7FA</color>
     <color name="bg_tertiary">#F3F4F6</color>
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
 
     <!-- Semantic Content and Surface Tokens -->
-    <color name="surface_container">@color/white</color>
+    <color name="surface_container">#FFFFFF</color>
     <color name="on_primary">#FFFFFF</color>
     <color name="on_error">#FFFFFF</color>
     <color name="on_secondary">#08130C</color>
@@ -101,6 +99,11 @@
     <color name="send_button_bg">#E6F0FF</color>
     <color name="message_time_sent">#EFF6FF</color>
     <color name="message_time_received">@color/gray_600</color>
+
+    <!-- Busca no chat: fundo do trecho encontrado (par dark em values-night) -->
+    <color name="search_highlight">#FDE68A</color>
+    <color name="search_highlight_active">#FBBF24</color>
+    <color name="search_highlight_text">#111827</color>
 
     <!-- Accessibility States (WCAG AA contrast tested) -->
     <color name="state_disabled">#B8BCC4</color>

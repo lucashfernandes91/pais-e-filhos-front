@@ -111,7 +111,7 @@
                 style="@style/Widget.CoParent.TextInputEditText"
                 android:importantForAutofill="no"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_input"
+                android:layout_height="@dimen/input_height"
                 android:hint="@string/ui_buscar_na_conversa"
                 android:gravity="center_vertical"
                 android:inputType="text|textCapSentences|textAutoCorrect"

@@ -27,6 +27,7 @@ import com.example.chatapp.InviteHelper
 import com.example.chatapp.LoginActivity
 import com.example.chatapp.LogoutHelper
 import com.example.chatapp.PrefsHelper
+import com.example.chatapp.dpToPx
 import com.example.chatapp.R
 import com.example.chatapp.RemoteImageLoader
 import com.example.chatapp.RetrofitClient
@@ -232,7 +233,7 @@ class ProfileFragment : Fragment() {
 
         if (children.isEmpty()) {
             val ctx = requireContext()
-            val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+            val dp = { value: Int -> ctx.dpToPx(value) }
 
             val emptyText = TextView(ctx).apply {
                 text = getString(R.string.children_empty)
@@ -264,7 +265,7 @@ class ProfileFragment : Fragment() {
 
     private fun createChildRow(child: Child): View {
         val ctx = requireContext()
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val dp = { value: Int -> ctx.dpToPx(value) }
 
         val row = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL

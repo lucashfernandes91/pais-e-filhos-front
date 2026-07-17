@@ -25,6 +25,7 @@ import com.example.chatapp.CreateEventRequest
 import com.example.chatapp.Event
 import com.example.chatapp.EventsAdapter
 import com.example.chatapp.PrefsHelper
+import com.example.chatapp.dpToPx
 import com.example.chatapp.R
 import com.example.chatapp.RetrofitClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -451,7 +452,7 @@ class AgendaFragment : Fragment() {
                     // ── Número do dia ──────────────────────────────────────
                     // Alinhado ao topo junto com o círculo, centralizado horizontalmente
                     val textColor = when {
-                        isToday -> R.color.white
+                        isToday -> R.color.on_primary
                         else -> R.color.gray_700
                     }
 
@@ -546,7 +547,7 @@ class AgendaFragment : Fragment() {
             if (count == 1) "1 evento" else "$count eventos"
 
         val container = sheetView.findViewById<LinearLayout>(R.id.llDayEventsContainer)
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val dp = { value: Int -> ctx.dpToPx(value) }
 
         for (event in dayEvents) {
             val iconRes = eventIconRes(event)
@@ -635,7 +636,7 @@ class AgendaFragment : Fragment() {
     private fun showEventDetailSheet(event: Event) {
         val ctx = requireContext()
         val dialog = BottomSheetDialog(ctx, R.style.BottomSheetDialogTheme)
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val dp = { value: Int -> ctx.dpToPx(value) }
 
         val sheetView = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL

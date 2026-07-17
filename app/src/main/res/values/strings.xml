@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ChatApp</string>
+    <string name="app_name">CoParent Lite</string>
 
     <!-- Formulário novo evento -->
     <string name="event_label_title">Título</string>
