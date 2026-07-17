@@ -19,9 +19,13 @@ import androidx.core.content.res.use
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.chatapp.ApiErrors
 import com.example.chatapp.Child
 import com.example.chatapp.CreateChildRequest
+import com.example.chatapp.InviteAcceptActivity
+import com.example.chatapp.InviteHelper
 import com.example.chatapp.LoginActivity
+import com.example.chatapp.LogoutHelper
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
 import com.example.chatapp.RemoteImageLoader
@@ -133,6 +137,11 @@ class ProfileFragment : Fragment() {
         // Convidar outro pai
         view.findViewById<View>(R.id.btnInvite)?.setOnClickListener {
             shareInviteLink()
+        }
+
+        // Recebeu um convite por texto: entrada manual do código
+        view.findViewById<View>(R.id.btnEnterInviteCode)?.setOnClickListener {
+            startActivity(Intent(requireContext(), InviteAcceptActivity::class.java))
         }
     }
 
@@ -704,6 +713,11 @@ class ProfileFragment : Fragment() {
                 view?.findViewById<TextView>(R.id.tvUserName)?.text = displayName
 
                 Toast.makeText(requireContext(), R.string.profile_updated, Toast.LENGTH_SHORT).show()
+            } catch (e: retrofit2.HttpException) {
+                // B4: mostra a mensagem real do servidor ("Email já cadastrado...")
+                val message = ApiErrors.messageFrom(e)
+                    ?: getString(R.string.profile_update_error, "HTTP ${e.code()}")
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), getString(R.string.profile_update_error, e.message.orEmpty()), Toast.LENGTH_SHORT).show()
             }
@@ -727,18 +741,7 @@ class ProfileFragment : Fragment() {
     // ── Convite ──────────────────────────────────────────
 
     private fun shareInviteLink() {
-        val username = PrefsHelper.getUsername(requireContext())
-        val displayName = username.replaceFirstChar { it.uppercase() }
-        val conversationId = PrefsHelper.getConversationId(requireContext())
-
-        val inviteText = getString(R.string.profile_invite_text, displayName, conversationId)
-
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.profile_invite_subject))
-            putExtra(Intent.EXTRA_TEXT, inviteText)
-        }
-        startActivity(Intent.createChooser(shareIntent, getString(R.string.profile_invite_chooser)))
+        InviteHelper.shareInvite(this)
     }
 
     // ── Logout ──────────────────────────────────────────────
@@ -748,6 +751,7 @@ class ProfileFragment : Fragment() {
             .setTitle(R.string.profile_logout_title)
             .setMessage(R.string.profile_logout_message)
             .setPositiveButton(R.string.profile_logout_confirm) { _, _ ->
+                LogoutHelper.notifyServerLogout(requireContext())
                 PrefsHelper.clearAll(requireContext())
 
                 val intent = Intent(requireContext(), LoginActivity::class.java)

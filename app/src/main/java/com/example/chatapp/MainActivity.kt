@@ -122,8 +122,54 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        // Sessão caiu (refresh expirado → AuthInterceptor limpou): volta ao login.
+        if (PrefsHelper.getAuthToken(this).isEmpty()) {
+            startActivity(
+                android.content.Intent(this, LoginActivity::class.java)
+                    .addFlags(
+                        android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                            android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    )
+            )
+            finish()
+            return
+        }
+
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         updateBottomNavBadges(bottomNav)
+        resumePendingInvite()
+        showWelcomeIfPending()
+    }
+
+    /** B8: pós-cadastro, aponta os 2 passos que fazem o app funcionar. */
+    private fun showWelcomeIfPending() {
+        if (!PrefsHelper.isWelcomePending(this)) return
+        PrefsHelper.setWelcomePending(this, false)
+
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.welcome_title)
+            .setMessage(R.string.welcome_message)
+            .setPositiveButton(R.string.welcome_go_to_profile) { _, _ ->
+                val navHost = supportFragmentManager
+                    .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
+                try {
+                    navHost?.navController?.navigate(R.id.profileFragment)
+                } catch (_: Exception) {
+                }
+            }
+            .setNegativeButton(R.string.welcome_later, null)
+            .show()
+    }
+
+    /** Deep link de convite recebido antes do login: retoma o aceite. */
+    private fun resumePendingInvite() {
+        val pendingCode = PrefsHelper.getPendingInviteCode(this) ?: return
+        PrefsHelper.clearPendingInviteCode(this)
+        startActivity(
+            android.content.Intent(this, InviteAcceptActivity::class.java)
+                .putExtra(InviteAcceptActivity.EXTRA_CODE, pendingCode)
+        )
     }
 
     private fun updateBottomNavBadges(bottomNav: BottomNavigationView) {

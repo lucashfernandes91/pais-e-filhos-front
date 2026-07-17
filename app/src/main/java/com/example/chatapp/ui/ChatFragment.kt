@@ -40,6 +40,12 @@ import java.util.Locale
 import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment() {
+
+    companion object {
+        // Posições do topo que disparam o carregamento da página anterior.
+        private const val LOAD_OLDER_THRESHOLD = 3
+    }
+
     private lateinit var viewModel: ChatViewModel
     private lateinit var messagesRecyclerView: RecyclerView
     private lateinit var messageInput: TextInputEditText
@@ -246,6 +252,16 @@ class ChatFragment : Fragment() {
             adapter = messageAdapter
             setHasFixedSize(false)
         }
+
+        messagesRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy >= 0) return
+                val lm = recyclerView.layoutManager as? LinearLayoutManager ?: return
+                if (lm.findFirstVisibleItemPosition() <= LOAD_OLDER_THRESHOLD) {
+                    viewModel.loadOlderMessages()
+                }
+            }
+        })
     }
 
     private fun setupSendButton() {
@@ -455,6 +471,30 @@ class ChatFragment : Fragment() {
             if (isSearchActive && searchInput.text?.isNotBlank() == true) {
                 performSearch(searchInput.text.toString())
             }
+        }
+
+        // Histórico paginado: prepend sem rolar para o fim, ancorando a
+        // mensagem que estava no topo na mesma posição visual.
+        viewModel.olderMessages.observe(viewLifecycleOwner) { event ->
+            if (event == null) return@observe
+
+            val lm = messagesRecyclerView.layoutManager as? LinearLayoutManager
+            val previousTopPosition = messageAdapter.getAdapterPositionForMessage(0)
+            val anchorOffset = lm?.findViewByPosition(previousTopPosition)?.top ?: 0
+
+            allMessages = event.messages
+            messageAdapter.updateMessages(event.messages)
+
+            val newAnchorPosition =
+                messageAdapter.getAdapterPositionForMessage(event.prependedCount)
+            if (newAnchorPosition >= 0) {
+                lm?.scrollToPositionWithOffset(newAnchorPosition, anchorOffset)
+            }
+
+            if (isSearchActive && searchInput.text?.isNotBlank() == true) {
+                performSearch(searchInput.text.toString())
+            }
+            viewModel.consumeOlderMessages()
         }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMsg ->

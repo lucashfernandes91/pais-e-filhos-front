@@ -61,6 +61,34 @@
             android:windowSoftInputMode="stateUnspecified|adjustResize" />
 
         <activity
+            android:name=".InviteAcceptActivity"
+            android:exported="true"
+            android:label="@string/invite_accept_title"
+            android:theme="@style/Theme.ChatApp"
+            android:windowSoftInputMode="stateUnspecified|adjustResize">
+            <!-- Link compartilhado: https://coparent.app/convite/CODIGO.
+                 autoVerify exige assetlinks.json publicado no domínio (pendente A5). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="coparent.app"
+                    android:pathPrefix="/convite" />
+            </intent-filter>
+            <!-- Fallback por scheme próprio: coparent://convite/CODIGO -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="coparent"
+                    android:host="convite" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"

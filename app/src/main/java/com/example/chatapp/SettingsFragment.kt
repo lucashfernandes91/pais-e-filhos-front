@@ -72,11 +72,7 @@ class SettingsFragment : Fragment() {
             cardInviteParent.visibility = View.VISIBLE
 
             cardInviteParent.setOnClickListener {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.settings_invite_soon),
-                    Toast.LENGTH_SHORT
-                ).show()
+                InviteHelper.shareInvite(this)
             }
         } else {
             cardOtherParent.visibility = View.VISIBLE
@@ -95,6 +91,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun logout() {
+        LogoutHelper.notifyServerLogout(requireContext())
         PrefsHelper.clearAll(requireContext())
 
         Toast.makeText(requireContext(), getString(R.string.settings_logged_out), Toast.LENGTH_SHORT).show()

@@ -267,6 +267,16 @@
                         android:text="@string/ui_convidar"
                         android:paddingHorizontal="@dimen/spacing_sm"
                         android:minWidth="0dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEnterInviteCode"
+                        style="@style/Widget.CoParent.Button.Text.Compact"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/touch_target_min"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="@string/profile_enter_invite_code"
+                        android:paddingHorizontal="@dimen/spacing_sm"
+                        android:minWidth="0dp" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

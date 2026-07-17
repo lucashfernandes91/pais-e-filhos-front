@@ -30,6 +30,8 @@ object PrefsHelper {
     private const val KEY_OTHER_PARENT_NAME = "other_parent_name"
     private const val KEY_CHILDREN_NAMES = "children_names"
     private const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
+    private const val KEY_PENDING_INVITE_CODE = "pending_invite_code"
+    private const val KEY_WELCOME_PENDING = "welcome_pending"
 
     // Legacy keys kept only for one-shot migration; do not use elsewhere.
     private const val LEGACY_KEY_PUSH_NOTIFICATIONS = "push_notifications"
@@ -115,6 +117,34 @@ object PrefsHelper {
             .putInt(KEY_CONVERSATION_ID, NO_CONVERSATION_ID)
             .remove(KEY_OTHER_PARENT_NAME)
             .remove(KEY_CHILDREN_NAMES)
+            .apply()
+    }
+
+    // ── Convite pendente (deep link antes do login) ───────
+
+    fun getPendingInviteCode(context: Context): String? =
+        prefs(context).getString(KEY_PENDING_INVITE_CODE, null)
+
+    fun savePendingInviteCode(context: Context, code: String) {
+        prefs(context).edit()
+            .putString(KEY_PENDING_INVITE_CODE, code)
+            .apply()
+    }
+
+    fun clearPendingInviteCode(context: Context) {
+        prefs(context).edit()
+            .remove(KEY_PENDING_INVITE_CODE)
+            .apply()
+    }
+
+    // ── Boas-vindas pós-cadastro (B8) ─────────────────────
+
+    fun isWelcomePending(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_WELCOME_PENDING, false)
+
+    fun setWelcomePending(context: Context, pending: Boolean) {
+        prefs(context).edit()
+            .putBoolean(KEY_WELCOME_PENDING, pending)
             .apply()
     }
 

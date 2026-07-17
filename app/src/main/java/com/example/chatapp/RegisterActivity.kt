@@ -14,6 +14,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 import java.util.Calendar
 import java.util.Locale
 
@@ -58,7 +60,14 @@ class RegisterActivity : AppCompatActivity() {
         etPasswordConfirm = findViewById(R.id.etRegPasswordConfirm)
         btnRegister = findViewById(R.id.btnRegister)
 
-        findViewById<android.widget.ImageButton>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<android.widget.ImageButton>(R.id.btnBack).setOnClickListener {
+            // Vindo do onboarding esta tela é a raiz da task: voltar
+            // precisa levar para o login, não fechar o app.
+            if (isTaskRoot) {
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+            finish()
+        }
 
         setupInlineValidation()
         btnRegister.setOnClickListener { attemptRegister() }
@@ -244,6 +253,7 @@ class RegisterActivity : AppCompatActivity() {
                         this@RegisterActivity, accessToken, refreshToken, returnedUsername
                     )
                     PrefsHelper.saveConversationId(this@RegisterActivity, conversationId)
+                    PrefsHelper.setWelcomePending(this@RegisterActivity, true)
                     RetrofitClient.init(this@RegisterActivity)
 
                     Toast.makeText(this@RegisterActivity, getString(R.string.register_account_created), Toast.LENGTH_SHORT).show()
@@ -255,10 +265,39 @@ class RegisterActivity : AppCompatActivity() {
                 } else {
                     showError(getString(R.string.register_conversation_start_error))
                 }
+            } catch (e: HttpException) {
+                handleServerError(e)
+            } catch (_: IOException) {
+                showError(getString(R.string.login_error_connection))
             } catch (e: Exception) {
                 showError(getString(R.string.register_generic_error, e.message.orEmpty()))
             }
         }
+    }
+
+    /**
+     * B4: exibe a mensagem real do servidor e a ancora no campo certo
+     * ("Nome de usuário já existe" → campo de usuário, etc.).
+     */
+    private fun handleServerError(exception: HttpException) {
+        val message = ApiErrors.messageFrom(exception)
+        if (message == null) {
+            showError(getString(R.string.register_generic_error, "HTTP ${exception.code()}"))
+            return
+        }
+
+        val lower = message.lowercase(Locale.forLanguageTag("pt-BR"))
+        val field = when {
+            "usuário" in lower || "usuario" in lower -> tilUsername
+            "email" in lower || "e-mail" in lower -> tilEmail
+            "senha" in lower || "password" in lower -> tilPassword
+            "nascimento" in lower -> tilBirthDate
+            "sobrenome" in lower -> tilLastName
+            "nome" in lower -> tilFirstName
+            else -> null
+        }
+        field?.let { setError(it, message) }
+        showError(message)
     }
 
     // ──────────────────────────────────────────────

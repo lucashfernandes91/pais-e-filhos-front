@@ -19,6 +19,52 @@
         android:paddingHorizontal="@dimen/spacing_m"
         android:paddingTop="@dimen/spacing_m">
 
+        <!-- Banner: e-mail não confirmado (A3) -->
+        <LinearLayout
+            android:id="@+id/bannerVerifyEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_info_banner"
+            android:padding="@dimen/spacing_sm"
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/email_verify_banner_title"
+                    android:textSize="@dimen/text_size_s"
+                    android:textStyle="bold"
+                    android:textColor="@color/info_banner_text" />
+
+                <TextView
+                    android:id="@+id/tvVerifyEmailMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:textSize="@dimen/text_size_xs"
+                    android:textColor="@color/info_banner_text" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVerifyEmail"
+                style="@style/Widget.CoParent.Button.Text.Compact"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/touch_target_min"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:text="@string/email_verify_banner_action"
+                android:minWidth="0dp"
+                android:paddingHorizontal="@dimen/spacing_sm" />
+        </LinearLayout>
+
         <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"

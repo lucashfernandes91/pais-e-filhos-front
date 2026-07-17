@@ -7,7 +7,9 @@ interface ApiService {
     @GET("api/messages/{id}/")
     suspend fun getMessages(
         @Header("Authorization") token: String,
-        @Path("id") conversationId: Int
+        @Path("id") conversationId: Int,
+        @Query("before") before: Int? = null,
+        @Query("limit") limit: Int? = null
     ): List<Message>
 
     @POST("api/send-message/")
@@ -108,6 +110,12 @@ interface ApiService {
         @Body body: Map<String, String>
     ): Map<String, Any>
 
+    @POST("api/logout/")
+    suspend fun logout(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
     @POST("api/password-reset/request/")
     suspend fun requestPasswordReset(
         @Body body: Map<String, String>
@@ -128,6 +136,17 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Map<String, Any>
 
+    @POST("api/email/verify/")
+    suspend fun verifyEmail(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
+    @POST("api/email/verify/resend/")
+    suspend fun resendEmailVerification(
+        @Header("Authorization") token: String
+    ): Map<String, Any>
+
     @PUT("api/profile/")
     suspend fun updateProfile(
         @Header("Authorization") token: String,
@@ -139,6 +158,19 @@ interface ApiService {
     suspend fun getConversations(
         @Header("Authorization") token: String
     ): List<ConversationDetail>
+
+    // Invites
+    @POST("api/invites/")
+    suspend fun createInvite(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, Int>
+    ): Map<String, Any>
+
+    @POST("api/invites/accept/")
+    suspend fun acceptInvite(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, String>
+    ): Map<String, Any>
 
     // Children
     @GET("api/children/{conversationId}/")

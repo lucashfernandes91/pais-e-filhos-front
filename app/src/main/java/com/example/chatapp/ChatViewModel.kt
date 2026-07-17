@@ -10,7 +10,16 @@ class ChatViewModel(
     private val conversationId: Int
 ) : ViewModel() {
 
+    companion object {
+        // Deve acompanhar o page size padrão do backend (list_messages).
+        const val PAGE_SIZE = 100
+    }
+
+    /** Página de mensagens antigas anexada no topo da lista. */
+    data class OlderMessages(val messages: List<Message>, val prependedCount: Int)
+
     val messages = MutableLiveData<List<Message>>()
+    val olderMessages = MutableLiveData<OlderMessages?>()
     val isLoading = MutableLiveData<Boolean>()
     val error = MutableLiveData<String?>()
     val loadError = MutableLiveData<Boolean>(false)
@@ -18,6 +27,8 @@ class ChatViewModel(
     val typingUser = MutableLiveData<String?>(null)
 
     private val messageList = mutableListOf<Message>()
+    private var hasMoreOlder = false
+    private var isFetchingOlder = false
     private var token: String = ""
     private lateinit var wsManager: WebSocketManager
     private val currentUsername by lazy { PrefsHelper.getUsername(context) }
@@ -65,6 +76,7 @@ class ChatViewModel(
                 val bearerToken = "Bearer $token"
                 val result = RetrofitClient.api.getMessages(bearerToken, conversationId)
 
+                hasMoreOlder = result.size >= PAGE_SIZE
                 messageList.clear()
                 messageList.addAll(result.sortedBy { it.created_at })
                 messages.postValue(messageList.toList())
@@ -77,6 +89,35 @@ class ChatViewModel(
                 isLoading.postValue(false)
             }
         }
+    }
+
+    /** Carrega a página anterior do histórico ao rolar para o topo. */
+    fun loadOlderMessages() {
+        if (isFetchingOlder || !hasMoreOlder) return
+        val oldestId = messageList.firstOrNull { it.id > 0 }?.id ?: return
+
+        isFetchingOlder = true
+        viewModelScope.launch {
+            try {
+                val older = RetrofitClient.api.getMessages(
+                    "Bearer $token", conversationId, before = oldestId
+                )
+                hasMoreOlder = older.size >= PAGE_SIZE
+                if (older.isNotEmpty()) {
+                    val sorted = older.sortedBy { it.created_at }
+                    messageList.addAll(0, sorted)
+                    olderMessages.postValue(OlderMessages(messageList.toList(), sorted.size))
+                }
+            } catch (_: Exception) {
+                // Silencioso: rolar ao topo novamente refaz a tentativa.
+            } finally {
+                isFetchingOlder = false
+            }
+        }
+    }
+
+    fun consumeOlderMessages() {
+        olderMessages.value = null
     }
 
     fun sendMessage(text: String) {

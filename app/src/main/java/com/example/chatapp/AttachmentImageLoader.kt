@@ -38,8 +38,11 @@ object AttachmentImageLoader {
 
         imageView.setImageDrawable(null)
 
+        // Mídia é servida por endpoint autenticado (B2).
+        val token = PrefsHelper.getAuthToken(imageView.context)
+
         imageLoaderScope.launch {
-            val bitmap = fetchBitmap(url)
+            val bitmap = fetchBitmap(url, token)
             withContext(Dispatchers.Main) {
                 val currentUrl = imageView.getTag(R.id.tag_attachment_image_url) as? String
                 if (currentUrl != url) {
@@ -61,11 +64,14 @@ object AttachmentImageLoader {
         imageView.setImageDrawable(null)
     }
 
-    private fun fetchBitmap(url: String): Bitmap? {
+    private fun fetchBitmap(url: String, token: String): Bitmap? {
         return try {
             val request = Request.Builder()
                 .url(url)
                 .get()
+                .apply {
+                    if (token.isNotEmpty()) header("Authorization", "Bearer $token")
+                }
                 .build()
 
             httpClient.newCall(request).execute().use { response ->

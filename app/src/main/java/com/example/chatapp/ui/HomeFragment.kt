@@ -19,7 +19,11 @@ import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
 import com.example.chatapp.RetrofitClient
 import com.example.chatapp.SkeletonAnimator
+import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -129,6 +133,98 @@ class HomeFragment : Fragment() {
         loadUpcomingEvents(view, token)
         loadUnreadNotificationsCount(view, token)
         loadMessageTarget(view, token)
+        loadEmailVerificationStatus(view, token)
+    }
+
+    // ── A3: banner de confirmação de e-mail (soft) ───────
+
+    private fun loadEmailVerificationStatus(view: View, token: String) {
+        val banner = view.findViewById<View>(R.id.bannerVerifyEmail) ?: return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val profile = RetrofitClient.api.getProfile("Bearer $token")
+                val verified = (profile["email_verified"] as? Boolean) ?: true
+                val email = (profile["email"] as? String).orEmpty()
+                if (!isAdded || this@HomeFragment.view !== view) return@launch
+
+                if (verified || email.isBlank()) {
+                    banner.visibility = View.GONE
+                    return@launch
+                }
+
+                view.findViewById<TextView>(R.id.tvVerifyEmailMessage)?.text =
+                    getString(R.string.email_verify_banner_message, email)
+                banner.visibility = View.VISIBLE
+                view.findViewById<View>(R.id.btnVerifyEmail)?.setOnClickListener {
+                    showVerifyEmailDialog(banner, token, email)
+                }
+            } catch (_: Exception) {
+                // Sem status: mantém o banner como está.
+            }
+        }
+    }
+
+    private fun showVerifyEmailDialog(banner: View, token: String, email: String) {
+        val ctx = requireContext()
+        val dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_verify_email, null)
+        dialogView.findViewById<TextView>(R.id.tvVerifyEmailDialogMessage)?.text =
+            getString(R.string.email_verify_banner_message, email)
+        val etCode = dialogView.findViewById<TextInputEditText>(R.id.etVerifyCode)
+
+        val dialog = MaterialAlertDialogBuilder(ctx)
+            .setTitle(R.string.email_verify_dialog_title)
+            .setView(dialogView)
+            .setPositiveButton(R.string.email_verify_banner_action, null)
+            .setNeutralButton(R.string.email_verify_resend, null)
+            .setNegativeButton(R.string.action_cancel, null)
+            .create()
+
+        dialog.setOnShowListener {
+            // Listeners manuais: confirmar/reenviar não devem fechar o diálogo em erro.
+            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val code = etCode?.text.toString().trim()
+                if (code.length != 6) {
+                    Toast.makeText(ctx, R.string.email_verify_error_invalid, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        RetrofitClient.api.verifyEmail("Bearer $token", mapOf("code" to code))
+                        Toast.makeText(ctx, R.string.email_verify_success, Toast.LENGTH_LONG).show()
+                        banner.visibility = View.GONE
+                        dialog.dismiss()
+                    } catch (e: HttpException) {
+                        val message = if (e.code() == 429) {
+                            R.string.email_verify_error_rate_limit
+                        } else {
+                            R.string.email_verify_error_invalid
+                        }
+                        Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
+                    } catch (_: Exception) {
+                        Toast.makeText(ctx, R.string.email_verify_error_generic, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            dialog.getButton(android.app.AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        RetrofitClient.api.resendEmailVerification("Bearer $token")
+                        Toast.makeText(ctx, R.string.email_verify_code_resent, Toast.LENGTH_SHORT).show()
+                    } catch (e: HttpException) {
+                        val message = if (e.code() == 429) {
+                            R.string.email_verify_error_rate_limit
+                        } else {
+                            R.string.email_verify_error_generic
+                        }
+                        Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
+                    } catch (_: Exception) {
+                        Toast.makeText(ctx, R.string.email_verify_error_generic, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        dialog.show()
     }
 
     private fun loadUpcomingEvents(view: View, token: String) {

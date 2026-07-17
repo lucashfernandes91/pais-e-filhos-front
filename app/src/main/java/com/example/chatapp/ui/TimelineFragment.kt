@@ -68,6 +68,23 @@ class TimelineFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = TimelineAdapter()
         recyclerView.adapter = adapter
+
+        // Lista é decrescente (recentes no topo): chegar perto do fim
+        // carrega a página anterior de mensagens.
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                if (dy <= 0) return
+                val lm = rv.layoutManager as? LinearLayoutManager ?: return
+                if (lm.findLastVisibleItemPosition() >= adapter.itemCount - LOAD_OLDER_THRESHOLD) {
+                    viewModel.loadOlderMessages()
+                }
+            }
+        })
+    }
+
+    companion object {
+        // Posições antes do fim que disparam o carregamento da página anterior.
+        private const val LOAD_OLDER_THRESHOLD = 5
     }
 
     private fun observeTimeline() {

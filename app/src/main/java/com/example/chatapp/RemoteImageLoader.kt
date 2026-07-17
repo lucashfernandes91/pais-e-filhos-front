@@ -37,8 +37,11 @@ object RemoteImageLoader {
             return
         }
 
+        // Mídia é servida por endpoint autenticado (B2).
+        val token = PrefsHelper.getAuthToken(imageView.context)
+
         imageLoaderScope.launch {
-            val bitmap = fetchBitmap(url) ?: return@launch
+            val bitmap = fetchBitmap(url, token) ?: return@launch
             withContext(Dispatchers.Main) {
                 imageView.setImageBitmap(bitmap)
                 onLoaded?.invoke()
@@ -46,9 +49,11 @@ object RemoteImageLoader {
         }
     }
 
-    private fun fetchBitmap(url: String): Bitmap? {
+    private fun fetchBitmap(url: String, token: String): Bitmap? {
         return try {
-            val request = Request.Builder().url(url).get().build()
+            val request = Request.Builder().url(url).get().apply {
+                if (token.isNotEmpty()) header("Authorization", "Bearer $token")
+            }.build()
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) return null
 

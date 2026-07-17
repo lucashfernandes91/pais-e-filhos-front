@@ -53,7 +53,14 @@ class OnboardingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         if (PrefsHelper.isOnboardingComplete(this)) {
-            goToLogin()
+            // Sessão salva: direto para o app, sem flash da tela de login.
+            // Se o token estiver vencido, o AuthInterceptor renova; falhando,
+            // o guard do MainActivity devolve ao login.
+            if (PrefsHelper.getAuthToken(this).isNotEmpty()) {
+                goToMain()
+            } else {
+                goToLogin()
+            }
             return
         }
 
@@ -93,7 +100,11 @@ class OnboardingActivity : AppCompatActivity() {
         if (currentPage < pages.lastIndex) {
             updatePage(currentPage + 1)
         } else {
-            completeOnboarding()
+            // "Começar" é para quem chegou agora: vai criar conta.
+            // Quem já tem conta usa o secundário ("Já tenho uma conta").
+            PrefsHelper.setOnboardingComplete(this, true)
+            startActivity(Intent(this, RegisterActivity::class.java))
+            finish()
         }
     }
 
@@ -163,6 +174,11 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun goToLogin() {
         startActivity(Intent(this, LoginActivity::class.java))
+        finish()
+    }
+
+    private fun goToMain() {
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
