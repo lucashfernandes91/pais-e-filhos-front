@@ -95,7 +95,6 @@
 
     <!-- Form controls -->
     <dimen name="input_height_multiline">100dp</dimen>
-    <dimen name="dialog_height_privacy">400dp</dimen>
     <dimen name="skeleton_line_title_width_m">140dp</dimen>
     <dimen name="skeleton_line_title_width_l">160dp</dimen>
     <dimen name="skeleton_line_title_width_xl">180dp</dimen>
@@ -115,7 +114,7 @@
     <dimen name="auth_hero_icon_size">40dp</dimen>
     <dimen name="auth_hero_icon_title_gap">20dp</dimen>
     <dimen name="auth_title_description_gap">8dp</dimen>
-    <dimen name="auth_header_form_gap">32dp</dimen>
+    <dimen name="auth_header_form_gap">24dp</dimen>
 
     <!-- Motion -->
     <integer name="motion_duration_short">250</integer>

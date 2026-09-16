@@ -21,17 +21,21 @@ class ForgotPasswordActivity : AppCompatActivity() {
     private lateinit var etIdentifier: TextInputEditText
     private lateinit var tvForgotError: TextView
     private lateinit var btnSendCode: MaterialButton
+    private var isSendingCode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forgot_password)
+        setupAuthHeader(
+            R.string.ui_recuperar_senha,
+            R.string.auth_recovery_description,
+            showBack = true,
+        )
 
         tilIdentifier = findViewById(R.id.tilIdentifier)
         etIdentifier = findViewById(R.id.etIdentifier)
         tvForgotError = findViewById(R.id.tvForgotError)
         btnSendCode = findViewById(R.id.btnSendCode)
-
-        findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
 
         btnSendCode.setOnClickListener { attemptSendCode() }
 
@@ -44,6 +48,8 @@ class ForgotPasswordActivity : AppCompatActivity() {
     }
 
     private fun attemptSendCode() {
+        if (isSendingCode) return
+
         hideError()
         val identifier = etIdentifier.text.toString().trim()
 
@@ -53,6 +59,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
         }
         tilIdentifier.error = null
 
+        isSendingCode = true
         btnSendCode.isEnabled = false
         btnSendCode.setText(R.string.reset_sending_code)
 
@@ -75,6 +82,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
             } catch (_: Exception) {
                 showError(getString(R.string.reset_error_server))
             } finally {
+                isSendingCode = false
                 btnSendCode.isEnabled = true
                 btnSendCode.setText(R.string.ui_enviar_codigo)
             }

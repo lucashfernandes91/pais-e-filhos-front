@@ -52,7 +52,12 @@ class SettingsFragment : Fragment() {
             ).show()
         }
 
-        view.findViewById<View>(R.id.btnPrivacy)?.setOnClickListener { openPrivacyPolicy() }
+        view.findViewById<View>(R.id.btnPrivacy)?.setOnClickListener {
+            openPublicDocument(LegalDocuments.PRIVACY_URL)
+        }
+        view.findViewById<View>(R.id.btnLegal)?.setOnClickListener {
+            openPublicDocument(LegalDocuments.TERMS_URL)
+        }
         view.findViewById<View>(R.id.btnLogout)?.setOnClickListener { logout() }
     }
 
@@ -84,8 +89,7 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun openPrivacyPolicy() {
-        val url = "https://coparent.app/privacy"
+    private fun openPublicDocument(url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
     }

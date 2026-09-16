@@ -7,60 +7,21 @@
     android:fillViewport="true">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:paddingHorizontal="@dimen/entry_content_padding_horizontal"
-        android:paddingVertical="@dimen/entry_content_padding_bottom">
+        style="@style/Widget.CoParent.Auth.Content">
 
-        <!-- App Icon/Logo -->
-        <FrameLayout
-            android:layout_width="@dimen/auth_hero_icon_container_size"
-            android:layout_height="@dimen/auth_hero_icon_container_size"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/auth_hero_icon_title_gap"
-            android:background="@drawable/bg_icon_circle_blue">
-
-            <ImageView
-                android:layout_width="@dimen/auth_hero_icon_size"
-                android:layout_height="@dimen/auth_hero_icon_size"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_shield"
-                app:tint="@color/on_primary"
-                android:contentDescription="@string/ui_coparent_logo" />
-        </FrameLayout>
-
-        <!-- Title -->
-        <TextView
+        <include
+            layout="@layout/view_auth_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_coparent_lite"
-            android:textSize="@dimen/text_size_xxl"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginBottom="@dimen/auth_title_description_gap"
-            android:textColor="@color/gray_900" />
-
-        <!-- Subtitle/tagline -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/ui_organize_a_guarda_compartilhada_sem_conflitos"
-            android:textSize="@dimen/text_size_s_plus"
-            android:gravity="center"
-            android:textColor="@color/gray_600"
-            android:lineSpacingExtra="@dimen/spacing_xs"
-            android:layout_marginBottom="@dimen/auth_header_form_gap"
-            android:maxLines="2"
-            android:ellipsize="end" />
+            android:layout_marginBottom="@dimen/auth_header_form_gap" />
 
         <!-- Email/Username Field -->
         <TextView
             style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_usuario_ou_email" />
+            android:text="@string/ui_usuario_ou_email"
+            android:labelFor="@id/etEmail" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.CoParent.Form.TextInputLayout"
@@ -72,6 +33,7 @@
                 style="@style/Widget.CoParent.TextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:autofillHints="username"
                 android:hint="@string/ui_ex_ana_silva"
                 android:inputType="text"
                 android:imeOptions="actionNext" />
@@ -82,7 +44,8 @@
             style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ui_senha" />
+            android:text="@string/ui_senha"
+            android:labelFor="@id/etPassword" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.CoParent.Form.TextInputLayout"
@@ -96,24 +59,19 @@
                 style="@style/Widget.CoParent.TextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:autofillHints="password"
                 android:hint="@string/ui_sua_senha"
                 android:inputType="textPassword"
                 android:imeOptions="actionDone" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/tvForgotPasswordLink"
+            style="@style/Widget.CoParent.Button.Text.Compact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:text="@string/ui_esqueci_minha_senha"
-            android:textColor="@color/primary_blue"
-            android:textSize="@dimen/text_size_s_plus"
-            android:textStyle="bold"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
-            android:padding="@dimen/spacing_xs"
             android:layout_marginBottom="@dimen/spacing_s" />
 
         <TextView
@@ -127,7 +85,17 @@
             android:text="@string/login_error_invalid_credentials"
             android:textColor="@color/feedback_error_text"
             android:textSize="@dimen/text_size_s"
+            android:accessibilityLiveRegion="polite"
             android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRetryConversation"
+            style="@style/Widget.CoParent.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login_retry_conversation"
+            android:visibility="gone"
+            android:layout_marginBottom="@dimen/spacing_m" />
 
         <!-- Login Button -->
         <com.google.android.material.button.MaterialButton
@@ -136,15 +104,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_entrar"
-            android:layout_marginBottom="@dimen/spacing_m" />
+            android:layout_marginBottom="@dimen/spacing_s" />
 
         <!-- Divider with text -->
         <LinearLayout
-            style="@style/Widget.CoParent.Divider.Labeled.Row"
+            style="@style/Widget.CoParent.Divider.Labeled.Row.Compact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_m"
-            android:layout_marginBottom="@dimen/spacing_m">
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="@dimen/spacing_xs">
 
             <View
                 style="@style/Widget.CoParent.Divider.Labeled.Line"
@@ -162,12 +130,12 @@
                 android:background="@color/gray_300" />
         </LinearLayout>
 
-        <!-- Create Account Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/tvCreateAccount"
-            style="@style/Widget.CoParent.Button.Outlined"
-            android:layout_width="match_parent"
+            style="@style/Widget.CoParent.Button.Text.Compact"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:text="@string/ui_criar_nova_conta"
             />
     </LinearLayout>

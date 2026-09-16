@@ -39,8 +39,18 @@ android {
     }
 
     buildTypes {
+        debug {
+            val mockUsername = localProps.getProperty("dev.username", "pai_demo")
+            val mockPassword = localProps.getProperty("dev.password", "PaisEFilhos!2026")
+            buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "true")
+            buildConfigField("String", "MOCK_USERNAME", "\"$mockUsername\"")
+            buildConfigField("String", "MOCK_PASSWORD", "\"$mockPassword\"")
+        }
         release {
             isMinifyEnabled = false
+            buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "false")
+            buildConfigField("String", "MOCK_USERNAME", "\"\"")
+            buildConfigField("String", "MOCK_PASSWORD", "\"\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

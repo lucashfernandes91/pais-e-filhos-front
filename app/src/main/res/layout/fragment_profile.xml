@@ -450,6 +450,37 @@
 
                 <View style="@style/Widget.CoParent.Settings.Divider" />
 
+                <LinearLayout
+                    android:id="@+id/rowTerms"
+                    style="@style/Widget.CoParent.Settings.Row">
+
+                    <FrameLayout
+                        style="@style/Widget.CoParent.Settings.IconContainer.Primary">
+
+                        <ImageView
+                            style="@style/Widget.CoParent.Settings.Icon"
+                            android:src="@drawable/ic_shield"
+                            app:tint="@color/primary_blue"
+                            android:contentDescription="@string/ui_termos_de_uso" />
+                    </FrameLayout>
+
+                    <TextView
+                        style="@style/TextAppearance.CoParent.SettingsItem"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ui_termos_de_uso" />
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_badge_size"
+                        android:layout_height="@dimen/icon_badge_size"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/gray_400"
+                        android:contentDescription="@string/ui_ir_para" />
+                </LinearLayout>
+
+                <View style="@style/Widget.CoParent.Settings.Divider" />
+
                 <!-- Settings row: Logout (destructive) -->
                 <LinearLayout
                     android:id="@+id/rowLogout"

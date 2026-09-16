@@ -125,6 +125,17 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Map<String, Any>
 
+    @GET("api/legal/acceptance/")
+    suspend fun getLegalAcceptanceStatus(
+        @Header("Authorization") token: String
+    ): Map<String, Any>
+
+    @POST("api/legal/acceptance/")
+    suspend fun acceptLegalDocuments(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
     @POST("api/email/verify/")
     suspend fun verifyEmail(
         @Header("Authorization") token: String,
@@ -188,8 +199,6 @@ interface ApiService {
         @Path("childId") childId: Int,
         @Part("name") name: okhttp3.RequestBody,
         @Part("birth_date") birthDate: okhttp3.RequestBody,
-        @Part("cpf") cpf: okhttp3.RequestBody,
-        @Part("rg") rg: okhttp3.RequestBody,
         @Part("has_custody") hasCustody: okhttp3.RequestBody,
         @Part photo: okhttp3.MultipartBody.Part?
     ): Child

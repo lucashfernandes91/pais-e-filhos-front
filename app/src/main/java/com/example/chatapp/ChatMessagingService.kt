@@ -34,17 +34,19 @@ class ChatMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        val title = remoteMessage.notification?.title ?: "Mensagem"
-        val body = remoteMessage.notification?.body ?: ""
-
-        Log.d(TAG, "Message received - Title: $title, Body: $body")
-
         // Check user preferences before showing notification
         if (!shouldShowNotification()) {
             Log.d(TAG, "Notification suppressed by user preferences")
             return
         }
 
+        if (remoteMessage.data["notification_type"] == MESSAGE_NOTIFICATION_TYPE) {
+            showMessageNotification()
+            return
+        }
+
+        val title = remoteMessage.notification?.title ?: return
+        val body = remoteMessage.notification?.body.orEmpty()
         showNotification(title, body)
     }
 
@@ -91,7 +93,15 @@ class ChatMessagingService : FirebaseMessagingService() {
         }
     }
 
-    private fun showNotification(title: String, body: String) {
+    private fun showMessageNotification() {
+        showNotification(
+            title = MESSAGE_NOTIFICATION_TITLE,
+            body = MESSAGE_NOTIFICATION_BODY,
+            lockScreenTitle = LOCK_SCREEN_NOTIFICATION_TITLE
+        )
+    }
+
+    private fun showNotification(title: String, body: String, lockScreenTitle: String? = null) {
         val notificationId = System.currentTimeMillis().toInt()
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -125,15 +135,28 @@ class ChatMessagingService : FirebaseMessagingService() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_chat)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(pendingIntent)
-            .build()
+
+        if (lockScreenTitle != null) {
+            val lockScreenNotification = NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_chat)
+                .setContentTitle(lockScreenTitle)
+                .setAutoCancel(true)
+                .build()
+            notificationBuilder
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setPublicVersion(lockScreenNotification)
+        } else {
+            notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        }
+
+        val notification = notificationBuilder.build()
 
         notificationManager.notify(notificationId, notification)
         Log.d(TAG, "Notification shown: $notificationId")
@@ -147,5 +170,9 @@ class ChatMessagingService : FirebaseMessagingService() {
     companion object {
         private const val TAG = "ChatMessagingService"
         private const val CHANNEL_ID = "chat_notifications"
+        private const val MESSAGE_NOTIFICATION_TYPE = "message"
+        private const val MESSAGE_NOTIFICATION_TITLE = "Nova mensagem"
+        private const val MESSAGE_NOTIFICATION_BODY = "Você recebeu uma nova mensagem."
+        private const val LOCK_SCREEN_NOTIFICATION_TITLE = "Nova notificação"
     }
 }

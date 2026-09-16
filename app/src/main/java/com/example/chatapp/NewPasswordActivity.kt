@@ -29,6 +29,11 @@ class NewPasswordActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_password)
+        setupAuthHeader(
+            R.string.ui_nova_senha,
+            R.string.auth_new_password_description,
+            showBack = true,
+        )
 
         identifier = intent.getStringExtra(VerifyResetCodeActivity.EXTRA_IDENTIFIER).orEmpty()
         code = intent.getStringExtra(VerifyResetCodeActivity.EXTRA_CODE).orEmpty()
@@ -39,8 +44,6 @@ class NewPasswordActivity : AppCompatActivity() {
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
         tvNewPasswordError = findViewById(R.id.tvNewPasswordError)
         btnResetPassword = findViewById(R.id.btnResetPassword)
-
-        findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
 
         btnResetPassword.setOnClickListener { attemptReset() }
 
@@ -88,10 +91,7 @@ class NewPasswordActivity : AppCompatActivity() {
                 ).show()
                 goToLogin()
             } catch (e: HttpException) {
-                showError(
-                    if (e.code() == 429) getString(R.string.reset_error_rate_limit)
-                    else getString(R.string.reset_error_code_invalid)
-                )
+                handleResetHttpError(e)
             } catch (_: IOException) {
                 showError(getString(R.string.reset_error_connection))
             } catch (_: Exception) {
@@ -100,6 +100,24 @@ class NewPasswordActivity : AppCompatActivity() {
                 btnResetPassword.isEnabled = true
                 btnResetPassword.setText(R.string.ui_redefinir_senha)
             }
+        }
+    }
+
+    private fun handleResetHttpError(exception: HttpException) {
+        when (exception.code()) {
+            429 -> showError(getString(R.string.reset_error_rate_limit))
+            400 -> {
+                val message = ApiErrors.messageFrom(exception)
+                if (message == getString(R.string.reset_error_code_invalid)) {
+                    showError(getString(R.string.reset_error_code_invalid))
+                } else if (message != null) {
+                    tilNewPassword.error = message
+                    showError(message)
+                } else {
+                    showError(getString(R.string.reset_error_server))
+                }
+            }
+            else -> showError(getString(R.string.reset_error_server))
         }
     }
 

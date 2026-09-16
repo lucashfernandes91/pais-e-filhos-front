@@ -87,15 +87,12 @@ class EditChildFragment : Fragment() {
         populateFields(view, c)
         setupPhotoPicker(view, c)
         setupDatePicker(view, c)
-        setupCpfMask(view)
         setupSaveButton(view, c)
     }
 
     private fun populateFields(view: View, c: Child) {
         val etName = view.findViewById<TextInputEditText>(R.id.etChildName)
         val etBirth = view.findViewById<TextInputEditText>(R.id.etBirthDate)
-        val etCpf = view.findViewById<TextInputEditText>(R.id.etCpf)
-        val etRg = view.findViewById<TextInputEditText>(R.id.etRg)
         val cbCustody = view.findViewById<MaterialCheckBox>(R.id.cbHasCustody)
         val tvInitial = view.findViewById<TextView>(R.id.tvChildInitial)
 
@@ -107,8 +104,6 @@ class EditChildFragment : Fragment() {
             etBirth.setText(formatDateForDisplay(bd))
         }
 
-        c.cpf?.let { etCpf.setText(it) }
-        c.rg?.let { etRg.setText(it) }
         cbCustody.isChecked = c.has_custody
     }
 
@@ -174,37 +169,11 @@ class EditChildFragment : Fragment() {
         }
     }
 
-    private fun setupCpfMask(view: View) {
-        val etCpf = view.findViewById<TextInputEditText>(R.id.etCpf)
-
-        etCpf.addTextChangedListener(object : android.text.TextWatcher {
-            private var isUpdating = false
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: android.text.Editable?) {
-                if (isUpdating) return
-                isUpdating = true
-                val digits = s.toString().replace(Regex("[^0-9]"), "")
-                val formatted = when {
-                    digits.length > 9 -> "${digits.substring(0, 3)}.${digits.substring(3, 6)}.${digits.substring(6, 9)}-${digits.substring(9, minOf(digits.length, 11))}"
-                    digits.length > 6 -> "${digits.substring(0, 3)}.${digits.substring(3, 6)}.${digits.substring(6)}"
-                    digits.length > 3 -> "${digits.substring(0, 3)}.${digits.substring(3)}"
-                    else -> digits
-                }
-                etCpf.setText(formatted)
-                etCpf.setSelection(formatted.length)
-                isUpdating = false
-            }
-        })
-    }
-
     private fun setupSaveButton(view: View, c: Child) {
         val btnSave = view.findViewById<MaterialButton>(R.id.btnSave)
 
         btnSave.setOnClickListener {
             val name = view.findViewById<TextInputEditText>(R.id.etChildName).text?.toString()?.trim()
-            val cpf = view.findViewById<TextInputEditText>(R.id.etCpf).text?.toString()?.trim().orEmpty()
-            val rg = view.findViewById<TextInputEditText>(R.id.etRg).text?.toString()?.trim().orEmpty()
             val hasCustody = view.findViewById<MaterialCheckBox>(R.id.cbHasCustody).isChecked
 
             if (name.isNullOrBlank()) {
@@ -222,7 +191,7 @@ class EditChildFragment : Fragment() {
             btnSave.isEnabled = false
             btnSave.setText(R.string.child_saving)
 
-            updateChild(c.id, name, selectedBirthDate, cpf, rg, hasCustody, btnSave)
+            updateChild(c.id, name, selectedBirthDate, hasCustody, btnSave)
         }
     }
 
@@ -230,8 +199,6 @@ class EditChildFragment : Fragment() {
         childId: Int,
         name: String,
         birthDate: String?,
-        cpf: String?,
-        rg: String?,
         hasCustody: Boolean,
         btnSave: MaterialButton
     ) {
@@ -252,8 +219,6 @@ class EditChildFragment : Fragment() {
                     childId,
                     name.toRequestBody(textType),
                     birthDate.orEmpty().toRequestBody(textType),
-                    cpf.orEmpty().toRequestBody(textType),
-                    rg.orEmpty().toRequestBody(textType),
                     hasCustody.toString().toRequestBody(textType),
                     photoPart
                 )

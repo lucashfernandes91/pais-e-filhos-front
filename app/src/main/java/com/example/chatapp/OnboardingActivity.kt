@@ -52,6 +52,12 @@ class OnboardingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (BuildConfig.MOCK_LOGIN_ENABLED) {
+            PrefsHelper.setOnboardingComplete(this, true)
+            goToLogin()
+            return
+        }
+
         if (PrefsHelper.isOnboardingComplete(this)) {
             // Sessão salva: direto para o app, sem flash da tela de login.
             // Se o token estiver vencido, o AuthInterceptor renova; falhando,

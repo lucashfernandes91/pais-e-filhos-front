@@ -53,14 +53,17 @@
         <item name="boxStrokeErrorColor">@color/error</item>
         <item name="boxStrokeWidth">@dimen/stroke_width_thin</item>
         <item name="errorEnabled">false</item>
-        <item name="helperTextEnabled">false</item>
+        <item name="helperTextEnabled">true</item>
+        <item name="helperText">@string/form_feedback_placeholder</item>
+        <item name="android:accessibilityLiveRegion">polite</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.CoParent.Input</item>
     </style>
 
     <style name="Widget.CoParent.TextInputEditText" parent="Widget.AppCompat.EditText">
         <item name="android:minHeight">@dimen/input_height</item>
-        <item name="android:paddingStart">@dimen/spacing_sm</item>
-        <item name="android:paddingEnd">@dimen/spacing_sm</item>
+        <item name="android:paddingStart">@dimen/spacing_m</item>
+        <item name="android:paddingEnd">@dimen/spacing_m</item>
+        <item name="android:includeFontPadding">false</item>
         <item name="android:textColor">@color/on_surface</item>
         <item name="android:textColorHint">@color/on_surface_variant</item>
         <item name="android:textSize">@dimen/text_size_m</item>
@@ -69,7 +72,9 @@
     <style name="TextAppearance.CoParent.InputLabel" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textColor">@color/input_label_text_color</item>
         <item name="android:textSize">@dimen/text_size_s</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="Widget.CoParent.Card.Surface" parent="Widget.MaterialComponents.CardView">
@@ -212,6 +217,17 @@
 
     <style name="Widget.CoParent.Form.Content.Compact" parent="Widget.CoParent.Form.Content">
         <item name="android:paddingBottom">@dimen/spacing_m</item>
+    </style>
+
+    <style name="Widget.CoParent.Auth.Content" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingStart">@dimen/entry_content_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/entry_content_padding_horizontal</item>
+        <item name="android:paddingTop">@dimen/entry_navigation_padding_top</item>
+        <item name="android:paddingBottom">@dimen/entry_content_padding_bottom</item>
     </style>
 
     <style name="Widget.CoParent.Form.Header.Row" parent="">

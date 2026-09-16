@@ -1,0 +1,10 @@
+# Copie para local.properties e ajuste sdk.dir para sua maquina.
+sdk.dir=C\:\\Users\\SEU_USUARIO\\AppData\\Local\\Android\\Sdk
+
+# Dispositivo fisico via USB + adb reverse tcp:8000 tcp:8000.
+dev.host=localhost
+dev.port=8000
+
+# Conta criada por: python manage.py seed_mobile_dev
+dev.username=pai_demo
+dev.password=PaisEFilhos!2026

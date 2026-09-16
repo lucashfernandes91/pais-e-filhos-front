@@ -328,7 +328,7 @@
                     style="@style/Widget.CoParent.Settings.Divider"
                     android:layout_marginEnd="@dimen/spacing_m" />
 
-                <!-- Validade jurídica -->
+                <!-- Termos de Uso -->
                 <LinearLayout
                     android:id="@+id/btnLegal"
                     style="@style/Widget.CoParent.Settings.Row">
@@ -340,7 +340,7 @@
                             style="@style/Widget.CoParent.Settings.Icon"
                             android:src="@drawable/ic_shield"
                             app:tint="@color/primary_blue"
-                            android:contentDescription="@string/ui_validade" />
+                            android:contentDescription="@string/ui_termos_de_uso" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -353,14 +353,14 @@
                             style="@style/TextStyle.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/ui_validade_juridica"
+                            android:text="@string/ui_termos_de_uso"
                             android:textStyle="bold" />
 
                         <TextView
                             style="@style/TextStyle.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/ui_como_funciona_o_registro_oficial"
+                            android:text="@string/ui_regras_de_uso_do_aplicativo"
                             android:layout_marginTop="@dimen/spacing_xs" />
                     </LinearLayout>
 
@@ -369,7 +369,7 @@
                         android:layout_height="@dimen/icon_badge_size"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/gray_400"
-                        android:contentDescription="@string/ui_validade" />
+                        android:contentDescription="@string/ui_termos_de_uso" />
                 </LinearLayout>
 
                 <View

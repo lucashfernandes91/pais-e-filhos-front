@@ -122,38 +122,64 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         updateBottomNavBadges(bottomNav)
+        if (showWelcomeIfPending()) return
         resumePendingInvite()
-        showWelcomeIfPending()
     }
 
-    /** B8: pós-cadastro, aponta os 2 passos que fazem o app funcionar. */
-    private fun showWelcomeIfPending() {
-        if (!PrefsHelper.isWelcomePending(this)) return
+    /** Pós-cadastro: apresenta uma única orientação, sem abrir o convite em paralelo. */
+    private fun showWelcomeIfPending(): Boolean {
+        if (!PrefsHelper.isWelcomePending(this)) return false
         PrefsHelper.setWelcomePending(this, false)
+        val pendingInviteCode = PrefsHelper.getPendingInviteCode(this)
 
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
             .setTitle(R.string.welcome_title)
-            .setMessage(R.string.welcome_message)
-            .setPositiveButton(R.string.welcome_go_to_profile) { _, _ ->
-                val navHost = supportFragmentManager
-                    .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
-                try {
-                    navHost?.navController?.navigate(R.id.profileFragment)
-                } catch (_: Exception) {
+            .setMessage(
+                if (pendingInviteCode.isNullOrBlank()) {
+                    R.string.welcome_message
+                } else {
+                    R.string.welcome_message_with_pending_invite
+                }
+            )
+            .setPositiveButton(
+                if (pendingInviteCode.isNullOrBlank()) {
+                    R.string.welcome_go_to_profile
+                } else {
+                    R.string.welcome_review_pending_invite
+                }
+            ) { _, _ ->
+                if (pendingInviteCode.isNullOrBlank()) {
+                    navigateToProfile()
+                } else {
+                    openPendingInvite(pendingInviteCode)
                 }
             }
             .setNegativeButton(R.string.welcome_later, null)
             .show()
+        return true
     }
 
     /** Deep link de convite recebido antes do login: retoma o aceite. */
     private fun resumePendingInvite() {
         val pendingCode = PrefsHelper.getPendingInviteCode(this) ?: return
+        openPendingInvite(pendingCode)
+    }
+
+    private fun openPendingInvite(code: String) {
         PrefsHelper.clearPendingInviteCode(this)
         startActivity(
             android.content.Intent(this, InviteAcceptActivity::class.java)
-                .putExtra(InviteAcceptActivity.EXTRA_CODE, pendingCode)
+                .putExtra(InviteAcceptActivity.EXTRA_CODE, code)
         )
+    }
+
+    private fun navigateToProfile() {
+        val navHost = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
+        try {
+            navHost?.navController?.navigate(R.id.profileFragment)
+        } catch (_: Exception) {
+        }
     }
 
     private fun updateBottomNavBadges(bottomNav: BottomNavigationView) {

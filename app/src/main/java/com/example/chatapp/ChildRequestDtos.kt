@@ -13,14 +13,11 @@ data class CreateChildRequest(
     @SerializedName("birth_date")
     val birthDate: String,
 
-    @SerializedName("cpf")
-    val cpf: String? = null,
-
-    @SerializedName("rg")
-    val rg: String? = null,
-
     @SerializedName("has_custody")
-    val hasCustody: Boolean = false
+    val hasCustody: Boolean = false,
+
+    @SerializedName("declare_legal_responsibility")
+    val declareLegalResponsibility: Boolean = false
 ) : Serializable {
     init {
         require(name.isNotBlank()) { "Nome do filho não pode estar vazio" }
@@ -37,12 +34,6 @@ data class UpdateChildRequest(
 
     @SerializedName("birth_date")
     val birthDate: String? = null,
-
-    @SerializedName("cpf")
-    val cpf: String? = null,
-
-    @SerializedName("rg")
-    val rg: String? = null,
 
     @SerializedName("has_custody")
     val hasCustody: Boolean? = null

@@ -84,14 +84,11 @@
     <string name="ui_foto">Foto</string>
     <string name="ui_nome_do_filho_a">Nome do filho(a)</string>
     <string name="ui_data_de_nascimento">Data de nascimento</string>
-    <string name="ui_cpf_opcional">CPF (opcional)</string>
-    <string name="ui_rg_opcional">RG (opcional)</string>
     <string name="ui_possuo_a_guarda_desta_crianca">Possuo a guarda desta crian&#231;a</string>
     <string name="ui_conviv">Convívio</string>
     <string name="ui_nome">Nome</string>
     <string name="ui_sobrenome">Sobrenome</string>
     <string name="ui_email">Email</string>
-    <string name="ui_politica_de_privacidade_coparent_lite_n_nultima_atualizacao" tools:ignore="Typos">Pol&#237;tica de Privacidade &#8212; CoParent Lite\n\n&#218;ltima atualiza&#231;&#227;o: Abril 2026\n\n1. Coleta de Dados\nColetamos apenas os dados necess&#225;rios para o funcionamento do app: nome, email, mensagens e eventos. N&#227;o coletamos dados de localiza&#231;&#227;o, contatos ou fotos (exceto quando enviadas voluntariamente como anexo).\n\n2. Uso dos Dados\nSeus dados s&#227;o usados exclusivamente para:\n&#8226; Comunica&#231;&#227;o entre coparentais\n&#8226; Registro oficial de mensagens e eventos\n&#8226; Gera&#231;&#227;o de relat&#243;rios PDF para fins legais\n&#8226; Notifica&#231;&#245;es sobre mensagens e eventos\n\n3. Armazenamento\nAs mensagens e eventos s&#227;o armazenados de forma segura em nossos servidores. Os dados s&#227;o criptografados em tr&#226;nsito (HTTPS/WSS) e em repouso.\n\n4. Compartilhamento\nN&#227;o compartilhamos, vendemos ou transferimos seus dados pessoais a terceiros, exceto quando exigido por ordem judicial.\n\n5. Imutabilidade\nAs mensagens enviadas pelo app s&#227;o imut&#225;veis &#8212; n&#227;o podem ser editadas ou apagadas. Isso garante a integridade do registro para fins legais.\n\n6. Exclus&#227;o de Conta\nVoc&#234; pode solicitar a exclus&#227;o da sua conta e todos os dados associados a qualquer momento atrav&#233;s do email suporte@coparent.app.\n\n7. Menores de Idade\nO app &#233; destinado a pais/respons&#225;veis legais maiores de 18 anos. N&#227;o coletamos dados de menores.\n\n8. Altera&#231;&#245;es\nReserva-se o direito de atualizar esta pol&#237;tica. Altera&#231;&#245;es significativas ser&#227;o comunicadas por email ou notifica&#231;&#227;o no app.\n\n9. Contato\nD&#250;vidas: suporte@coparent.app</string>
     <string name="ui_novo">Novo</string>
     <string name="ui_evento">Evento</string>
     <string name="ui_d">D</string>
@@ -113,12 +110,8 @@
     <string name="ui_guarda">Guarda</string>
     <string name="ui_sob_sua_guarda">Sob sua guarda</string>
     <string name="ui_informacoes">Informa&#231;&#245;es</string>
-    <string name="ui_cpf">CPF</string>
-    <string name="ui_rg">RG</string>
     <string name="ui_remover_filho">Remover filho</string>
     <string name="ui_editar_dados">Editar dados</string>
-    <string name="ui_000_000_000_00" tools:ignore="TypographyDashes">000.000.000-00</string>
-    <string name="ui_numero_do_rg">N&#250;mero do RG</string>
     <string name="ui_salvar_alteracoes">Salvar altera&#231;&#245;es</string>
     <string name="ui_as_alteracoes_sao_registradas_no_historico_oficial">As altera&#231;&#245;es s&#227;o registradas no hist&#243;rico oficial.</string>
     <string name="ui_guarda_atual">GUARDA ATUAL</string>
@@ -167,6 +160,8 @@
     <string name="ui_validade">Validade</string>
     <string name="ui_validade_juridica">Validade jur&#237;dica</string>
     <string name="ui_como_funciona_o_registro_oficial">Como funciona o registro oficial</string>
+    <string name="ui_termos_de_uso">Termos de Uso</string>
+    <string name="ui_regras_de_uso_do_aplicativo">Regras de uso do aplicativo</string>
     <string name="ui_ajuda">Ajuda</string>
     <string name="ui_ajuda_e_suporte">Ajuda &amp; Suporte</string>
     <string name="ui_linha_do_tempo">Linha do tempo</string>

@@ -25,6 +25,7 @@ import com.example.chatapp.CreateChildRequest
 import com.example.chatapp.InviteAcceptActivity
 import com.example.chatapp.InviteHelper
 import com.example.chatapp.LoginActivity
+import com.example.chatapp.LegalDocuments
 import com.example.chatapp.LogoutHelper
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.dpToPx
@@ -127,7 +128,10 @@ class ProfileFragment : Fragment() {
 
         // Privacidade
         view.findViewById<View>(R.id.rowPrivacy)?.setOnClickListener {
-            showPrivacyDialog()
+            openPublicDocument(LegalDocuments.PRIVACY_URL)
+        }
+        view.findViewById<View>(R.id.rowTerms)?.setOnClickListener {
+            openPublicDocument(LegalDocuments.TERMS_URL)
         }
 
         // Logout
@@ -403,8 +407,7 @@ class ProfileFragment : Fragment() {
 
         val etName = dialogView.findViewById<EditText>(R.id.etChildName)
         val etBirthDate = dialogView.findViewById<EditText>(R.id.etChildBirthDate)
-        val etCpf = dialogView.findViewById<EditText>(R.id.etChildCpf)
-        val etRg = dialogView.findViewById<EditText>(R.id.etChildRg)
+        val cbLegalDeclaration = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.cbChildLegalDeclaration)
         val cbHasCustody = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.cbHasCustody)
         val btnChildPhoto = dialogView.findViewById<View>(R.id.btnChildPhoto)
         val ivChildPhoto = dialogView.findViewById<ImageView>(R.id.ivChildPhoto)
@@ -413,27 +416,6 @@ class ProfileFragment : Fragment() {
 
         var selectedDate: String? = null
         var selectedPhotoUri: Uri? = null
-
-        // Máscara simples de CPF
-        etCpf.addTextChangedListener(object : android.text.TextWatcher {
-            private var isUpdating = false
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: android.text.Editable?) {
-                if (isUpdating) return
-                isUpdating = true
-                val digits = s.toString().replace(Regex("[^0-9]"), "")
-                val formatted = when {
-                    digits.length > 9 -> "${digits.substring(0,3)}.${digits.substring(3,6)}.${digits.substring(6,9)}-${digits.substring(9, minOf(digits.length, 11))}"
-                    digits.length > 6 -> "${digits.substring(0,3)}.${digits.substring(3,6)}.${digits.substring(6)}"
-                    digits.length > 3 -> "${digits.substring(0,3)}.${digits.substring(3)}"
-                    else -> digits
-                }
-                etCpf.setText(formatted)
-                etCpf.setSelection(formatted.length)
-                isUpdating = false
-            }
-        })
 
         // Foto picker
         btnChildPhoto.setOnClickListener {
@@ -483,12 +465,16 @@ class ProfileFragment : Fragment() {
                     etBirthDate.error = getString(R.string.child_birth_date_required)
                     isValid = false
                 }
+                if (!cbLegalDeclaration.isChecked) {
+                    cbLegalDeclaration.error = getString(R.string.child_legal_declaration_required)
+                    isValid = false
+                } else {
+                    cbLegalDeclaration.error = null
+                }
                 if (!isValid) return@setOnClickListener
 
-                val cpf = etCpf.text.toString().trim().ifEmpty { null }
-                val rg = etRg.text.toString().trim().ifEmpty { null }
                 val hasCustody = cbHasCustody.isChecked
-                createChild(name, selectedDate!!, cpf, rg, hasCustody) {
+                createChild(name, selectedDate!!, hasCustody, true) {
                     dialog.dismiss()
                 }
             }
@@ -499,9 +485,8 @@ class ProfileFragment : Fragment() {
     private fun createChild(
         name: String,
         birthDate: String,
-        cpf: String?,
-        rg: String?,
         hasCustody: Boolean,
+        declareLegalResponsibility: Boolean,
         onSuccess: () -> Unit
     ) {
         val token = PrefsHelper.getAuthToken(requireContext())
@@ -526,9 +511,8 @@ class ProfileFragment : Fragment() {
                     name = name.trim(),
                     conversationId = conversationId,
                     birthDate = birthDate.trim(),
-                    cpf = cpf,
-                    rg = rg,
-                    hasCustody = hasCustody
+                    hasCustody = hasCustody,
+                    declareLegalResponsibility = declareLegalResponsibility
                 )
 
                 android.util.Log.d("ProfileFragment", "createChild: convId=$conversationId, name=$name, birthDate=$birthDate")
@@ -725,18 +709,8 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    // ── Privacidade ──────────────────────────────────────
-
-    private fun showPrivacyDialog() {
-        val dialogRoot = requireActivity().findViewById<ViewGroup>(android.R.id.content)
-        val dialogView = LayoutInflater.from(requireContext())
-            .inflate(R.layout.dialog_privacy, dialogRoot, false)
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.profile_privacy_title)
-            .setView(dialogView)
-            .setPositiveButton(R.string.action_close, null)
-            .show()
+    private fun openPublicDocument(url: String) {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 
     // ── Convite ──────────────────────────────────────────

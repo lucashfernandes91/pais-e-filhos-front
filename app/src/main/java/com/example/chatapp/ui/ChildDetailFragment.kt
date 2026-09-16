@@ -199,10 +199,6 @@ class ChildDetailFragment : Fragment() {
         val notInformed = getString(R.string.child_not_informed)
         view.findViewById<TextView>(R.id.tvBirthDate).text =
             currentChild.birth_date?.takeIf { it.isNotBlank() }?.let(::formatBirthDate) ?: notInformed
-        view.findViewById<TextView>(R.id.tvCpf).text =
-            currentChild.cpf?.takeIf { it.isNotBlank() } ?: notInformed
-        view.findViewById<TextView>(R.id.tvRg).text =
-            currentChild.rg?.takeIf { it.isNotBlank() } ?: notInformed
         view.findViewById<TextView>(R.id.tvCustodyValue).setText(
             if (currentChild.has_custody) {
                 R.string.child_custody_with_you

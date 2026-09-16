@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
     <application
         android:name=".CoParentApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -38,6 +38,12 @@
             android:name=".RegisterActivity"
             android:exported="false"
             android:label="Registro"
+            android:theme="@style/Theme.ChatApp" />
+
+        <activity
+            android:name=".LegalAcceptanceActivity"
+            android:exported="false"
+            android:label="Documentos legais"
             android:theme="@style/Theme.ChatApp" />
 
         <activity

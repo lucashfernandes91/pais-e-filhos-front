@@ -2,6 +2,8 @@ package com.example.chatapp.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,9 +30,14 @@ import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.util.*
 
+private const val EMAIL_RESEND_COOLDOWN_MS = 30_000L
+
 class HomeFragment : Fragment() {
 
     private var swipeRefresh: SwipeRefreshLayout? = null
+    private var isResendingEmailVerification = false
+    private var emailResendAvailableAt = 0L
+    private var emailResendCountdown: CountDownTimer? = null
     private val apiDateKeyFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
 
     private fun getGreetingByTime(): String {
@@ -207,12 +214,25 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
-            dialog.getButton(android.app.AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+            val resendButton = dialog.getButton(android.app.AlertDialog.BUTTON_NEUTRAL)
+            updateEmailResendButton(resendButton)
+            resendButton.setOnClickListener {
+                if (isResendingEmailVerification || emailResendAvailableAt > SystemClock.elapsedRealtime()) {
+                    return@setOnClickListener
+                }
+
+                isResendingEmailVerification = true
+                resendButton.isEnabled = false
+                resendButton.text = getString(R.string.email_verify_resending)
                 viewLifecycleOwner.lifecycleScope.launch {
                     try {
                         RetrofitClient.api.resendEmailVerification("Bearer $token")
                         Toast.makeText(ctx, R.string.email_verify_code_resent, Toast.LENGTH_SHORT).show()
+                        emailResendAvailableAt = SystemClock.elapsedRealtime() + EMAIL_RESEND_COOLDOWN_MS
                     } catch (e: HttpException) {
+                        if (e.code() == 429) {
+                            emailResendAvailableAt = SystemClock.elapsedRealtime() + EMAIL_RESEND_COOLDOWN_MS
+                        }
                         val message = if (e.code() == 429) {
                             R.string.email_verify_error_rate_limit
                         } else {
@@ -221,11 +241,43 @@ class HomeFragment : Fragment() {
                         Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
                     } catch (_: Exception) {
                         Toast.makeText(ctx, R.string.email_verify_error_generic, Toast.LENGTH_SHORT).show()
+                    } finally {
+                        isResendingEmailVerification = false
+                        updateEmailResendButton(resendButton)
                     }
                 }
             }
         }
+        dialog.setOnDismissListener {
+            emailResendCountdown?.cancel()
+            emailResendCountdown = null
+        }
         dialog.show()
+    }
+
+    private fun updateEmailResendButton(button: android.widget.Button) {
+        emailResendCountdown?.cancel()
+        val remaining = emailResendAvailableAt - SystemClock.elapsedRealtime()
+        if (remaining <= 0L) {
+            emailResendAvailableAt = 0L
+            button.isEnabled = !isResendingEmailVerification
+            if (!isResendingEmailVerification) button.setText(R.string.email_verify_resend)
+            return
+        }
+
+        button.isEnabled = false
+        emailResendCountdown = object : CountDownTimer(remaining, 1_000L) {
+            override fun onTick(millisUntilFinished: Long) {
+                val seconds = (millisUntilFinished + 999L) / 1_000L
+                button.text = getString(R.string.email_verify_resend_wait, seconds)
+            }
+
+            override fun onFinish() {
+                emailResendAvailableAt = 0L
+                button.isEnabled = true
+                button.setText(R.string.email_verify_resend)
+            }
+        }.start()
     }
 
     private fun loadUpcomingEvents(view: View, token: String) {
