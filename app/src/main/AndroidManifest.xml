@@ -16,6 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatApp"
         android:networkSecurityConfig="@xml/network_security_config">
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="${firebaseMessagingAutoInitEnabled}" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="${firebaseAnalyticsCollectionEnabled}" />
         <activity
             android:name=".OnboardingActivity"
             android:exported="true"
@@ -73,7 +79,7 @@
             android:label="@string/invite_accept_title"
             android:theme="@style/Theme.ChatApp"
             android:windowSoftInputMode="stateUnspecified|adjustResize">
-            <!-- Link compartilhado: https://coparent.app/convite/CODIGO.
+            <!-- Link compartilhado: https://dominio-do-ambiente/convite/CODIGO.
                  autoVerify exige assetlinks.json publicado no domínio (pendente A5). -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -81,7 +87,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
-                    android:host="coparent.app"
+                    android:host="${appLinkHost}"
                     android:pathPrefix="/convite" />
             </intent-filter>
             <!-- Fallback por scheme próprio: coparent://convite/CODIGO -->

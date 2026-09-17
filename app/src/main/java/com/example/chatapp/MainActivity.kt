@@ -70,14 +70,15 @@ class MainActivity : AppCompatActivity() {
             bottomNav.menu.findItem(destination.id)?.isChecked = true
         }
 
-        // Register Firebase token
-        registerFirebaseToken()
+        if (BuildConfig.FIREBASE_MESSAGING_ENABLED) {
+            registerFirebaseToken()
+        }
 
         // Load badges
         updateBottomNavBadges(bottomNav)
 
-        // Request notification permission (Android 13+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        // Request notification permission only where Firebase messaging is enabled.
+        if (BuildConfig.FIREBASE_MESSAGING_ENABLED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
                     Manifest.permission.POST_NOTIFICATIONS

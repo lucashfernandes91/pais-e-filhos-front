@@ -36,6 +36,11 @@ android {
         val devPort = localProps.getProperty("dev.port", "8000")
         buildConfigField("String", "API_BASE_URL", "\"http://$devHost:$devPort/\"")
         buildConfigField("String", "WS_BASE_URL", "\"ws://$devHost:$devPort/\"")
+        buildConfigField("String", "LEGAL_BASE_URL", "\"https://coparent.app\"")
+        buildConfigField("boolean", "FIREBASE_MESSAGING_ENABLED", "true")
+        manifestPlaceholders["appLinkHost"] = "coparent.app"
+        manifestPlaceholders["firebaseMessagingAutoInitEnabled"] = "true"
+        manifestPlaceholders["firebaseAnalyticsCollectionEnabled"] = "true"
     }
 
     buildTypes {
@@ -56,6 +61,24 @@ android {
                 "proguard-rules.pro"
             )
         }
+        create("staging") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-hml"
+            isDebuggable = true
+
+            buildConfigField("String", "API_BASE_URL", "\"https://coparent-hml.originstudios.com.br/\"")
+            buildConfigField("String", "WS_BASE_URL", "\"wss://coparent-hml.originstudios.com.br/\"")
+            buildConfigField("String", "LEGAL_BASE_URL", "\"https://coparent-hml.originstudios.com.br\"")
+            buildConfigField("boolean", "FIREBASE_MESSAGING_ENABLED", "false")
+            buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "false")
+            buildConfigField("String", "MOCK_USERNAME", "\"\"")
+            buildConfigField("String", "MOCK_PASSWORD", "\"\"")
+            manifestPlaceholders["appLinkHost"] = "coparent-hml.originstudios.com.br"
+            manifestPlaceholders["firebaseMessagingAutoInitEnabled"] = "false"
+            manifestPlaceholders["firebaseAnalyticsCollectionEnabled"] = "false"
+            resValue("string", "app_name", "CoParent Homologação")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -63,6 +86,15 @@ android {
     }
     buildFeatures {
         buildConfig = true
+        resValues = true
+    }
+}
+
+tasks.matching { it.name == "processStagingGoogleServices" }.configureEach {
+    doFirst {
+        check(file("src/staging/google-services.json").isFile) {
+            "A variante staging exige app/src/staging/google-services.json de um projeto Firebase exclusivo de homologação."
+        }
     }
 }
 
