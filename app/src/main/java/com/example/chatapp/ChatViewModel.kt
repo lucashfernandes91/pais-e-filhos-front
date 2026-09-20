@@ -48,6 +48,15 @@ class ChatViewModel(
         }
     }
 
+    private fun currentBearerToken(): String? {
+        token = PrefsHelper.getAuthToken(context)
+        if (token.isEmpty()) {
+            error.postValue("Token not found. Please login first.")
+            return null
+        }
+        return "Bearer $token"
+    }
+
     private fun initWebSocket() {
         wsManager = WebSocketManager(
             conversationId = conversationId,
@@ -73,7 +82,7 @@ class ChatViewModel(
                 error.postValue(null)
                 loadError.postValue(false)
 
-                val bearerToken = "Bearer $token"
+                val bearerToken = currentBearerToken() ?: return@launch
                 val result = RetrofitClient.api.getMessages(bearerToken, conversationId)
 
                 hasMoreOlder = result.size >= PAGE_SIZE
@@ -100,7 +109,7 @@ class ChatViewModel(
         viewModelScope.launch {
             try {
                 val older = RetrofitClient.api.getMessages(
-                    "Bearer $token", conversationId, before = oldestId
+                    currentBearerToken() ?: return@launch, conversationId, before = oldestId
                 )
                 hasMoreOlder = older.size >= PAGE_SIZE
                 if (older.isNotEmpty()) {
@@ -144,7 +153,7 @@ class ChatViewModel(
         viewModelScope.launch {
             try {
                 isLoading.postValue(true)
-                val bearerToken = "Bearer $token"
+                val bearerToken = currentBearerToken() ?: return@launch
                 RetrofitClient.api.sendMessage(
                     bearerToken,
                     mapOf(
@@ -187,7 +196,10 @@ class ChatViewModel(
 
             for (text in toSend) {
                 try {
-                    val bearerToken = "Bearer $token"
+                    val bearerToken = currentBearerToken() ?: run {
+                        pendingMessages.addAll(toSend)
+                        return@launch
+                    }
                     RetrofitClient.api.sendMessage(
                         bearerToken,
                         mapOf(
@@ -208,7 +220,7 @@ class ChatViewModel(
     // Item 20: Marcar mensagens do outro pai como lidas
     private fun markOtherMessagesAsRead() {
         viewModelScope.launch {
-            val bearerToken = "Bearer $token"
+            val bearerToken = currentBearerToken() ?: return@launch
             for (msg in messageList) {
                 if (msg.sender != currentUsername && msg.id > 0) {
                     // Verificar se já foi lida (sem read_by do user atual)
@@ -228,7 +240,7 @@ class ChatViewModel(
     fun markAsRead(messageId: Int) {
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
+                val bearerToken = currentBearerToken() ?: return@launch
                 RetrofitClient.api.markMessageAsRead(bearerToken, messageId)
             } catch (_: Exception) {}
         }
@@ -239,7 +251,7 @@ class ChatViewModel(
         viewModelScope.launch {
             try {
                 isLoading.postValue(true)
-                val bearerToken = "Bearer $token"
+                val bearerToken = currentBearerToken() ?: return@launch
 
                 val contentResolver = context.contentResolver
                 var mimeType = contentResolver.getType(uri) ?: "application/octet-stream"

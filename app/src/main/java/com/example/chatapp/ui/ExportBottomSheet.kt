@@ -1,8 +1,11 @@
 package com.example.chatapp.ui
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 
 class ExportBottomSheet : BottomSheetDialogFragment() {
 
@@ -120,17 +124,11 @@ class ExportBottomSheet : BottomSheetDialogFragment() {
                     exportType
                 )
 
-                val downloadDir = ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-                    ?: File(ctx.filesDir, "downloads").also { it.mkdirs() }
-
                 val typeLabel = if (exportType == TYPE_EVENTS) "Eventos" else "Mensagens"
                 val fileName = "CoParent_${typeLabel}_${conversationId}.pdf"
-                val pdfFile = File(downloadDir, fileName)
 
-                responseBody.byteStream().use { input ->
-                    FileOutputStream(pdfFile).use { output ->
-                        input.copyTo(output)
-                    }
+                val pdfFile = responseBody.byteStream().use { input ->
+                    savePdfToDownloads(input, fileName)
                 }
 
                 withContext(Dispatchers.Main) {
@@ -162,18 +160,50 @@ class ExportBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun sharePdfFile(file: File) {
+    private fun savePdfToDownloads(input: InputStream, fileName: String): Uri {
+        val ctx = requireContext()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val values = android.content.ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
+                put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/CoParent")
+            }
+            val uri = ctx.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                ?: error("Não foi possível criar o arquivo em Downloads")
+            try {
+                ctx.contentResolver.openOutputStream(uri)?.use { output ->
+                    input.copyTo(output)
+                } ?: error("Não foi possível gravar o arquivo em Downloads")
+            } catch (e: Exception) {
+                ctx.contentResolver.delete(uri, null, null)
+                throw e
+            }
+            uri
+        } else {
+            val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val coparentDir = File(downloadDir, "CoParent").also { it.mkdirs() }
+            val pdfFile = File(coparentDir, fileName)
+            FileOutputStream(pdfFile).use { output -> input.copyTo(output) }
+            Uri.fromFile(pdfFile)
+        }
+    }
+
+    private fun sharePdfFile(uri: Uri) {
         try {
             val ctx = requireContext()
-            val uri = FileProvider.getUriForFile(
-                ctx,
-                "${ctx.packageName}.fileprovider",
-                file
-            )
+            val shareUri = if (uri.scheme == "file") {
+                FileProvider.getUriForFile(
+                    ctx,
+                    "${ctx.packageName}.fileprovider",
+                    File(requireNotNull(uri.path))
+                )
+            } else {
+                uri
+            }
 
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"
-                putExtra(Intent.EXTRA_STREAM, uri)
+                putExtra(Intent.EXTRA_STREAM, shareUri)
                 putExtra(Intent.EXTRA_SUBJECT, getString(R.string.export_share_subject))
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }

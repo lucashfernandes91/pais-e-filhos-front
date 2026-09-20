@@ -84,6 +84,7 @@ class NotificationsFragment : Fragment() {
      */
     private fun loadNotifications() {
         showLoadingState()
+        token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty()) {
             showErrorState()
             return
@@ -118,6 +119,7 @@ class NotificationsFragment : Fragment() {
      * Updates UI only after backend confirms success.
      */
     private fun markAllAsRead() {
+        token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty() || isActionRunning) return
 
         lifecycleScope.launch {
@@ -156,6 +158,7 @@ class NotificationsFragment : Fragment() {
      * Marks a single notification as read on the backend, then updates UI.
      */
     private fun markSingleAsRead(item: NotificationItem) {
+        token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty() || item.isRead) return
 
         lifecycleScope.launch {
@@ -180,6 +183,7 @@ class NotificationsFragment : Fragment() {
     }
 
     private fun deleteAllNotifications() {
+        token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty() || isActionRunning) return
 
         lifecycleScope.launch {

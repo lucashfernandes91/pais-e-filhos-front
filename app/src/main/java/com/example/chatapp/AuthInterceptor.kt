@@ -13,8 +13,8 @@ import org.json.JSONObject
  * Handles expired JWT access tokens without starting activities from OkHttp.
  *
  * Starting LoginActivity from an interceptor can race with the Activity lifecycle
- * while the app is already opening the login screen. On refresh failure we only
- * clear the local session and return 401; the visible screen decides navigation.
+ * while the app is already opening the login screen. Temporary refresh failures
+ * keep the local session; only a proven-invalid refresh token clears it.
  */
 class AuthInterceptor(private val context: Context) : Interceptor {
 
@@ -53,21 +53,23 @@ class AuthInterceptor(private val context: Context) : Interceptor {
                 return chain.proceed(retryRequest)
             }
 
-            val newToken = performTokenRefresh(chain, refreshToken)
-            if (newToken != null) {
-                PrefsHelper.saveAccessToken(context, newToken)
-                val retryRequest = originalRequest.newBuilder()
-                    .header("Authorization", "Bearer $newToken")
-                    .build()
-                return chain.proceed(retryRequest)
-            }
+            when (val refreshResult = performTokenRefresh(chain, refreshToken)) {
+                is RefreshResult.Success -> {
+                    PrefsHelper.saveAccessToken(context, refreshResult.accessToken)
+                    val retryRequest = originalRequest.newBuilder()
+                        .header("Authorization", "Bearer ${refreshResult.accessToken}")
+                        .build()
+                    return chain.proceed(retryRequest)
+                }
 
-            expireLocalSession()
+                RefreshResult.InvalidSession -> expireLocalSession()
+                RefreshResult.RetryableFailure -> Unit
+            }
             return unauthorizedResponse
         }
     }
 
-    private fun performTokenRefresh(chain: Interceptor.Chain, refreshToken: String): String? {
+    private fun performTokenRefresh(chain: Interceptor.Chain, refreshToken: String): RefreshResult {
         return try {
             val json = JSONObject().apply {
                 put("refresh", refreshToken)
@@ -91,17 +93,30 @@ class AuthInterceptor(private val context: Context) : Interceptor {
                     PrefsHelper.saveRefreshToken(context, newRefreshToken)
                 }
                 refreshResponse.close()
-                if (newAccessToken.isNotEmpty()) newAccessToken else null
+                if (newAccessToken.isNotEmpty()) {
+                    RefreshResult.Success(newAccessToken)
+                } else {
+                    RefreshResult.RetryableFailure
+                }
+            } else if (refreshResponse.code == 401 || refreshResponse.code == 403) {
+                refreshResponse.close()
+                RefreshResult.InvalidSession
             } else {
                 refreshResponse.close()
-                null
+                RefreshResult.RetryableFailure
             }
         } catch (_: Exception) {
-            null
+            RefreshResult.RetryableFailure
         }
     }
 
     private fun expireLocalSession() {
         PrefsHelper.clearSession(context)
+    }
+
+    private sealed class RefreshResult {
+        data class Success(val accessToken: String) : RefreshResult()
+        object InvalidSession : RefreshResult()
+        object RetryableFailure : RefreshResult()
     }
 }

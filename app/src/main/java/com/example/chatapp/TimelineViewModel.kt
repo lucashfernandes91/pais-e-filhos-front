@@ -1,12 +1,16 @@
 package com.example.chatapp
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class TimelineViewModel(private val token: String, private val conversationId: Int) : ViewModel() {
+class TimelineViewModel(
+    private val context: Context,
+    private val conversationId: Int
+) : ViewModel() {
 
     companion object {
         // Deve acompanhar o page size padrão do backend (list_messages).
@@ -22,14 +26,24 @@ class TimelineViewModel(private val token: String, private val conversationId: I
     private var hasMoreMessages = false
     private var isFetchingOlder = false
 
+    private fun currentBearerToken(): String? {
+        val token = PrefsHelper.getAuthToken(context)
+        if (token.isEmpty()) {
+            error.postValue("Erro ao carregar: sessão indisponível")
+            return null
+        }
+        return "Bearer $token"
+    }
+
     fun loadTimeline() {
         viewModelScope.launch {
             try {
                 isLoading.postValue(true)
                 error.postValue(null)
 
-                val messages = RetrofitClient.api.getMessages("Bearer $token", conversationId)
-                val events = RetrofitClient.api.getEvents("Bearer $token", conversationId)
+                val bearerToken = currentBearerToken() ?: return@launch
+                val messages = RetrofitClient.api.getMessages(bearerToken, conversationId)
+                val events = RetrofitClient.api.getEvents(bearerToken, conversationId)
 
                 hasMoreMessages = messages.size >= PAGE_SIZE
                 oldestMessageId = messages.minByOrNull { it.id }?.id
@@ -57,7 +71,7 @@ class TimelineViewModel(private val token: String, private val conversationId: I
         viewModelScope.launch {
             try {
                 val older = RetrofitClient.api.getMessages(
-                    "Bearer $token", conversationId, before = before
+                    currentBearerToken() ?: return@launch, conversationId, before = before
                 )
                 hasMoreMessages = older.size >= PAGE_SIZE
                 if (older.isNotEmpty()) {
@@ -76,10 +90,12 @@ class TimelineViewModel(private val token: String, private val conversationId: I
 }
 
 class TimelineViewModelFactory(
-    private val token: String,
+    context: Context,
     private val conversationId: Int
 ) : ViewModelProvider.Factory {
+    private val appContext = context.applicationContext
+
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return TimelineViewModel(token, conversationId) as T
+        return TimelineViewModel(appContext, conversationId) as T
     }
 }

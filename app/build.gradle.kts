@@ -66,16 +66,17 @@ android {
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-hml"
             isDebuggable = true
+            signingConfig = signingConfigs.getByName("debug")
 
             buildConfigField("String", "API_BASE_URL", "\"https://coparent-hml.originstudios.com.br/\"")
             buildConfigField("String", "WS_BASE_URL", "\"wss://coparent-hml.originstudios.com.br/\"")
             buildConfigField("String", "LEGAL_BASE_URL", "\"https://coparent-hml.originstudios.com.br\"")
-            buildConfigField("boolean", "FIREBASE_MESSAGING_ENABLED", "false")
+            buildConfigField("boolean", "FIREBASE_MESSAGING_ENABLED", "true")
             buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "false")
             buildConfigField("String", "MOCK_USERNAME", "\"\"")
             buildConfigField("String", "MOCK_PASSWORD", "\"\"")
             manifestPlaceholders["appLinkHost"] = "coparent-hml.originstudios.com.br"
-            manifestPlaceholders["firebaseMessagingAutoInitEnabled"] = "false"
+            manifestPlaceholders["firebaseMessagingAutoInitEnabled"] = "true"
             manifestPlaceholders["firebaseAnalyticsCollectionEnabled"] = "false"
             resValue("string", "app_name", "CoParent Homologação")
         }

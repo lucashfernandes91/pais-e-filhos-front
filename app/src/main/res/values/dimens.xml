@@ -105,7 +105,7 @@
     <!-- Entry flow: onboarding, login and registration -->
     <dimen name="entry_content_padding_horizontal">24dp</dimen>
     <dimen name="entry_content_padding_bottom">24dp</dimen>
-    <dimen name="entry_navigation_padding_top">16dp</dimen>
+    <dimen name="entry_navigation_padding_top">32dp</dimen>
     <dimen name="onboarding_hero_icon_container_size">96dp</dimen>
     <dimen name="onboarding_hero_icon_size">64dp</dimen>
     <dimen name="onboarding_hero_icon_title_gap">32dp</dimen>

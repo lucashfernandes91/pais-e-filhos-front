@@ -18,10 +18,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="@dimen/height_action"
+            android:minHeight="@dimen/touch_target_min"
             android:orientation="horizontal"
             android:paddingHorizontal="@dimen/spacing_sm"
-            android:paddingVertical="@dimen/spacing_sm">
+            android:paddingVertical="@dimen/spacing_s">
 
             <ImageView
                 android:id="@+id/ivPickerIcon"

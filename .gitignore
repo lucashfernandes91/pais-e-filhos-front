@@ -20,3 +20,5 @@ local.properties
 
 # Android Studio local project metadata
 /.idea/.name
+    /app/src/staging/google-services.json
+/.kotlin/errors/errors-1789875277284.log

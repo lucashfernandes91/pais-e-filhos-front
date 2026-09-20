@@ -12,7 +12,8 @@
 
         <!-- Header -->
         <LinearLayout
-            style="@style/Widget.CoParent.Form.Header.Row">
+            style="@style/Widget.CoParent.Form.Header.Row"
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <ImageButton
                 android:id="@+id/btnBack"
@@ -43,7 +44,7 @@
             style="@style/Widget.CoParent.TextInputLayout.Event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_l">
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEventTitle"
@@ -60,7 +61,7 @@
             android:id="@+id/layoutDateTimeSingle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_l"
+            android:layout_marginBottom="@dimen/spacing_m"
             android:orientation="horizontal">
 
             <FrameLayout
@@ -151,7 +152,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            android:layout_marginBottom="@dimen/spacing_l">
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <TextView
                 style="@style/TextAppearance.CoParent.Form.SectionLabel.Emphasis"
@@ -205,7 +206,7 @@
             android:id="@+id/chipGroupType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_l"
+            android:layout_marginBottom="@dimen/spacing_m"
             app:chipSpacingHorizontal="@dimen/spacing_s"
             app:chipSpacingVertical="@dimen/spacing_s"
             app:selectionRequired="true"
@@ -251,7 +252,7 @@
             style="@style/Widget.CoParent.TextInputLayout.Event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_l">
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEventNotes"

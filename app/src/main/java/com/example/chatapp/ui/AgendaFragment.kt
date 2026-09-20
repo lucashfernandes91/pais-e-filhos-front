@@ -816,6 +816,7 @@ class AgendaFragment : Fragment() {
         lifecycleScope.launch {
             showLoadingState()
             try {
+                token = PrefsHelper.getAuthToken(requireContext())
                 if (
                     token.isEmpty() ||
                     apiService == null ||

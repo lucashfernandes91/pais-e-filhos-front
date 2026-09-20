@@ -226,6 +226,14 @@
             android:text="@string/register_adult_declaration"
             android:textColor="@color/gray_700" />
 
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbLegalAcceptance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_s"
+            android:text="@string/register_legal_acceptance_short"
+            android:textColor="@color/gray_700" />
+
         <TextView
             style="@style/TextAppearance.CoParent.Form.SectionLabel"
             android:layout_width="match_parent"
@@ -262,13 +270,6 @@
                 android:maxLines="2"
                 android:ellipsize="none" />
         </LinearLayout>
-
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/cbLegalAcceptance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/register_legal_acceptance_short"
-            android:textColor="@color/gray_700" />
 
         </LinearLayout>
 

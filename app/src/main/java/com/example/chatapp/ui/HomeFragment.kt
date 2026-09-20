@@ -98,7 +98,8 @@ class HomeFragment : Fragment() {
         swipeRefresh = view.findViewById(R.id.swipeRefreshHome)
         swipeRefresh?.setColorSchemeResources(R.color.primary_blue)
         swipeRefresh?.setOnRefreshListener {
-            if (token.isNotEmpty()) loadAllData(view, token)
+            val currentToken = PrefsHelper.getAuthToken(requireContext())
+            if (currentToken.isNotEmpty()) loadAllData(view, currentToken)
             else swipeRefresh?.isRefreshing = false
         }
 
@@ -403,11 +404,19 @@ class HomeFragment : Fragment() {
         tvCustodyHeaderLabel?.setText(R.string.ui_guarda_atual)
         tvNextSwapLabel?.setText(R.string.ui_proxima_troca)
 
+        val username = PrefsHelper.getUsername(ctx)
+        val hasDeclaredCustody = children.any { child ->
+            child.has_custody && child.created_by_name == username
+        }
         val custodyEvents = events.filter { AppEventType.fromRaw(it.event_type).isCustody }
 
         if (custodyEvents.isEmpty()) {
-            custodyLegalBadge?.visibility = View.GONE
-            tvCustodyStatus?.setText(R.string.home_no_custody_configured)
+            custodyLegalBadge?.visibility = if (hasDeclaredCustody) View.VISIBLE else View.GONE
+            if (hasDeclaredCustody) {
+                tvCustodyStatus?.setText(R.string.home_with_you)
+            } else {
+                tvCustodyStatus?.setText(R.string.home_no_custody_configured)
+            }
             tvNextSwapLabel?.setText(R.string.home_next_step_label)
             tvNextSwapDate?.setText(R.string.home_add_custody_events)
             return
@@ -434,7 +443,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        val username = PrefsHelper.getUsername(ctx)
         val otherParentName = PrefsHelper.getOtherParentName(ctx)
             .replaceFirstChar { it.uppercase() }.ifEmpty { ctx.getString(R.string.home_other_parent) }
 
@@ -446,6 +454,8 @@ class HomeFragment : Fragment() {
             } else {
                 ctx.getString(R.string.home_with_parent, otherParentName)
             }
+        } else if (hasDeclaredCustody) {
+            tvCustodyStatus?.setText(R.string.home_with_you)
         } else {
             tvCustodyStatus?.setText(R.string.home_no_active_custody)
         }

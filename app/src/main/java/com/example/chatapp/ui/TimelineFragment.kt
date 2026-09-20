@@ -34,7 +34,6 @@ class TimelineFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val token = PrefsHelper.getAuthToken(requireContext())
         val conversationId = PrefsHelper.getConversationId(requireContext())
 
         recyclerView = view.findViewById(R.id.timelineRecyclerView)
@@ -42,7 +41,7 @@ class TimelineFragment : Fragment() {
         errorState = view.findViewById(R.id.errorStateTimeline)
         progressLoading = view.findViewById(R.id.progressLoadingTimeline)
 
-        val factory = TimelineViewModelFactory(token, conversationId)
+        val factory = TimelineViewModelFactory(requireContext(), conversationId)
         viewModel = ViewModelProvider(this, factory)[TimelineViewModel::class.java]
 
         setupRecyclerView()
