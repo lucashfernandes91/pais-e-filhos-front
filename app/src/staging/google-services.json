@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "862026275502",
+    "project_id": "coparent-homologacao",
+    "storage_bucket": "coparent-homologacao.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:862026275502:android:6ffca03f3fc440dcdcab3f",
+        "android_client_info": {
+          "package_name": "com.example.chatapp.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADUpkj0iJ1c4GcmylfZ0jDVhaA7C2oJs0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

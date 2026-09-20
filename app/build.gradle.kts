@@ -1,7 +1,14 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+}
+
+// Carrega local.properties (gitignored, por dev). Fallback se ausente.
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
@@ -20,15 +27,58 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Host do backend em dev. Sobrescreva em local.properties:
+        //   dev.host=localhost       (celular físico via adb reverse)
+        //   dev.host=192.168.x.x     (celular na mesma WiFi)
+        // Default = 10.0.2.2 (emulador).
+        val devHost = localProps.getProperty("dev.host", "10.0.2.2")
+        val devPort = localProps.getProperty("dev.port", "8000")
+        buildConfigField("String", "API_BASE_URL", "\"http://$devHost:$devPort/\"")
+        buildConfigField("String", "WS_BASE_URL", "\"ws://$devHost:$devPort/\"")
+        buildConfigField("String", "LEGAL_BASE_URL", "\"https://coparent.app\"")
+        buildConfigField("boolean", "FIREBASE_MESSAGING_ENABLED", "true")
+        manifestPlaceholders["appLinkHost"] = "coparent.app"
+        manifestPlaceholders["firebaseMessagingAutoInitEnabled"] = "true"
+        manifestPlaceholders["firebaseAnalyticsCollectionEnabled"] = "true"
     }
 
     buildTypes {
+        debug {
+            val mockUsername = localProps.getProperty("dev.username", "pai_demo")
+            val mockPassword = localProps.getProperty("dev.password", "PaisEFilhos!2026")
+            buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "true")
+            buildConfigField("String", "MOCK_USERNAME", "\"$mockUsername\"")
+            buildConfigField("String", "MOCK_PASSWORD", "\"$mockPassword\"")
+        }
         release {
             isMinifyEnabled = false
+            buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "false")
+            buildConfigField("String", "MOCK_USERNAME", "\"\"")
+            buildConfigField("String", "MOCK_PASSWORD", "\"\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        create("staging") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-hml"
+            isDebuggable = true
+            signingConfig = signingConfigs.getByName("debug")
+
+            buildConfigField("String", "API_BASE_URL", "\"https://coparent-hml.originstudios.com.br/\"")
+            buildConfigField("String", "WS_BASE_URL", "\"wss://coparent-hml.originstudios.com.br/\"")
+            buildConfigField("String", "LEGAL_BASE_URL", "\"https://coparent-hml.originstudios.com.br\"")
+            buildConfigField("boolean", "FIREBASE_MESSAGING_ENABLED", "true")
+            buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "false")
+            buildConfigField("String", "MOCK_USERNAME", "\"\"")
+            buildConfigField("String", "MOCK_PASSWORD", "\"\"")
+            manifestPlaceholders["appLinkHost"] = "coparent-hml.originstudios.com.br"
+            manifestPlaceholders["firebaseMessagingAutoInitEnabled"] = "true"
+            manifestPlaceholders["firebaseAnalyticsCollectionEnabled"] = "false"
+            resValue("string", "app_name", "CoParent Homologação")
         }
     }
     compileOptions {
@@ -36,29 +86,30 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     buildFeatures {
-        compose = true
+        buildConfig = true
+        resValues = true
+    }
+}
+
+tasks.matching { it.name == "processStagingGoogleServices" }.configureEach {
+    doFirst {
+        check(file("src/staging/google-services.json").isFile) {
+            "A variante staging exige app/src/staging/google-services.json de um projeto Firebase exclusivo de homologação."
+        }
     }
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")

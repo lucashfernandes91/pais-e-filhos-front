@@ -2,6 +2,8 @@ package com.example.chatapp.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,19 +14,30 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.chatapp.AppEventType
 import com.example.chatapp.Child
 import com.example.chatapp.Event
 import com.example.chatapp.PrefsHelper
+import com.example.chatapp.dpToPx
 import com.example.chatapp.R
 import com.example.chatapp.RetrofitClient
 import com.example.chatapp.SkeletonAnimator
+import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.util.*
+
+private const val EMAIL_RESEND_COOLDOWN_MS = 30_000L
 
 class HomeFragment : Fragment() {
 
     private var swipeRefresh: SwipeRefreshLayout? = null
+    private var isResendingEmailVerification = false
+    private var emailResendAvailableAt = 0L
+    private var emailResendCountdown: CountDownTimer? = null
     private val apiDateKeyFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
 
     private fun getGreetingByTime(): String {
@@ -85,7 +98,8 @@ class HomeFragment : Fragment() {
         swipeRefresh = view.findViewById(R.id.swipeRefreshHome)
         swipeRefresh?.setColorSchemeResources(R.color.primary_blue)
         swipeRefresh?.setOnRefreshListener {
-            if (token.isNotEmpty()) loadAllData(view, token)
+            val currentToken = PrefsHelper.getAuthToken(requireContext())
+            if (currentToken.isNotEmpty()) loadAllData(view, currentToken)
             else swipeRefresh?.isRefreshing = false
         }
 
@@ -128,6 +142,143 @@ class HomeFragment : Fragment() {
         loadUpcomingEvents(view, token)
         loadUnreadNotificationsCount(view, token)
         loadMessageTarget(view, token)
+        loadEmailVerificationStatus(view, token)
+    }
+
+    // ── A3: banner de confirmação de e-mail (soft) ───────
+
+    private fun loadEmailVerificationStatus(view: View, token: String) {
+        val banner = view.findViewById<View>(R.id.bannerVerifyEmail) ?: return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val profile = RetrofitClient.api.getProfile("Bearer $token")
+                val verified = (profile["email_verified"] as? Boolean) ?: true
+                val email = (profile["email"] as? String).orEmpty()
+                if (!isAdded || this@HomeFragment.view !== view) return@launch
+
+                if (verified || email.isBlank()) {
+                    banner.visibility = View.GONE
+                    return@launch
+                }
+
+                view.findViewById<TextView>(R.id.tvVerifyEmailMessage)?.text =
+                    getString(R.string.email_verify_banner_message, email)
+                banner.visibility = View.VISIBLE
+                view.findViewById<View>(R.id.btnVerifyEmail)?.setOnClickListener {
+                    showVerifyEmailDialog(banner, token, email)
+                }
+            } catch (_: Exception) {
+                // Sem status: mantém o banner como está.
+            }
+        }
+    }
+
+    private fun showVerifyEmailDialog(banner: View, token: String, email: String) {
+        val ctx = requireContext()
+        val dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_verify_email, null)
+        dialogView.findViewById<TextView>(R.id.tvVerifyEmailDialogMessage)?.text =
+            getString(R.string.email_verify_banner_message, email)
+        val etCode = dialogView.findViewById<TextInputEditText>(R.id.etVerifyCode)
+
+        val dialog = MaterialAlertDialogBuilder(ctx)
+            .setTitle(R.string.email_verify_dialog_title)
+            .setView(dialogView)
+            .setPositiveButton(R.string.email_verify_banner_action, null)
+            .setNeutralButton(R.string.email_verify_resend, null)
+            .setNegativeButton(R.string.action_cancel, null)
+            .create()
+
+        dialog.setOnShowListener {
+            // Listeners manuais: confirmar/reenviar não devem fechar o diálogo em erro.
+            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val code = etCode?.text.toString().trim()
+                if (code.length != 6) {
+                    Toast.makeText(ctx, R.string.email_verify_error_invalid, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        RetrofitClient.api.verifyEmail("Bearer $token", mapOf("code" to code))
+                        Toast.makeText(ctx, R.string.email_verify_success, Toast.LENGTH_LONG).show()
+                        banner.visibility = View.GONE
+                        dialog.dismiss()
+                    } catch (e: HttpException) {
+                        val message = if (e.code() == 429) {
+                            R.string.email_verify_error_rate_limit
+                        } else {
+                            R.string.email_verify_error_invalid
+                        }
+                        Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
+                    } catch (_: Exception) {
+                        Toast.makeText(ctx, R.string.email_verify_error_generic, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            val resendButton = dialog.getButton(android.app.AlertDialog.BUTTON_NEUTRAL)
+            updateEmailResendButton(resendButton)
+            resendButton.setOnClickListener {
+                if (isResendingEmailVerification || emailResendAvailableAt > SystemClock.elapsedRealtime()) {
+                    return@setOnClickListener
+                }
+
+                isResendingEmailVerification = true
+                resendButton.isEnabled = false
+                resendButton.text = getString(R.string.email_verify_resending)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        RetrofitClient.api.resendEmailVerification("Bearer $token")
+                        Toast.makeText(ctx, R.string.email_verify_code_resent, Toast.LENGTH_SHORT).show()
+                        emailResendAvailableAt = SystemClock.elapsedRealtime() + EMAIL_RESEND_COOLDOWN_MS
+                    } catch (e: HttpException) {
+                        if (e.code() == 429) {
+                            emailResendAvailableAt = SystemClock.elapsedRealtime() + EMAIL_RESEND_COOLDOWN_MS
+                        }
+                        val message = if (e.code() == 429) {
+                            R.string.email_verify_error_rate_limit
+                        } else {
+                            R.string.email_verify_error_generic
+                        }
+                        Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
+                    } catch (_: Exception) {
+                        Toast.makeText(ctx, R.string.email_verify_error_generic, Toast.LENGTH_SHORT).show()
+                    } finally {
+                        isResendingEmailVerification = false
+                        updateEmailResendButton(resendButton)
+                    }
+                }
+            }
+        }
+        dialog.setOnDismissListener {
+            emailResendCountdown?.cancel()
+            emailResendCountdown = null
+        }
+        dialog.show()
+    }
+
+    private fun updateEmailResendButton(button: android.widget.Button) {
+        emailResendCountdown?.cancel()
+        val remaining = emailResendAvailableAt - SystemClock.elapsedRealtime()
+        if (remaining <= 0L) {
+            emailResendAvailableAt = 0L
+            button.isEnabled = !isResendingEmailVerification
+            if (!isResendingEmailVerification) button.setText(R.string.email_verify_resend)
+            return
+        }
+
+        button.isEnabled = false
+        emailResendCountdown = object : CountDownTimer(remaining, 1_000L) {
+            override fun onTick(millisUntilFinished: Long) {
+                val seconds = (millisUntilFinished + 999L) / 1_000L
+                button.text = getString(R.string.email_verify_resend_wait, seconds)
+            }
+
+            override fun onFinish() {
+                emailResendAvailableAt = 0L
+                button.isEnabled = true
+                button.setText(R.string.email_verify_resend)
+            }
+        }.start()
     }
 
     private fun loadUpcomingEvents(view: View, token: String) {
@@ -253,11 +404,19 @@ class HomeFragment : Fragment() {
         tvCustodyHeaderLabel?.setText(R.string.ui_guarda_atual)
         tvNextSwapLabel?.setText(R.string.ui_proxima_troca)
 
-        val custodyEvents = events.filter { it.event_type.uppercase() == "CUSTODY" }
+        val username = PrefsHelper.getUsername(ctx)
+        val hasDeclaredCustody = children.any { child ->
+            child.has_custody && child.created_by_name == username
+        }
+        val custodyEvents = events.filter { AppEventType.fromRaw(it.event_type).isCustody }
 
         if (custodyEvents.isEmpty()) {
-            custodyLegalBadge?.visibility = View.GONE
-            tvCustodyStatus?.setText(R.string.home_no_custody_configured)
+            custodyLegalBadge?.visibility = if (hasDeclaredCustody) View.VISIBLE else View.GONE
+            if (hasDeclaredCustody) {
+                tvCustodyStatus?.setText(R.string.home_with_you)
+            } else {
+                tvCustodyStatus?.setText(R.string.home_no_custody_configured)
+            }
             tvNextSwapLabel?.setText(R.string.home_next_step_label)
             tvNextSwapDate?.setText(R.string.home_add_custody_events)
             return
@@ -267,6 +426,7 @@ class HomeFragment : Fragment() {
 
         // Encontrar evento de custódia ativo (agora está entre start e end)
         var currentCustody: Event? = null
+        var currentCustodyEnd: Date? = null
         for (event in custodyEvents) {
             val start = parseEventDate(event.event_date) ?: continue
             val end = if (!event.event_date_end.isNullOrEmpty()) {
@@ -278,34 +438,51 @@ class HomeFragment : Fragment() {
 
             if (end != null && !now.before(start) && now.before(end)) {
                 currentCustody = event
+                currentCustodyEnd = end
                 break
             }
         }
 
-        val username = PrefsHelper.getUsername(ctx)
         val otherParentName = PrefsHelper.getOtherParentName(ctx)
             .replaceFirstChar { it.uppercase() }.ifEmpty { ctx.getString(R.string.home_other_parent) }
 
+        val isWithMe = currentCustody?.created_by_name == username
+
         if (currentCustody != null) {
-            val isWithMe = currentCustody.created_by_name == username
             tvCustodyStatus?.text = if (isWithMe) {
                 ctx.getString(R.string.home_with_you)
             } else {
                 ctx.getString(R.string.home_with_parent, otherParentName)
             }
+        } else if (hasDeclaredCustody) {
+            tvCustodyStatus?.setText(R.string.home_with_you)
         } else {
             tvCustodyStatus?.setText(R.string.home_no_active_custody)
         }
 
-        // Próxima troca: próximo evento de custódia futuro
-        val nextCustody = custodyEvents
-            .mapNotNull { event -> parseEventDate(event.event_date)?.let { date -> event to date } }
-            .filter { it.second.after(now) }
-            .minByOrNull { it.second }
+        // Próxima troca: se está com a guarda agora, é o fim do período atual;
+        // se não está, é o início do próximo período do próprio usuário.
+        val nextSwapDate: Date? = if (currentCustody != null) {
+            if (isWithMe) {
+                currentCustodyEnd
+            } else {
+                custodyEvents
+                    .mapNotNull { event -> parseEventDate(event.event_date)?.let { date -> event to date } }
+                    .filter { it.second.after(now) && it.first.created_by_name == username }
+                    .minByOrNull { it.second }
+                    ?.second
+            }
+        } else {
+            custodyEvents
+                .mapNotNull { event -> parseEventDate(event.event_date)?.let { date -> event to date } }
+                .filter { it.second.after(now) }
+                .minByOrNull { it.second }
+                ?.second
+        }
 
-        if (nextCustody != null) {
+        if (nextSwapDate != null) {
             val dateFormat = SimpleDateFormat("EEEE, dd 'de' MMMM", Locale.forLanguageTag("pt-BR"))
-            tvNextSwapDate?.text = dateFormat.format(nextCustody.second)
+            tvNextSwapDate?.text = dateFormat.format(nextSwapDate)
                 .replaceFirstChar { it.uppercase() }
         } else {
             tvNextSwapDate?.setText(R.string.home_no_scheduled_exchange)
@@ -400,7 +577,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun createEmptyEventsCard(ctx: Context): View {
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val dp = { value: Int -> ctx.dpToPx(value) }
 
         val card = com.google.android.material.card.MaterialCardView(ctx).apply {
             layoutParams = LinearLayout.LayoutParams(
@@ -411,7 +588,7 @@ class HomeFragment : Fragment() {
             cardElevation = 0f
             strokeColor = ContextCompat.getColor(ctx, R.color.gray_200)
             strokeWidth = dp(1)
-            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.white))
+            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.surface_container))
         }
 
         val innerLayout = LinearLayout(ctx).apply {
@@ -441,7 +618,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun createEventsErrorCard(ctx: Context, view: View, token: String): View {
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val dp = { value: Int -> ctx.dpToPx(value) }
 
         val card = com.google.android.material.card.MaterialCardView(ctx).apply {
             layoutParams = LinearLayout.LayoutParams(
@@ -452,7 +629,7 @@ class HomeFragment : Fragment() {
             cardElevation = 0f
             strokeColor = ContextCompat.getColor(ctx, R.color.gray_200)
             strokeWidth = dp(1)
-            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.white))
+            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.surface_container))
         }
 
         val content = LinearLayout(ctx).apply {
@@ -490,7 +667,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun createEventRow(ctx: Context, title: String, subtitle: String, eventType: String = ""): View {
-        val dp = { value: Int -> (value * ctx.resources.displayMetrics.density).toInt() }
+        val dp = { value: Int -> ctx.dpToPx(value) }
 
         val card = com.google.android.material.card.MaterialCardView(ctx).apply {
             layoutParams = LinearLayout.LayoutParams(
@@ -501,7 +678,7 @@ class HomeFragment : Fragment() {
             cardElevation = 0f
             strokeColor = ContextCompat.getColor(ctx, R.color.gray_200)
             strokeWidth = dp(1)
-            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.white))
+            setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.surface_container))
         }
 
         val row = LinearLayout(ctx).apply {
@@ -520,12 +697,7 @@ class HomeFragment : Fragment() {
             background = ContextCompat.getDrawable(ctx, R.drawable.bg_icon_circle_blue)
         }
 
-        val iconRes = when (eventType.uppercase()) {
-            "SCHOOL" -> R.drawable.ic_school
-            "MEDICAL" -> R.drawable.ic_health
-            "CUSTODY" -> R.drawable.ic_custody
-            else -> R.drawable.ic_other
-        }
+        val iconRes = AppEventType.fromRaw(eventType).iconRes
 
         val icon = android.widget.ImageView(ctx).apply {
             val size = dp(20)

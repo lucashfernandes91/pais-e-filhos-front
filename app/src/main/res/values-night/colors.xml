@@ -38,8 +38,6 @@
     <color name="bg_primary">#0F1117</color>           <!-- Quase preto, com subtom azul -->
     <color name="bg_secondary">#1A1C25</color>         <!-- Superfícies elevadas (cards) -->
     <color name="bg_tertiary">#242731</color>          <!-- Inputs, chips, nested containers -->
-    <color name="white">#1A1C25</color>                <!-- "white" no dark = surface elevada -->
-    <color name="black">#F1F3F9</color>                <!-- "black" no dark = texto principal -->
 
     <!-- Semantic content tokens keep foreground separate from legacy surfaces. -->
     <color name="surface_container">@color/bg_secondary</color>
@@ -197,4 +195,8 @@
     <color name="feedback_error_bg">#5C1A1E</color>
     <color name="feedback_error_text">#FCA5A5</color>
     <color name="picker_card_bg">#242731</color>
+    <!-- Busca no chat: ambar translucido sobre bolhas escuras -->
+    <color name="search_highlight">#66FBBF24</color>
+    <color name="search_highlight_active">#A6FBBF24</color>
+    <color name="search_highlight_text">#F1F3F9</color>
 </resources>

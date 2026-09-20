@@ -7,23 +7,37 @@
     <dimen name="spacing_m">16dp</dimen>
     <dimen name="spacing_l">24dp</dimen>
     <dimen name="spacing_xl">32dp</dimen>
+    <dimen name="divider_inset_settings">66dp</dimen>
+    <dimen name="divider_inset_detail">60dp</dimen>
 
     <!-- Corner Radius -->
     <dimen name="corner_radius_s">8dp</dimen>
     <dimen name="corner_radius_m">10dp</dimen>
     <dimen name="corner_radius_l">12dp</dimen>
     <dimen name="corner_radius_xl">16dp</dimen>
+    <dimen name="corner_radius_xxl">20dp</dimen>
     <dimen name="corner_radius_full">24dp</dimen>
 
     <!-- Component Heights -->
     <dimen name="button_height">48dp</dimen>
     <dimen name="input_height">48dp</dimen>
-    <dimen name="height_button">48dp</dimen>
-    <dimen name="height_input">48dp</dimen>
     <dimen name="height_action">52dp</dimen>
     <dimen name="height_control_compact">40dp</dimen>
     <dimen name="touch_target_min">48dp</dimen>
     <dimen name="bottom_nav_height">56dp</dimen>
+    <dimen name="screen_content_bottom_padding">80dp</dimen>
+    <dimen name="button_min_width_action">96dp</dimen>
+    <dimen name="list_item_min_height">72dp</dimen>
+    <dimen name="message_media_width">200dp</dimen>
+    <dimen name="message_media_height">150dp</dimen>
+    <dimen name="message_bubble_side_margin">64dp</dimen>
+    <dimen name="timeline_gutter_width">32dp</dimen>
+    <dimen name="sheet_handle_width">40dp</dimen>
+    <dimen name="sheet_handle_height">4dp</dimen>
+    <dimen name="onboarding_bottom_actions_padding_top">20dp</dimen>
+    <dimen name="onboarding_bottom_actions_padding_bottom">96dp</dimen>
+    <dimen name="onboarding_page_max_width">320dp</dimen>
+    <dimen name="onboarding_dots_gap">28dp</dimen>
 
     <!-- Elevation -->
     <dimen name="elevation_none">0dp</dimen>
@@ -36,28 +50,62 @@
     <dimen name="stroke_width_emphasis">2dp</dimen>
 
     <!-- Icon Sizes -->
+    <dimen name="icon_size_xxs">12dp</dimen>
+    <dimen name="icon_size_xs">14dp</dimen>
     <dimen name="icon_size_s">16dp</dimen>
+    <dimen name="icon_size_sm">18dp</dimen>
     <dimen name="icon_size_m">24dp</dimen>
     <dimen name="icon_size_l">32dp</dimen>
+    <dimen name="icon_size_xl">64dp</dimen>
+    <dimen name="icon_badge_size">20dp</dimen>
+    <dimen name="icon_dot_size_s">6dp</dimen>
+    <dimen name="icon_dot_size_m">10dp</dimen>
+    <dimen name="icon_notification_size">22dp</dimen>
+    <dimen name="notification_badge_size">16dp</dimen>
+    <dimen name="icon_container_size_m">44dp</dimen>
 
     <!-- Avatar Sizes -->
     <dimen name="avatar_size_s">32dp</dimen>
     <dimen name="avatar_size_m">40dp</dimen>
+    <dimen name="avatar_size_ml">44dp</dimen>
     <dimen name="avatar_size_l">56dp</dimen>
+    <dimen name="avatar_size_xl">64dp</dimen>
+    <dimen name="avatar_size_xl_plus">88dp</dimen>
+    <dimen name="avatar_size_xxl">96dp</dimen>
+    <dimen name="avatar_frame_size_xxl">108dp</dimen>
+
+    <!-- Icon Containers -->
+    <dimen name="icon_container_size_xs">28dp</dimen>
+    <dimen name="icon_container_size_s">36dp</dimen>
 
     <!-- Text Sizes -->
     <dimen name="text_size_xs">12sp</dimen>
+    <dimen name="text_size_xs_plus">13sp</dimen>
     <dimen name="text_size_s">14sp</dimen>
+    <dimen name="text_size_s_plus">15sp</dimen>
     <dimen name="text_size_m">16sp</dimen>
+    <dimen name="text_size_ml">18sp</dimen>
     <dimen name="text_size_l">20sp</dimen>
+    <dimen name="text_size_l_plus">22sp</dimen>
     <dimen name="text_size_xl">24sp</dimen>
     <dimen name="text_size_xxl">28sp</dimen>
     <dimen name="text_size_xxxl">32sp</dimen>
+    <dimen name="text_size_display">36sp</dimen>
+    <dimen name="text_size_mini">11sp</dimen>
+
+    <!-- Form controls -->
+    <dimen name="input_height_multiline">100dp</dimen>
+    <dimen name="skeleton_line_title_width_m">140dp</dimen>
+    <dimen name="skeleton_line_title_width_l">160dp</dimen>
+    <dimen name="skeleton_line_title_width_xl">180dp</dimen>
+    <dimen name="skeleton_line_meta_width_s">80dp</dimen>
+    <dimen name="skeleton_line_meta_width_m">100dp</dimen>
+    <dimen name="skeleton_line_meta_width_l">120dp</dimen>
 
     <!-- Entry flow: onboarding, login and registration -->
     <dimen name="entry_content_padding_horizontal">24dp</dimen>
     <dimen name="entry_content_padding_bottom">24dp</dimen>
-    <dimen name="entry_navigation_padding_top">16dp</dimen>
+    <dimen name="entry_navigation_padding_top">32dp</dimen>
     <dimen name="onboarding_hero_icon_container_size">96dp</dimen>
     <dimen name="onboarding_hero_icon_size">64dp</dimen>
     <dimen name="onboarding_hero_icon_title_gap">32dp</dimen>
@@ -66,7 +114,7 @@
     <dimen name="auth_hero_icon_size">40dp</dimen>
     <dimen name="auth_hero_icon_title_gap">20dp</dimen>
     <dimen name="auth_title_description_gap">8dp</dimen>
-    <dimen name="auth_header_form_gap">32dp</dimen>
+    <dimen name="auth_header_form_gap">24dp</dimen>
 
     <!-- Motion -->
     <integer name="motion_duration_short">250</integer>

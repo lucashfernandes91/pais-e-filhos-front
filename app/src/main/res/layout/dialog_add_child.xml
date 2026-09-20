@@ -5,23 +5,19 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        style="@style/Widget.CoParent.Form.Content.Compact">
 
         <!-- Foto da criança -->
         <FrameLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:gravity="center">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/spacing_m">
 
             <LinearLayout
                 android:id="@+id/btnChildPhoto"
-                android:layout_width="88dp"
-                android:layout_height="88dp"
-                android:layout_gravity="center"
+                android:layout_width="@dimen/avatar_size_xl_plus"
+                android:layout_height="@dimen/avatar_size_xl_plus"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:background="@drawable/bg_avatar_child"
@@ -31,8 +27,8 @@
 
                 <ImageView
                     android:id="@+id/ivChildPhoto"
-                    android:layout_width="88dp"
-                    android:layout_height="88dp"
+                    android:layout_width="@dimen/avatar_size_xl_plus"
+                    android:layout_height="@dimen/avatar_size_xl_plus"
                     android:scaleType="centerCrop"
                     android:visibility="gone"
                     android:contentDescription="@null"
@@ -40,8 +36,8 @@
 
                 <ImageView
                     android:id="@+id/ivCameraIcon"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="@dimen/icon_container_size_xs"
+                    android:layout_height="@dimen/icon_container_size_xs"
                     android:src="@drawable/ic_camera"
                     app:tint="@color/gray_400"
                     android:contentDescription="@null"
@@ -52,87 +48,71 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ui_foto"
-                    android:textSize="11sp"
+                    android:textSize="@dimen/text_size_mini"
                     android:textColor="@color/gray_400"
-                    android:layout_marginTop="2dp" />
+                    android:layout_marginTop="@dimen/spacing_xs" />
             </LinearLayout>
         </FrameLayout>
 
         <!-- Nome -->
-        <EditText
-            android:id="@+id/etChildName"
-            android:importantForAutofill="no"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="@string/ui_nome_do_filho_a"
-            android:textSize="15sp"
-            android:textColor="@color/gray_900"
-            android:textColorHint="@color/gray_400"
-            android:background="@drawable/bg_input_outlined"
-            android:paddingHorizontal="14dp"
-            android:inputType="textPersonName"
-            android:singleLine="true" />
+        <TextView
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
+            android:text="@string/ui_nome" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.CoParent.Form.TextInputLayout"
+            app:hintEnabled="false">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etChildName"
+                style="@style/Widget.CoParent.TextInputEditText"
+                android:importantForAutofill="no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ui_nome_do_filho_a"
+                android:inputType="textPersonName|textCapWords|textAutoCorrect"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Data de nascimento -->
-        <EditText
-            android:id="@+id/etChildBirthDate"
-            android:importantForAutofill="no"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:hint="@string/ui_data_de_nascimento"
-            android:textSize="15sp"
-            android:textColor="@color/gray_900"
-            android:textColorHint="@color/gray_400"
-            android:background="@drawable/bg_input_outlined"
-            android:paddingHorizontal="14dp"
-            android:inputType="date"
-            android:focusable="true"
-            android:clickable="true"
-            android:singleLine="true" />
+        <TextView
+            style="@style/TextAppearance.CoParent.Form.SectionLabel"
+            android:text="@string/ui_data_de_nascimento" />
 
-        <!-- CPF -->
-        <EditText
-            android:id="@+id/etChildCpf"
-            android:importantForAutofill="no"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:hint="@string/ui_cpf_opcional"
-            android:textSize="15sp"
-            android:textColor="@color/gray_900"
-            android:textColorHint="@color/gray_400"
-            android:background="@drawable/bg_input_outlined"
-            android:paddingHorizontal="14dp"
-            android:inputType="number"
-            android:maxLength="14"
-            android:singleLine="true" />
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.CoParent.Form.TextInputLayout"
+            app:hintEnabled="false">
 
-        <!-- RG -->
-        <EditText
-            android:id="@+id/etChildRg"
-            android:importantForAutofill="no"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:hint="@string/ui_rg_opcional"
-            android:textSize="15sp"
-            android:textColor="@color/gray_900"
-            android:textColorHint="@color/gray_400"
-            android:background="@drawable/bg_input_outlined"
-            android:paddingHorizontal="14dp"
-            android:inputType="text"
-            android:maxLength="20"
-            android:singleLine="true" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etChildBirthDate"
+                style="@style/Widget.CoParent.TextInputEditText"
+                android:importantForAutofill="no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ui_data_de_nascimento"
+                android:inputType="date"
+                android:focusable="true"
+                android:clickable="true"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Checkbox guarda -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbChildLegalDeclaration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:text="@string/child_legal_declaration"
+            android:textColor="@color/gray_700"
+            app:buttonTint="@color/primary_blue" />
+
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/cbHasCustody"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/spacing_sm"
             android:text="@string/ui_possuo_a_guarda_desta_crianca"
-            android:textSize="15sp"
+            android:textSize="@dimen/text_size_s_plus"
             android:textColor="@color/gray_700"
             app:buttonTint="@color/primary_blue" />
 

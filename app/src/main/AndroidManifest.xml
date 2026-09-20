@@ -4,8 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
     <application
-        android:allowBackup="true"
+        android:name=".CoParentApplication"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -14,6 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatApp"
         android:networkSecurityConfig="@xml/network_security_config">
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="${firebaseMessagingAutoInitEnabled}" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="${firebaseAnalyticsCollectionEnabled}" />
         <activity
             android:name=".OnboardingActivity"
             android:exported="true"
@@ -39,6 +47,61 @@
             android:theme="@style/Theme.ChatApp" />
 
         <activity
+            android:name=".LegalAcceptanceActivity"
+            android:exported="false"
+            android:label="Documentos legais"
+            android:theme="@style/Theme.ChatApp" />
+
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false"
+            android:label="Recuperar senha"
+            android:theme="@style/Theme.ChatApp"
+            android:windowSoftInputMode="stateUnspecified|adjustResize" />
+
+        <activity
+            android:name=".VerifyResetCodeActivity"
+            android:exported="false"
+            android:label="Verificar código"
+            android:theme="@style/Theme.ChatApp"
+            android:windowSoftInputMode="stateUnspecified|adjustResize" />
+
+        <activity
+            android:name=".NewPasswordActivity"
+            android:exported="false"
+            android:label="Nova senha"
+            android:theme="@style/Theme.ChatApp"
+            android:windowSoftInputMode="stateUnspecified|adjustResize" />
+
+        <activity
+            android:name=".InviteAcceptActivity"
+            android:exported="true"
+            android:label="@string/invite_accept_title"
+            android:theme="@style/Theme.ChatApp"
+            android:windowSoftInputMode="stateUnspecified|adjustResize">
+            <!-- Link compartilhado: https://dominio-do-ambiente/convite/CODIGO.
+                 autoVerify exige assetlinks.json publicado no domínio (pendente A5). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="${appLinkHost}"
+                    android:pathPrefix="/convite" />
+            </intent-filter>
+            <!-- Fallback por scheme próprio: coparent://convite/CODIGO -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="coparent"
+                    android:host="convite" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
@@ -46,6 +109,11 @@
 
             <nav-graph android:value="@navigation/nav_graph" />
         </activity>
+
+        <activity
+            android:name=".ImageViewerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ChatApp" />
 
 
         <service

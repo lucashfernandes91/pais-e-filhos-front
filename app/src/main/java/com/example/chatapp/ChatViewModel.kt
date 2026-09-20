@@ -10,7 +10,16 @@ class ChatViewModel(
     private val conversationId: Int
 ) : ViewModel() {
 
+    companion object {
+        // Deve acompanhar o page size padrão do backend (list_messages).
+        const val PAGE_SIZE = 100
+    }
+
+    /** Página de mensagens antigas anexada no topo da lista. */
+    data class OlderMessages(val messages: List<Message>, val prependedCount: Int)
+
     val messages = MutableLiveData<List<Message>>()
+    val olderMessages = MutableLiveData<OlderMessages?>()
     val isLoading = MutableLiveData<Boolean>()
     val error = MutableLiveData<String?>()
     val loadError = MutableLiveData<Boolean>(false)
@@ -18,6 +27,8 @@ class ChatViewModel(
     val typingUser = MutableLiveData<String?>(null)
 
     private val messageList = mutableListOf<Message>()
+    private var hasMoreOlder = false
+    private var isFetchingOlder = false
     private var token: String = ""
     private lateinit var wsManager: WebSocketManager
     private val currentUsername by lazy { PrefsHelper.getUsername(context) }
@@ -35,6 +46,15 @@ class ChatViewModel(
         if (token.isEmpty()) {
             error.postValue("Token not found. Please login first.")
         }
+    }
+
+    private fun currentBearerToken(): String? {
+        token = PrefsHelper.getAuthToken(context)
+        if (token.isEmpty()) {
+            error.postValue("Token not found. Please login first.")
+            return null
+        }
+        return "Bearer $token"
     }
 
     private fun initWebSocket() {
@@ -62,9 +82,10 @@ class ChatViewModel(
                 error.postValue(null)
                 loadError.postValue(false)
 
-                val bearerToken = "Bearer $token"
+                val bearerToken = currentBearerToken() ?: return@launch
                 val result = RetrofitClient.api.getMessages(bearerToken, conversationId)
 
+                hasMoreOlder = result.size >= PAGE_SIZE
                 messageList.clear()
                 messageList.addAll(result.sortedBy { it.created_at })
                 messages.postValue(messageList.toList())
@@ -77,6 +98,35 @@ class ChatViewModel(
                 isLoading.postValue(false)
             }
         }
+    }
+
+    /** Carrega a página anterior do histórico ao rolar para o topo. */
+    fun loadOlderMessages() {
+        if (isFetchingOlder || !hasMoreOlder) return
+        val oldestId = messageList.firstOrNull { it.id > 0 }?.id ?: return
+
+        isFetchingOlder = true
+        viewModelScope.launch {
+            try {
+                val older = RetrofitClient.api.getMessages(
+                    currentBearerToken() ?: return@launch, conversationId, before = oldestId
+                )
+                hasMoreOlder = older.size >= PAGE_SIZE
+                if (older.isNotEmpty()) {
+                    val sorted = older.sortedBy { it.created_at }
+                    messageList.addAll(0, sorted)
+                    olderMessages.postValue(OlderMessages(messageList.toList(), sorted.size))
+                }
+            } catch (_: Exception) {
+                // Silencioso: rolar ao topo novamente refaz a tentativa.
+            } finally {
+                isFetchingOlder = false
+            }
+        }
+    }
+
+    fun consumeOlderMessages() {
+        olderMessages.value = null
     }
 
     fun sendMessage(text: String) {
@@ -103,7 +153,7 @@ class ChatViewModel(
         viewModelScope.launch {
             try {
                 isLoading.postValue(true)
-                val bearerToken = "Bearer $token"
+                val bearerToken = currentBearerToken() ?: return@launch
                 RetrofitClient.api.sendMessage(
                     bearerToken,
                     mapOf(
@@ -146,7 +196,10 @@ class ChatViewModel(
 
             for (text in toSend) {
                 try {
-                    val bearerToken = "Bearer $token"
+                    val bearerToken = currentBearerToken() ?: run {
+                        pendingMessages.addAll(toSend)
+                        return@launch
+                    }
                     RetrofitClient.api.sendMessage(
                         bearerToken,
                         mapOf(
@@ -167,7 +220,7 @@ class ChatViewModel(
     // Item 20: Marcar mensagens do outro pai como lidas
     private fun markOtherMessagesAsRead() {
         viewModelScope.launch {
-            val bearerToken = "Bearer $token"
+            val bearerToken = currentBearerToken() ?: return@launch
             for (msg in messageList) {
                 if (msg.sender != currentUsername && msg.id > 0) {
                     // Verificar se já foi lida (sem read_by do user atual)
@@ -187,7 +240,7 @@ class ChatViewModel(
     fun markAsRead(messageId: Int) {
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
+                val bearerToken = currentBearerToken() ?: return@launch
                 RetrofitClient.api.markMessageAsRead(bearerToken, messageId)
             } catch (_: Exception) {}
         }
@@ -198,11 +251,10 @@ class ChatViewModel(
         viewModelScope.launch {
             try {
                 isLoading.postValue(true)
-                val bearerToken = "Bearer $token"
+                val bearerToken = currentBearerToken() ?: return@launch
 
                 val contentResolver = context.contentResolver
-                val inputStream = contentResolver.openInputStream(uri) ?: return@launch
-                val mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
+                var mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
 
                 // Get filename
                 var fileName = "attachment"
@@ -213,8 +265,21 @@ class ChatViewModel(
                     }
                 }
 
-                val bytes = inputStream.readBytes()
-                inputStream.close()
+                // Fotos são comprimidas antes do upload (igual WhatsApp); documentos vão intocados.
+                val compressed = if (mimeType.startsWith("image/")) {
+                    ImageCompressor.compress(context, uri)
+                } else {
+                    null
+                }
+
+                val bytes: ByteArray
+                if (compressed != null) {
+                    bytes = compressed
+                    mimeType = "image/jpeg"
+                    fileName = fileName.substringBeforeLast('.', fileName) + ".jpg"
+                } else {
+                    bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() } ?: return@launch
+                }
 
                 val requestFile = okhttp3.RequestBody.create(
                     mimeType.toMediaType(), bytes

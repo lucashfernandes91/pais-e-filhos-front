@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/spacing_l"
+    android:paddingTop="@dimen/spacing_m">
+
+    <TextView
+        android:id="@+id/tvVerifyEmailDialogMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_s"
+        android:textColor="@color/gray_600"
+        android:layout_marginBottom="@dimen/spacing_m" />
+
+    <TextView
+        style="@style/TextAppearance.CoParent.Form.SectionLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/email_verify_code_hint" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilVerifyCode"
+        style="@style/Widget.CoParent.Form.TextInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etVerifyCode"
+            style="@style/Widget.CoParent.TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/ui_000000"
+            android:inputType="number"
+            android:maxLength="6"
+            android:imeOptions="actionDone" />
+    </com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>

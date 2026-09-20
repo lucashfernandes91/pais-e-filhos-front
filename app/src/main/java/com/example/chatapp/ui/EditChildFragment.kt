@@ -2,7 +2,6 @@ package com.example.chatapp.ui
 
 import android.app.DatePickerDialog
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -19,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.chatapp.Child
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
+import com.example.chatapp.RemoteImageLoader
 import com.example.chatapp.RetrofitClient
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -33,7 +33,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.net.URL
 
 /**
  * Tela full-screen de edição dos dados de um filho.
@@ -76,7 +75,7 @@ class EditChildFragment : Fragment() {
 
         val c = child
         if (c == null) {
-            Toast.makeText(requireContext(), "Dados não encontrados", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.child_data_not_found), Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
             return
         }
@@ -88,15 +87,12 @@ class EditChildFragment : Fragment() {
         populateFields(view, c)
         setupPhotoPicker(view, c)
         setupDatePicker(view, c)
-        setupCpfMask(view)
         setupSaveButton(view, c)
     }
 
     private fun populateFields(view: View, c: Child) {
         val etName = view.findViewById<TextInputEditText>(R.id.etChildName)
         val etBirth = view.findViewById<TextInputEditText>(R.id.etBirthDate)
-        val etCpf = view.findViewById<TextInputEditText>(R.id.etCpf)
-        val etRg = view.findViewById<TextInputEditText>(R.id.etRg)
         val cbCustody = view.findViewById<MaterialCheckBox>(R.id.cbHasCustody)
         val tvInitial = view.findViewById<TextView>(R.id.tvChildInitial)
 
@@ -108,8 +104,6 @@ class EditChildFragment : Fragment() {
             etBirth.setText(formatDateForDisplay(bd))
         }
 
-        c.cpf?.let { etCpf.setText(it) }
-        c.rg?.let { etRg.setText(it) }
         cbCustody.isChecked = c.has_custody
     }
 
@@ -130,14 +124,11 @@ class EditChildFragment : Fragment() {
 
     private fun loadRemotePhoto(view: View, photoUrl: String?) {
         if (photoUrl.isNullOrBlank()) return
-        lifecycleScope.launch {
-            val bitmap = withContext(Dispatchers.IO) {
-                runCatching {
-                    URL(photoUrl).openStream().use { BitmapFactory.decodeStream(it) }
-                }.getOrNull()
-            }
-            if (bitmap != null && selectedPhotoUri == null) {
-                showBitmapPhoto(view, bitmap)
+        val imageView = view.findViewById<ImageView>(R.id.ivChildPhoto) ?: return
+        RemoteImageLoader.load(imageView, photoUrl) {
+            if (selectedPhotoUri == null) {
+                imageView.visibility = View.VISIBLE
+                view.findViewById<TextView>(R.id.tvChildInitial)?.visibility = View.GONE
             }
         }
     }
@@ -178,55 +169,29 @@ class EditChildFragment : Fragment() {
         }
     }
 
-    private fun setupCpfMask(view: View) {
-        val etCpf = view.findViewById<TextInputEditText>(R.id.etCpf)
-
-        etCpf.addTextChangedListener(object : android.text.TextWatcher {
-            private var isUpdating = false
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: android.text.Editable?) {
-                if (isUpdating) return
-                isUpdating = true
-                val digits = s.toString().replace(Regex("[^0-9]"), "")
-                val formatted = when {
-                    digits.length > 9 -> "${digits.substring(0, 3)}.${digits.substring(3, 6)}.${digits.substring(6, 9)}-${digits.substring(9, minOf(digits.length, 11))}"
-                    digits.length > 6 -> "${digits.substring(0, 3)}.${digits.substring(3, 6)}.${digits.substring(6)}"
-                    digits.length > 3 -> "${digits.substring(0, 3)}.${digits.substring(3)}"
-                    else -> digits
-                }
-                etCpf.setText(formatted)
-                etCpf.setSelection(formatted.length)
-                isUpdating = false
-            }
-        })
-    }
-
     private fun setupSaveButton(view: View, c: Child) {
         val btnSave = view.findViewById<MaterialButton>(R.id.btnSave)
 
         btnSave.setOnClickListener {
             val name = view.findViewById<TextInputEditText>(R.id.etChildName).text?.toString()?.trim()
-            val cpf = view.findViewById<TextInputEditText>(R.id.etCpf).text?.toString()?.trim().orEmpty()
-            val rg = view.findViewById<TextInputEditText>(R.id.etRg).text?.toString()?.trim().orEmpty()
             val hasCustody = view.findViewById<MaterialCheckBox>(R.id.cbHasCustody).isChecked
 
             if (name.isNullOrBlank()) {
                 view.findViewById<TextInputEditText>(R.id.etChildName)
-                    .error = "Nome é obrigatório"
+                    .error = getString(R.string.child_name_required)
                 return@setOnClickListener
             }
 
             if (selectedBirthDate.isNullOrBlank()) {
                 view.findViewById<TextInputEditText>(R.id.etBirthDate)
-                    .error = "Data de nascimento é obrigatória"
+                    .error = getString(R.string.child_birth_date_required)
                 return@setOnClickListener
             }
 
             btnSave.isEnabled = false
             btnSave.setText(R.string.child_saving)
 
-            updateChild(c.id, name, selectedBirthDate, cpf, rg, hasCustody, btnSave)
+            updateChild(c.id, name, selectedBirthDate, hasCustody, btnSave)
         }
     }
 
@@ -234,14 +199,12 @@ class EditChildFragment : Fragment() {
         childId: Int,
         name: String,
         birthDate: String?,
-        cpf: String?,
-        rg: String?,
         hasCustody: Boolean,
         btnSave: MaterialButton
     ) {
         val token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty()) {
-            Toast.makeText(requireContext(), "Sessão expirada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.child_session_expired), Toast.LENGTH_SHORT).show()
             btnSave.isEnabled = true
             btnSave.setText(R.string.action_save_changes)
             return
@@ -256,13 +219,11 @@ class EditChildFragment : Fragment() {
                     childId,
                     name.toRequestBody(textType),
                     birthDate.orEmpty().toRequestBody(textType),
-                    cpf.orEmpty().toRequestBody(textType),
-                    rg.orEmpty().toRequestBody(textType),
                     hasCustody.toString().toRequestBody(textType),
                     photoPart
                 )
 
-                Toast.makeText(requireContext(), "Dados atualizados", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.child_update_success), Toast.LENGTH_SHORT).show()
 
                 // Passa o resultado para o fragment anterior via savedStateHandle
                 findNavController()
@@ -275,7 +236,7 @@ class EditChildFragment : Fragment() {
                 val errorBody = e.response()?.errorBody()?.string()
                 Toast.makeText(
                     requireContext(),
-                    "Erro ${e.code()}: ${errorBody ?: "Falha ao salvar"}",
+                    getString(R.string.child_update_http_error, e.code(), errorBody ?: e.message.orEmpty()),
                     Toast.LENGTH_LONG
                 ).show()
                 btnSave.isEnabled = true
@@ -283,7 +244,7 @@ class EditChildFragment : Fragment() {
             } catch (e: Exception) {
                 Toast.makeText(
                     requireContext(),
-                    "Erro: ${e.message}",
+                    getString(R.string.child_update_error, e.message.orEmpty()),
                     Toast.LENGTH_SHORT
                 ).show()
                 btnSave.isEnabled = true
@@ -297,9 +258,9 @@ class EditChildFragment : Fragment() {
         return withContext(Dispatchers.IO) {
             val resolver = requireContext().contentResolver
             val bytes = resolver.openInputStream(uri)?.use { it.readBytes() }
-                ?: throw IllegalArgumentException("N\u00e3o foi poss\u00edvel ler a foto selecionada")
+                ?: throw IllegalArgumentException(getString(R.string.child_photo_read_error))
             if (bytes.size > 5 * 1024 * 1024) {
-                throw IllegalArgumentException("A foto deve ter no m\u00e1ximo 5 MB")
+                throw IllegalArgumentException(getString(R.string.child_photo_size_error))
             }
             var filename = "child_photo.jpg"
             resolver.query(uri, null, null, null, null)?.use { cursor ->

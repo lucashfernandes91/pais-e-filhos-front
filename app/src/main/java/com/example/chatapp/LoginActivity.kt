@@ -26,17 +26,26 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etEmail: TextInputEditText
     private lateinit var etPassword: TextInputEditText
     private lateinit var btnLogin: MaterialButton
+    private lateinit var btnRetryConversation: MaterialButton
     private lateinit var tvLoginError: TextView
+    private var isLoginInProgress = false
+    private var conversationRecoveryToken: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
         RetrofitClient.init(this)
+        setupAuthHeader(
+            R.string.auth_login_title,
+            R.string.auth_login_description,
+            showBack = false,
+        )
 
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
+        btnRetryConversation = findViewById(R.id.btnRetryConversation)
         tvLoginError = findViewById(R.id.tvLoginError)
         tilEmail = etEmail.parent.parent as TextInputLayout
         tilPassword = etPassword.parent.parent as TextInputLayout
@@ -47,6 +56,7 @@ class LoginActivity : AppCompatActivity() {
             hideKeyboard()
             attemptLogin()
         }
+        btnRetryConversation.setOnClickListener { retryConversationLoad() }
 
         etPassword.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -60,9 +70,17 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
+        findViewById<TextView>(R.id.tvForgotPasswordLink)?.setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+        }
+
         val existingToken = PrefsHelper.getAuthToken(this)
         if (existingToken.isNotEmpty()) {
             validateStoredSession(existingToken)
+        } else if (BuildConfig.MOCK_LOGIN_ENABLED) {
+            etEmail.setText(BuildConfig.MOCK_USERNAME)
+            etPassword.setText(BuildConfig.MOCK_PASSWORD)
+            btnLogin.post { attemptLogin() }
         }
     }
 
@@ -71,18 +89,25 @@ class LoginActivity : AppCompatActivity() {
     // ──────────────────────────────────────────────
 
     private fun setupInlineValidation() {
-        val clearLoginErrorWatcher = object : TextWatcher {
+        val emailWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 hideLoginError()
-                clearState(tilEmail)
-                clearState(tilPassword)
+                if (tilEmail.isErrorEnabled || !s.isNullOrBlank()) validateUsernameField()
+            }
+            override fun afterTextChanged(s: Editable?) = Unit
+        }
+        val passwordWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                hideLoginError()
+                if (tilPassword.isErrorEnabled || !s.isNullOrEmpty()) validatePasswordField()
             }
             override fun afterTextChanged(s: Editable?) = Unit
         }
 
-        etEmail.addTextChangedListener(clearLoginErrorWatcher)
-        etPassword.addTextChangedListener(clearLoginErrorWatcher)
+        etEmail.addTextChangedListener(emailWatcher)
+        etPassword.addTextChangedListener(passwordWatcher)
 
         etEmail.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) validateUsernameField()
@@ -96,7 +121,7 @@ class LoginActivity : AppCompatActivity() {
     private fun validateUsernameField(): Boolean {
         val text = etEmail.text.toString().trim()
         return when {
-            text.isEmpty() -> { setError(tilEmail, "Usuário obrigatório"); false }
+            text.isEmpty() -> { setError(tilEmail, "Usuário ou email obrigatório"); false }
             text.length < 3 -> { setError(tilEmail, "Mínimo 3 caracteres"); false }
             else -> { clearState(tilEmail); true }
         }
@@ -115,26 +140,35 @@ class LoginActivity : AppCompatActivity() {
     // ──────────────────────────────────────────────
 
     private fun validateStoredSession(token: String) {
+        if (isLoginInProgress) return
+        isLoginInProgress = true
         btnLogin.isEnabled = false
         btnLogin.setText(R.string.login_validating_session)
 
         lifecycleScope.launch {
             try {
                 RetrofitClient.api.getProfile("Bearer $token")
-                if (loadConversationData(token)) {
-                    goToMain()
-                } else {
-                    showError("Nao foi possivel iniciar sua conversa")
+                if (!continueAfterAuthentication(token)) {
+                    return@launch
                 }
+            } catch (e: HttpException) {
+                if (e.code() == 401) {
+                    PrefsHelper.clearSession(this@LoginActivity)
+                    resetLoginButton()
+                } else {
+                    showLoginError(getString(R.string.login_error_server))
+                }
+            } catch (_: IOException) {
+                showLoginError(getString(R.string.login_error_connection))
             } catch (_: Exception) {
-                PrefsHelper.clearSession(this@LoginActivity)
-                btnLogin.isEnabled = true
-                btnLogin.setText(R.string.ui_entrar)
+                showLoginError(getString(R.string.login_error_server))
             }
         }
     }
 
     private fun attemptLogin() {
+        if (isLoginInProgress) return
+
         hideLoginError()
         val usernameOk = validateUsernameField()
         val passwordOk = validatePasswordField()
@@ -145,30 +179,30 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnLogin.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+        isLoginInProgress = true
         btnLogin.isEnabled = false
         btnLogin.setText(R.string.login_connecting)
 
-        val username = etEmail.text.toString().trim()
-        val password = etPassword.text.toString().trim()
+        val identifier = etEmail.text.toString().trim()
+        val password = etPassword.text.toString()
 
         lifecycleScope.launch {
             try {
                 val response = RetrofitClient.api.obtainToken(
-                    mapOf("username" to username, "password" to password)
+                    mapOf("username" to identifier, "password" to password)
                 )
 
                 val accessToken = (response["access"] as? String) ?: ""
                 val refreshToken = (response["refresh"] as? String) ?: ""
+                val username = (response["username"] as? String) ?: identifier
 
                 if (accessToken.isNotEmpty()) {
                     PrefsHelper.saveCredentials(
                         this@LoginActivity, accessToken, refreshToken, username
                     )
                     RetrofitClient.init(this@LoginActivity)
-                    if (loadConversationData(accessToken)) {
-                        goToMain()
-                    } else {
-                        showLoginError(getString(R.string.login_error_conversation))
+                    if (!continueAfterAuthentication(accessToken)) {
+                        return@launch
                     }
                 } else {
                     showLoginError(getString(R.string.login_error_token_missing))
@@ -181,6 +215,61 @@ class LoginActivity : AppCompatActivity() {
                 showLoginError(getString(R.string.login_error_server))
             }
         }
+    }
+
+    private suspend fun continueAfterAuthentication(token: String): Boolean {
+        if (!loadConversationData(token)) {
+            showConversationRecovery(token)
+            return false
+        }
+
+        val status = RetrofitClient.api.getLegalAcceptanceStatus("Bearer $token")
+        val required = status["required"] as? Boolean ?: true
+        if (required) {
+            startActivity(Intent(this, LegalAcceptanceActivity::class.java))
+            finish()
+        } else {
+            goToMain()
+        }
+        return true
+    }
+
+    private fun retryConversationLoad() {
+        if (isLoginInProgress) return
+        val token = conversationRecoveryToken ?: PrefsHelper.getAuthToken(this)
+        if (token.isEmpty()) {
+            btnRetryConversation.visibility = View.GONE
+            return
+        }
+
+        isLoginInProgress = true
+        btnRetryConversation.isEnabled = false
+        btnRetryConversation.setText(R.string.login_retrying_conversation)
+
+        lifecycleScope.launch {
+            try {
+                if (!continueAfterAuthentication(token)) return@launch
+            } catch (_: IOException) {
+                showConversationRecovery(token)
+            } catch (_: HttpException) {
+                showConversationRecovery(token)
+            } catch (_: Exception) {
+                showConversationRecovery(token)
+            }
+        }
+    }
+
+    private fun showConversationRecovery(token: String) {
+        conversationRecoveryToken = token
+        tvLoginError.text = getString(R.string.login_error_conversation_recovery)
+        tvLoginError.visibility = View.VISIBLE
+        btnRetryConversation.isEnabled = true
+        btnRetryConversation.setText(R.string.login_retry_conversation)
+        btnRetryConversation.visibility = View.VISIBLE
+        resetLoginButton()
+        tilEmail.startAnimation(
+            android.view.animation.AnimationUtils.loadAnimation(this, R.anim.fade_in)
+        )
     }
 
     /**
@@ -260,9 +349,14 @@ class LoginActivity : AppCompatActivity() {
         if (::tvLoginError.isInitialized) {
             tvLoginError.visibility = View.GONE
         }
+        if (::btnRetryConversation.isInitialized) {
+            btnRetryConversation.visibility = View.GONE
+            conversationRecoveryToken = null
+        }
     }
 
     private fun resetLoginButton() {
+        isLoginInProgress = false
         btnLogin.isEnabled = true
         btnLogin.setText(R.string.ui_entrar)
     }

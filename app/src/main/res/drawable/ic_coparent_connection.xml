@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <path android:fillColor="@color/auth_brand_surface"
+        android:pathData="M20,2 H44 Q62,2 62,20 V44 Q62,62 44,62 H20 Q2,62 2,44 V20 Q2,2 20,2 Z" />
+    <path android:fillColor="@color/primary_blue"
+        android:pathData="M20,14 A5,5 0,1 1,20,24 A5,5 0,1 1,20,14" />
+    <path android:fillColor="@color/auth_brand_green"
+        android:pathData="M44,14 A5,5 0,1 1,44,24 A5,5 0,1 1,44,14" />
+    <path android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/primary_blue" android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:pathData="M17,30 C9,41 19,54 32,50" />
+    <path android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/auth_brand_green" android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:pathData="M47,30 C55,41 45,54 32,50" />
+    <path android:fillColor="@color/on_surface"
+        android:pathData="M32,29 A4,4 0,1 1,32,37 A4,4 0,1 1,32,29" />
+    <path android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/on_surface" android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M27,43 Q32,39 37,43" />
+</vector>

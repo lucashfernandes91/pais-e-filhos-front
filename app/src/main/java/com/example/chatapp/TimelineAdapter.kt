@@ -4,16 +4,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class TimelineAdapter(
-    private val items: List<TimelineItem>,
-    private val currentUsername: String
+    private var items: List<TimelineItem> = emptyList()
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
@@ -22,6 +21,12 @@ class TimelineAdapter(
     private val dayFormat = SimpleDateFormat("dd", ptBr)
     private val monthFormat = SimpleDateFormat("MMMM", ptBr)
     private val timeFormat = SimpleDateFormat("HH:mm", ptBr)
+
+    fun updateItems(newItems: List<TimelineItem>) {
+        val diffResult = DiffUtil.calculateDiff(TimelineDiffCallback(items, newItems))
+        items = newItems
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
         is TimelineItem.MessageItem -> VIEW_TYPE_MESSAGE
@@ -66,7 +71,6 @@ class TimelineAdapter(
     }
 
     inner class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val messageBubble: LinearLayout = itemView.findViewById(R.id.messageBubble)
         private val senderName: TextView = itemView.findViewById(R.id.senderName)
         private val messageContent: TextView = itemView.findViewById(R.id.messageContent)
         private val messageTime: TextView = itemView.findViewById(R.id.messageTime)
@@ -85,6 +89,13 @@ class TimelineAdapter(
             } else {
                 messageTime.text = message.created_at
             }
+
+            itemView.contentDescription = itemView.context.getString(
+                R.string.timeline_message_content_description,
+                senderDisplay,
+                messageTime.text,
+                message.content
+            )
         }
     }
 
@@ -108,13 +119,7 @@ class TimelineAdapter(
             }
 
             // Ícone na timeline conforme tipo de evento
-            val iconRes = when (event.event_type.uppercase()) {
-                "SCHOOL" -> R.drawable.ic_school
-                "MEDICAL" -> R.drawable.ic_health
-                "CUSTODY" -> R.drawable.ic_custody
-                else -> R.drawable.ic_other
-            }
-            timelineDotIcon.setImageResource(iconRes)
+            timelineDotIcon.setImageResource(AppEventType.fromRaw(event.event_type).iconRes)
 
             eventType.visibility = View.GONE
             eventCreator.visibility = View.GONE
@@ -125,11 +130,47 @@ class TimelineAdapter(
             } else {
                 eventNotes.visibility = View.GONE
             }
+
+            itemView.contentDescription = itemView.context.getString(
+                R.string.timeline_event_content_description,
+                event.title,
+                eventDate.text,
+                event.notes.ifBlank {
+                    itemView.context.getString(R.string.timeline_event_without_notes)
+                }
+            )
         }
     }
 
     companion object {
         private const val VIEW_TYPE_MESSAGE = 0
         private const val VIEW_TYPE_EVENT = 1
+    }
+
+    private class TimelineDiffCallback(
+        private val oldItems: List<TimelineItem>,
+        private val newItems: List<TimelineItem>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldItems.size
+
+        override fun getNewListSize(): Int = newItems.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldItems[oldItemPosition]
+            val newItem = newItems[newItemPosition]
+
+            return when {
+                oldItem is TimelineItem.MessageItem && newItem is TimelineItem.MessageItem ->
+                    oldItem.message.id == newItem.message.id
+                oldItem is TimelineItem.EventItem && newItem is TimelineItem.EventItem ->
+                    oldItem.event.id == newItem.event.id
+                else -> false
+            }
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldItems[oldItemPosition] == newItems[newItemPosition]
+        }
     }
 }

@@ -8,13 +8,7 @@
 
     <!-- Top Bar -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:background="@color/surface_container"
-        android:elevation="2dp">
+        style="@style/Widget.CoParent.TopBar.Row.Surface">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -26,14 +20,12 @@
             android:contentDescription="@string/cd_back_button" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.TopBar.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/ui_notificacoes"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/gray_900"
-            android:layout_marginStart="12dp" />
+            android:layout_marginStart="@dimen/spacing_sm" />
     </LinearLayout>
 
     <View style="@style/Widget.CoParent.Header.Divider" />
@@ -47,14 +39,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="@dimen/spacing_l">
 
             <!-- Card: Notificações push -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="@dimen/spacing_sm"
                 >
 
                 <LinearLayout
@@ -62,17 +54,17 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="16dp">
+                    android:padding="@dimen/spacing_m">
 
                     <FrameLayout
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="@dimen/avatar_size_m"
+                        android:layout_height="@dimen/avatar_size_m"
                         android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginEnd="14dp">
+                        android:layout_marginEnd="@dimen/spacing_sm">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="@dimen/icon_badge_size"
+                            android:layout_height="@dimen/icon_badge_size"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_notification_bell"
                             app:tint="@color/primary_blue"
@@ -84,23 +76,22 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:layout_marginEnd="12dp">
+                        android:layout_marginEnd="@dimen/spacing_sm">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/ui_notificacoes_push"
-                            android:textSize="15sp"
+                            android:textSize="@dimen/text_size_m"
                             android:textStyle="bold"
                             android:textColor="@color/gray_900" />
 
                         <TextView
+                            style="@style/TextAppearance.CoParent.List.Meta"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/ui_mensagens_e_eventos_importantes"
-                            android:textSize="13sp"
-                            android:textColor="@color/gray_500"
-                            android:layout_marginTop="2dp" />
+                            android:layout_marginTop="@dimen/spacing_xs" />
                     </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -117,25 +108,21 @@
                 style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="@dimen/spacing_sm"
                 >
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
+                    style="@style/Widget.CoParent.List.Row">
 
                     <FrameLayout
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="@dimen/avatar_size_m"
+                        android:layout_height="@dimen/avatar_size_m"
                         android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginEnd="14dp">
+                        android:layout_marginEnd="@dimen/spacing_sm">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="@dimen/icon_badge_size"
+                            android:layout_height="@dimen/icon_badge_size"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_email_outline"
                             app:tint="@color/primary_blue"
@@ -147,23 +134,20 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:layout_marginEnd="12dp">
+                        android:layout_marginEnd="@dimen/spacing_sm">
 
                         <TextView
+                            style="@style/TextAppearance.CoParent.List.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/ui_email_de_backup"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/gray_900" />
+                            android:text="@string/ui_email_de_backup" />
 
                         <TextView
+                            style="@style/TextAppearance.CoParent.List.Meta"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/ui_receba_uma_copia_se_o_push_falhar"
-                            android:textSize="13sp"
-                            android:textColor="@color/gray_500"
-                            android:layout_marginTop="2dp" />
+                            android:layout_marginTop="@dimen/spacing_xs" />
                     </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -180,25 +164,21 @@
                 style="@style/Widget.CoParent.Card.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="@dimen/spacing_sm"
                 >
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
+                    style="@style/Widget.CoParent.List.Row">
 
                     <FrameLayout
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="@dimen/avatar_size_m"
+                        android:layout_height="@dimen/avatar_size_m"
                         android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginEnd="14dp">
+                        android:layout_marginEnd="@dimen/spacing_sm">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="@dimen/icon_badge_size"
+                            android:layout_height="@dimen/icon_badge_size"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_night_mode"
                             app:tint="@color/primary_blue"
@@ -210,23 +190,20 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:layout_marginEnd="12dp">
+                        android:layout_marginEnd="@dimen/spacing_sm">
 
                         <TextView
+                            style="@style/TextAppearance.CoParent.List.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/ui_modo_silencioso_noturno"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/gray_900" />
+                            android:text="@string/ui_modo_silencioso_noturno" />
 
                         <TextView
+                            style="@style/TextAppearance.CoParent.List.Meta"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/ui_sem_notificacoes_entre_22h_e_7h"
-                            android:textSize="13sp"
-                            android:textColor="@color/gray_500"
-                            android:layout_marginTop="2dp" />
+                            android:layout_marginTop="@dimen/spacing_xs" />
                     </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial

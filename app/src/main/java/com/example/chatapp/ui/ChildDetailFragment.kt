@@ -1,6 +1,5 @@
 package com.example.chatapp.ui
 
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -18,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.chatapp.Child
 import com.example.chatapp.PrefsHelper
 import com.example.chatapp.R
+import com.example.chatapp.RemoteImageLoader
 import com.example.chatapp.RetrofitClient
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -27,7 +27,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -61,7 +60,7 @@ class ChildDetailFragment : Fragment() {
         @Suppress("DEPRECATION")
         child = arguments?.getSerializable(ARG_CHILD) as? Child
         if (child == null) {
-            Toast.makeText(requireContext(), "Filho nao encontrado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.child_not_found), Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
             return
         }
@@ -123,14 +122,8 @@ class ChildDetailFragment : Fragment() {
 
     private fun loadChildPhoto(ivPhoto: ImageView, tvInitial: TextView, photoUrl: String?) {
         if (photoUrl.isNullOrBlank()) return
-        lifecycleScope.launch {
-            val bitmap = withContext(Dispatchers.IO) {
-                runCatching {
-                    URL(photoUrl).openStream().use { BitmapFactory.decodeStream(it) }
-                }.getOrNull()
-            }
-            if (bitmap != null) {
-                ivPhoto.setImageBitmap(bitmap)
+        RemoteImageLoader.load(ivPhoto, photoUrl) {
+            if (view != null) {
                 ivPhoto.visibility = View.VISIBLE
                 tvInitial.visibility = View.GONE
             }
@@ -149,7 +142,7 @@ class ChildDetailFragment : Fragment() {
         val currentChild = child ?: return
         val token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty()) {
-            Toast.makeText(requireContext(), "Sessao expirada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.child_session_expired), Toast.LENGTH_SHORT).show()
             view?.let { renderChild(it, currentChild) }
             return
         }
@@ -165,10 +158,14 @@ class ChildDetailFragment : Fragment() {
 
                 child = updatedChild
                 view?.let { renderChild(it, updatedChild) }
-                Toast.makeText(requireContext(), "Foto atualizada", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.child_photo_updated), Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 view?.let { renderChild(it, currentChild) }
-                Toast.makeText(requireContext(), "Erro ao atualizar foto: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.child_photo_update_error, e.message.orEmpty()),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -177,9 +174,9 @@ class ChildDetailFragment : Fragment() {
         withContext(Dispatchers.IO) {
             val resolver = requireContext().contentResolver
             val bytes = resolver.openInputStream(uri)?.use { it.readBytes() }
-                ?: throw IllegalArgumentException("Nao foi possivel ler a foto selecionada")
+                ?: throw IllegalArgumentException(getString(R.string.child_photo_read_error))
             if (bytes.size > 5 * 1024 * 1024) {
-                throw IllegalArgumentException("A foto deve ter no maximo 5 MB")
+                throw IllegalArgumentException(getString(R.string.child_photo_size_error))
             }
 
             var filename = "child_photo.jpg"
@@ -202,10 +199,6 @@ class ChildDetailFragment : Fragment() {
         val notInformed = getString(R.string.child_not_informed)
         view.findViewById<TextView>(R.id.tvBirthDate).text =
             currentChild.birth_date?.takeIf { it.isNotBlank() }?.let(::formatBirthDate) ?: notInformed
-        view.findViewById<TextView>(R.id.tvCpf).text =
-            currentChild.cpf?.takeIf { it.isNotBlank() } ?: notInformed
-        view.findViewById<TextView>(R.id.tvRg).text =
-            currentChild.rg?.takeIf { it.isNotBlank() } ?: notInformed
         view.findViewById<TextView>(R.id.tvCustodyValue).setText(
             if (currentChild.has_custody) {
                 R.string.child_custody_with_you
@@ -217,26 +210,30 @@ class ChildDetailFragment : Fragment() {
 
     private fun confirmDelete(currentChild: Child) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Remover filho(a)")
-            .setMessage("Deseja remover ${currentChild.name}? Esta acao nao pode ser desfeita.")
-            .setPositiveButton("Remover") { _, _ -> deleteChild(currentChild.id) }
-            .setNegativeButton("Cancelar", null)
+            .setTitle(R.string.child_delete_title)
+            .setMessage(getString(R.string.child_delete_message, currentChild.name))
+            .setPositiveButton(R.string.child_delete_confirm) { _, _ -> deleteChild(currentChild.id) }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
     private fun deleteChild(childId: Int) {
         val token = PrefsHelper.getAuthToken(requireContext())
         if (token.isEmpty()) {
-            Toast.makeText(requireContext(), "Sessao expirada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.child_session_expired), Toast.LENGTH_SHORT).show()
             return
         }
         lifecycleScope.launch {
             try {
                 RetrofitClient.api.deleteChild("Bearer $token", childId)
-                Toast.makeText(requireContext(), "Removido", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.child_deleted), Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro ao remover: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.child_delete_error, e.message.orEmpty()),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

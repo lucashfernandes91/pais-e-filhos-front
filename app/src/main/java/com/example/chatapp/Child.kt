@@ -13,12 +13,6 @@ data class Child(
     @SerializedName("birth_date")
     val birth_date: String?,
 
-    @SerializedName("cpf")
-    val cpf: String? = null,
-
-    @SerializedName("rg")
-    val rg: String? = null,
-
     @SerializedName("photo_url")
     val photo_url: String? = null,
 

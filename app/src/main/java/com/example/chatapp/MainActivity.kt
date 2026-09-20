@@ -33,7 +33,9 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        // Navegação manual — garante que sempre volta para Home
+        // Navegação manual — garante que sempre volta para Home.
+        // Listener único: marcar isChecked programaticamente não o dispara,
+        // então a sincronização abaixo não precisa desanexar nada.
         bottomNav.setOnItemSelectedListener { item ->
             val navOptions = NavOptions.Builder()
                 .setPopUpTo(R.id.homeFragment, false)
@@ -65,35 +67,18 @@ class MainActivity : AppCompatActivity() {
                 View.GONE
             }
 
-            // Atualizar item selecionado sem disparar listener
-            val menuItem = bottomNav.menu.findItem(destination.id)
-            if (menuItem != null) {
-                bottomNav.setOnItemSelectedListener(null)
-                menuItem.isChecked = true
-                // Reattach listener
-                bottomNav.setOnItemSelectedListener { item ->
-                    val opts = NavOptions.Builder()
-                        .setPopUpTo(R.id.homeFragment, false)
-                        .setLaunchSingleTop(true)
-                        .build()
-                    try {
-                        navController.navigate(item.itemId, null, opts)
-                        true
-                    } catch (e: Exception) {
-                        false
-                    }
-                }
-            }
+            bottomNav.menu.findItem(destination.id)?.isChecked = true
         }
 
-        // Register Firebase token
-        registerFirebaseToken()
+        if (BuildConfig.FIREBASE_MESSAGING_ENABLED) {
+            registerFirebaseToken()
+        }
 
         // Load badges
         updateBottomNavBadges(bottomNav)
 
-        // Request notification permission (Android 13+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        // Request notification permission only where Firebase messaging is enabled.
+        if (BuildConfig.FIREBASE_MESSAGING_ENABLED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
                     Manifest.permission.POST_NOTIFICATIONS
@@ -122,8 +107,80 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        // Sessão caiu (refresh expirado → AuthInterceptor limpou): volta ao login.
+        if (PrefsHelper.getAuthToken(this).isEmpty()) {
+            startActivity(
+                android.content.Intent(this, LoginActivity::class.java)
+                    .addFlags(
+                        android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                            android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    )
+            )
+            finish()
+            return
+        }
+
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         updateBottomNavBadges(bottomNav)
+        if (showWelcomeIfPending()) return
+        resumePendingInvite()
+    }
+
+    /** Pós-cadastro: apresenta uma única orientação, sem abrir o convite em paralelo. */
+    private fun showWelcomeIfPending(): Boolean {
+        if (!PrefsHelper.isWelcomePending(this)) return false
+        PrefsHelper.setWelcomePending(this, false)
+        val pendingInviteCode = PrefsHelper.getPendingInviteCode(this)
+
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.welcome_title)
+            .setMessage(
+                if (pendingInviteCode.isNullOrBlank()) {
+                    R.string.welcome_message
+                } else {
+                    R.string.welcome_message_with_pending_invite
+                }
+            )
+            .setPositiveButton(
+                if (pendingInviteCode.isNullOrBlank()) {
+                    R.string.welcome_go_to_profile
+                } else {
+                    R.string.welcome_review_pending_invite
+                }
+            ) { _, _ ->
+                if (pendingInviteCode.isNullOrBlank()) {
+                    navigateToProfile()
+                } else {
+                    openPendingInvite(pendingInviteCode)
+                }
+            }
+            .setNegativeButton(R.string.welcome_later, null)
+            .show()
+        return true
+    }
+
+    /** Deep link de convite recebido antes do login: retoma o aceite. */
+    private fun resumePendingInvite() {
+        val pendingCode = PrefsHelper.getPendingInviteCode(this) ?: return
+        openPendingInvite(pendingCode)
+    }
+
+    private fun openPendingInvite(code: String) {
+        PrefsHelper.clearPendingInviteCode(this)
+        startActivity(
+            android.content.Intent(this, InviteAcceptActivity::class.java)
+                .putExtra(InviteAcceptActivity.EXTRA_CODE, code)
+        )
+    }
+
+    private fun navigateToProfile() {
+        val navHost = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
+        try {
+            navHost?.navController?.navigate(R.id.profileFragment)
+        } catch (_: Exception) {
+        }
     }
 
     private fun updateBottomNavBadges(bottomNav: BottomNavigationView) {

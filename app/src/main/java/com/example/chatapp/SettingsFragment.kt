@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsFragment : Fragment() {
@@ -25,22 +24,19 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Find views
         switchPushNotifications = view.findViewById(R.id.switchPushNotifications)
         switchEmailNotifications = view.findViewById(R.id.switchEmailNotifications)
 
-        // Load saved settings
         loadSettings()
-
-        // Outro responsável - verificar se existe
         setupOtherParent(view)
 
-        // Set listeners
         switchPushNotifications.setOnCheckedChangeListener { _, isChecked ->
             PrefsHelper.setPushEnabled(requireContext(), isChecked)
             Toast.makeText(
                 context,
-                if (isChecked) "Notificações push ativadas" else "Notificações push desativadas",
+                getString(
+                    if (isChecked) R.string.settings_push_enabled else R.string.settings_push_disabled
+                ),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -49,13 +45,19 @@ class SettingsFragment : Fragment() {
             PrefsHelper.setEmailEnabled(requireContext(), isChecked)
             Toast.makeText(
                 context,
-                if (isChecked) "Email ativado" else "Email desativado",
+                getString(
+                    if (isChecked) R.string.settings_email_enabled else R.string.settings_email_disabled
+                ),
                 Toast.LENGTH_SHORT
             ).show()
         }
 
-        view.findViewById<View>(R.id.btnExportData)?.setOnClickListener { exportData() }
-        view.findViewById<View>(R.id.btnPrivacy)?.setOnClickListener { openPrivacyPolicy() }
+        view.findViewById<View>(R.id.btnPrivacy)?.setOnClickListener {
+            openPublicDocument(LegalDocuments.PRIVACY_URL)
+        }
+        view.findViewById<View>(R.id.btnLegal)?.setOnClickListener {
+            openPublicDocument(LegalDocuments.TERMS_URL)
+        }
         view.findViewById<View>(R.id.btnLogout)?.setOnClickListener { logout() }
     }
 
@@ -75,7 +77,7 @@ class SettingsFragment : Fragment() {
             cardInviteParent.visibility = View.VISIBLE
 
             cardInviteParent.setOnClickListener {
-                Toast.makeText(requireContext(), "Convite em breve!", Toast.LENGTH_SHORT).show()
+                InviteHelper.shareInvite(this)
             }
         } else {
             cardOtherParent.visibility = View.VISIBLE
@@ -87,34 +89,16 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun exportData() {
-        val conversationId = PrefsHelper.getConversationId(requireContext())
-        val authToken = PrefsHelper.getAuthToken(requireContext())
-
-        if (authToken.isEmpty()) {
-            Toast.makeText(requireContext(), "Faça login para exportar", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        Toast.makeText(requireContext(), "Iniciando download do PDF...", Toast.LENGTH_SHORT).show()
-        PdfDownloadHelper.downloadConversationPdf(
-            requireContext(),
-            authToken,
-            conversationId,
-            viewLifecycleOwner.lifecycleScope
-        )
-    }
-
-    private fun openPrivacyPolicy() {
-        val url = "https://coparent.app/privacy"
+    private fun openPublicDocument(url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
     }
 
     private fun logout() {
+        LogoutHelper.notifyServerLogout(requireContext())
         PrefsHelper.clearAll(requireContext())
 
-        Toast.makeText(requireContext(), "Desconectado", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.settings_logged_out), Toast.LENGTH_SHORT).show()
 
         val intent = Intent(requireContext(), LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

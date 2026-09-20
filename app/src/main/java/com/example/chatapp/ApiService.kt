@@ -7,7 +7,9 @@ interface ApiService {
     @GET("api/messages/{id}/")
     suspend fun getMessages(
         @Header("Authorization") token: String,
-        @Path("id") conversationId: Int
+        @Path("id") conversationId: Int,
+        @Query("before") before: Int? = null,
+        @Query("limit") limit: Int? = null
     ): List<Message>
 
     @POST("api/send-message/")
@@ -15,12 +17,6 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: Map<String, Any>
     )
-
-    @GET("api/messages/{messageId}/detail/")
-    suspend fun getMessageDetail(
-        @Header("Authorization") token: String,
-        @Path("messageId") messageId: Int
-    ): Map<String, Any>
 
     @POST("api/messages/{messageId}/read/")
     suspend fun markMessageAsRead(
@@ -89,16 +85,12 @@ interface ApiService {
     @GET("api/export/pdf/{conversationId}/")
     suspend fun exportConversationPdf(
         @Header("Authorization") token: String,
-        @Path("conversationId") conversationId: Int
+        @Path("conversationId") conversationId: Int,
+        @Query("type") type: String
     ): okhttp3.ResponseBody
 
     @POST("api/token/")
     suspend fun obtainToken(
-        @Body body: Map<String, String>
-    ): Map<String, Any>
-
-    @POST("api/token/refresh/")
-    suspend fun refreshToken(
         @Body body: Map<String, String>
     ): Map<String, Any>
 
@@ -107,8 +99,51 @@ interface ApiService {
         @Body body: Map<String, String>
     ): Map<String, Any>
 
+    @POST("api/logout/")
+    suspend fun logout(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
+    @POST("api/password-reset/request/")
+    suspend fun requestPasswordReset(
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
+    @POST("api/password-reset/verify/")
+    suspend fun verifyPasswordResetCode(
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
+    @POST("api/password-reset/confirm/")
+    suspend fun confirmPasswordReset(
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
     @GET("api/profile/")
     suspend fun getProfile(
+        @Header("Authorization") token: String
+    ): Map<String, Any>
+
+    @GET("api/legal/acceptance/")
+    suspend fun getLegalAcceptanceStatus(
+        @Header("Authorization") token: String
+    ): Map<String, Any>
+
+    @POST("api/legal/acceptance/")
+    suspend fun acceptLegalDocuments(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
+    @POST("api/email/verify/")
+    suspend fun verifyEmail(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, String>
+    ): Map<String, Any>
+
+    @POST("api/email/verify/resend/")
+    suspend fun resendEmailVerification(
         @Header("Authorization") token: String
     ): Map<String, Any>
 
@@ -123,6 +158,19 @@ interface ApiService {
     suspend fun getConversations(
         @Header("Authorization") token: String
     ): List<ConversationDetail>
+
+    // Invites
+    @POST("api/invites/")
+    suspend fun createInvite(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, Int>
+    ): Map<String, Any>
+
+    @POST("api/invites/accept/")
+    suspend fun acceptInvite(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, String>
+    ): Map<String, Any>
 
     // Children
     @GET("api/children/{conversationId}/")
@@ -151,8 +199,6 @@ interface ApiService {
         @Path("childId") childId: Int,
         @Part("name") name: okhttp3.RequestBody,
         @Part("birth_date") birthDate: okhttp3.RequestBody,
-        @Part("cpf") cpf: okhttp3.RequestBody,
-        @Part("rg") rg: okhttp3.RequestBody,
         @Part("has_custody") hasCustody: okhttp3.RequestBody,
         @Part photo: okhttp3.MultipartBody.Part?
     ): Child

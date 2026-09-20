@@ -13,15 +13,16 @@
 
     <!-- Chat -->
     <string name="cd_search_button">Buscar nas mensagens da conversa</string>
-    <string name="cd_export_button">Exportar conversa para PDF</string>
+    <string name="cd_export_button">Exportar mensagens para PDF</string>
     <string name="cd_send_button">Enviar mensagem</string>
     <string name="cd_attach_button">Anexar arquivo ou imagem</string>
+    <string name="cd_chat_message_field">Campo de mensagem da conversa</string>
     <string name="cd_close_search">Fechar busca na conversa</string>
     <string name="cd_previous_search_result">Ir para o resultado anterior</string>
     <string name="cd_next_search_result">Ir para o pr&#243;ximo resultado</string>
     <string name="cd_empty_chat">Nenhuma mensagem ainda</string>
-    <string name="cd_message_bubble_sent">Mensagem enviada por você às %s</string>
-    <string name="cd_message_bubble_received">Mensagem recebida de %1$s &#224;s %2$s</string>
+    <string name="cd_message_bubble_sent">Mensagem enviada por você às %1$s. %2$s. Status: %3$s</string>
+    <string name="cd_message_bubble_received">Mensagem recebida de %1$s &#224;s %2$s. %3$s</string>
 
     <!-- Agenda -->
     <string name="cd_prev_month_button">Ir para o mês anterior</string>
@@ -35,7 +36,12 @@
     <string name="cd_back_button">Voltar</string>
     <string name="cd_empty_notifications" tools:ignore="Typos">Nenhuma notifica&#231;&#227;o no momento</string>
     <string name="cd_loading_notifications">Carregando notifica&#231;&#245;es</string>
+    <string name="cd_mark_all_read_button">Marcar todas as notifica&#231;&#245;es como lidas</string>
+    <string name="cd_clear_all_notifications_button">Limpar todas as notifica&#231;&#245;es</string>
+    <string name="cd_close_image_viewer">Fechar visualiza&#231;&#227;o da imagem</string>
+    <string name="cd_download_image_button">Baixar imagem</string>
     <string name="cd_empty_timeline">Linha do tempo vazia</string>
+    <string name="cd_export_timeline_button">Exportar eventos para PDF</string>
 
     <!-- Profile -->
     <string name="cd_avatar">Foto de perfil. Toque para editar</string>

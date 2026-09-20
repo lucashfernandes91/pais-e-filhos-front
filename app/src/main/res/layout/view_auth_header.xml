@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/touch_target_min">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            style="@style/Widget.CoParent.TouchTarget.Icon"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_gravity="start|top"
+            android:contentDescription="@string/cd_back_button"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_arrow_back"
+            android:visibility="gone"
+            app:tint="@color/gray_900" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/touch_target_min"
+            android:layout_marginStart="@dimen/touch_target_min"
+            android:layout_marginEnd="@dimen/touch_target_min"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_coparent_connection" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:text="@string/ui_coparent_lite"
+                android:textColor="@color/gray_900"
+                android:textSize="@dimen/text_size_l"
+                android:textStyle="bold"
+                android:includeFontPadding="false" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:gravity="center"
+        android:text="@string/auth_brand_signature"
+        android:textColor="@color/auth_brand_green"
+        android:textSize="@dimen/text_size_s_plus"
+        android:includeFontPadding="false" />
+
+    <TextView
+        android:id="@+id/tvAuthTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:gravity="center"
+        android:textColor="@color/gray_900"
+        android:textSize="@dimen/text_size_xxl"
+        android:textStyle="bold"
+        android:includeFontPadding="false" />
+
+    <TextView
+        android:id="@+id/tvAuthDescription"
+        style="@style/TextAppearance.CoParent.Form.Subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/auth_title_description_gap"
+        android:gravity="center"
+        android:lineSpacingExtra="@dimen/spacing_xs"
+        android:includeFontPadding="false" />
+</LinearLayout>

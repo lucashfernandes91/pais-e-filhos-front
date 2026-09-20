@@ -5,16 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="24dp">
+    android:paddingBottom="@dimen/spacing_l">
 
     <!-- Drag Handle -->
-    <View
-        android:layout_width="36dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_drag_handle" />
+    <View style="@style/Widget.CoParent.Sheet.Handle" />
 
     <!-- Header: data do dia -->
     <LinearLayout
@@ -22,8 +16,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingBottom="16dp">
+        android:paddingStart="@dimen/spacing_l"
+        android:paddingEnd="@dimen/spacing_l"
+        android:paddingBottom="@dimen/spacing_m">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -33,41 +28,39 @@
 
             <TextView
                 android:id="@+id/tvDaySheetDayName"
+                style="@style/TextAppearance.CoParent.Detail.SectionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="@color/gray_500"
                 android:textAllCaps="true"
                 android:letterSpacing="0.08" />
 
             <TextView
                 android:id="@+id/tvDaySheetDate"
+                style="@style/TextAppearance.CoParent.Sheet.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/gray_900"
-                android:layout_marginTop="2dp" />
+                android:layout_marginTop="@dimen/spacing_xs" />
         </LinearLayout>
 
         <!-- Badge: quantidade de eventos -->
         <TextView
             android:id="@+id/tvDaySheetCount"
+            style="@style/Widget.CoParent.Badge.Label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_xs"
             android:textColor="@color/primary_blue"
             android:background="@drawable/bg_badge_blue"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp" />
+            />
     </LinearLayout>
 
     <!-- Divider -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="12dp"
+        android:layout_height="@dimen/stroke_width_thin"
+        android:layout_marginStart="@dimen/spacing_l"
+        android:layout_marginEnd="@dimen/spacing_l"
+        android:layout_marginBottom="@dimen/spacing_sm"
         android:background="@color/gray_200" />
 
     <!-- Lista de eventos do dia -->
@@ -76,6 +69,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp" />
+        android:paddingStart="@dimen/spacing_l"
+        android:paddingEnd="@dimen/spacing_l" />
 
 </LinearLayout>

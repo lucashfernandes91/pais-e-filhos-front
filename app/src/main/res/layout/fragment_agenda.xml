@@ -15,16 +15,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="80dp">
+            android:paddingBottom="@dimen/screen_content_bottom_padding">
 
             <!-- Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingHorizontal="20dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="8dp"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingTop="@dimen/spacing_m"
+                android:paddingBottom="@dimen/spacing_s"
                 android:gravity="center_vertical"
                 android:background="@color/bg_primary">
 
@@ -39,7 +39,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ui_agenda"
-                        android:textSize="26sp"
+                        android:textSize="@dimen/text_size_xl"
                         android:textStyle="bold"
                         android:textColor="@color/gray_900" />
 
@@ -47,7 +47,7 @@
                         android:id="@+id/tvCurrentMonth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_size_s"
                         android:textColor="@color/gray_500" />
                 </LinearLayout>
 
@@ -58,36 +58,35 @@
                     android:layout_height="@dimen/touch_target_min"
                     android:text="@string/ui_novo"
                     android:contentDescription="@string/cd_add_event_button"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_size_s"
                     app:icon="@drawable/ic_add"
                     app:iconGravity="textStart"
-                    app:iconPadding="6dp"
-                    app:iconSize="18dp"
+                    app:iconPadding="@dimen/spacing_s"
+                    app:iconSize="@dimen/icon_size_sm"
                     app:iconTint="@color/on_primary"
-                    android:minWidth="96dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp" />
+                    android:minWidth="@dimen/button_min_width_action"
+                    android:paddingStart="@dimen/spacing_m"
+                    android:paddingEnd="@dimen/spacing_m" />
             </LinearLayout>
 
             <View
                 style="@style/Widget.CoParent.Header.Divider"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="@dimen/spacing_s" />
 
             <!-- Calendar Card -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.CoParent.Card.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginHorizontal="@dimen/spacing_m"
+                android:layout_marginBottom="@dimen/spacing_m"
                 >
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="@dimen/spacing_sm">
 
                     <!-- Legend Row -->
                     <LinearLayout
@@ -96,7 +95,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center"
-                        android:paddingBottom="8dp">
+                        android:paddingBottom="@dimen/spacing_s">
 
                         <!-- Mãe -->
                         <LinearLayout
@@ -104,20 +103,20 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:layout_marginEnd="16dp">
+                            android:layout_marginEnd="@dimen/spacing_m">
 
                             <View
-                                android:layout_width="10dp"
-                                android:layout_height="10dp"
+                                android:layout_width="@dimen/icon_dot_size_m"
+                                android:layout_height="@dimen/icon_dot_size_m"
                                 android:background="@drawable/bg_dot_pink"
-                                android:layout_marginEnd="4dp" />
+                                android:layout_marginEnd="@dimen/spacing_xs" />
 
                             <TextView
                                 android:id="@+id/tvLegendMother"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/agenda_no_other_parent"
-                                android:textSize="12sp"
+                                android:textSize="@dimen/text_size_xs"
                                 android:textColor="@color/gray_500" />
                         </LinearLayout>
 
@@ -127,20 +126,20 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:layout_marginEnd="16dp">
+                            android:layout_marginEnd="@dimen/spacing_m">
 
                             <View
-                                android:layout_width="10dp"
-                                android:layout_height="10dp"
+                                android:layout_width="@dimen/icon_dot_size_m"
+                                android:layout_height="@dimen/icon_dot_size_m"
                                 android:background="@drawable/bg_dot_blue"
-                                android:layout_marginEnd="4dp" />
+                                android:layout_marginEnd="@dimen/spacing_xs" />
 
                             <TextView
                                 android:id="@+id/tvLegendFather"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/agenda_you"
-                                android:textSize="12sp"
+                                android:textSize="@dimen/text_size_xs"
                                 android:textColor="@color/gray_500" />
                         </LinearLayout>
 
@@ -152,16 +151,16 @@
                             android:gravity="center_vertical">
 
                             <View
-                                android:layout_width="10dp"
-                                android:layout_height="10dp"
-                                android:layout_marginEnd="4dp"
+                                android:layout_width="@dimen/icon_dot_size_m"
+                                android:layout_height="@dimen/icon_dot_size_m"
+                                android:layout_marginEnd="@dimen/spacing_xs"
                                 android:background="@drawable/bg_event_dot" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/ui_evento"
-                                android:textSize="12sp"
+                                android:textSize="@dimen/text_size_xs"
                                 android:textColor="@color/gray_500" />
                         </LinearLayout>
                     </LinearLayout>
@@ -172,16 +171,16 @@
                         android:layout_height="@dimen/touch_target_min"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="4dp">
+                        android:paddingHorizontal="@dimen/spacing_xs">
 
                         <ImageButton
                             android:id="@+id/btnPrevMonth"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="@dimen/touch_target_min"
+                            android:layout_height="@dimen/touch_target_min"
                             android:src="@drawable/ic_arrow_back"
                             android:background="?selectableItemBackgroundBorderless"
                             android:contentDescription="@string/cd_prev_month_button"
-                            android:padding="12dp" />
+                            android:padding="@dimen/spacing_sm" />
 
                         <TextView
                             android:id="@+id/tvCalendarMonth"
@@ -189,34 +188,34 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textSize="16sp"
+                            android:textSize="@dimen/text_size_m"
                             android:textStyle="bold"
                             android:textColor="@color/gray_900" />
 
                         <ImageButton
                             android:id="@+id/btnNextMonth"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="@dimen/touch_target_min"
+                            android:layout_height="@dimen/touch_target_min"
                             android:src="@drawable/ic_arrow_forward"
                             android:background="?selectableItemBackgroundBorderless"
                             android:contentDescription="@string/cd_next_month_button"
-                            android:padding="12dp" />
+                            android:padding="@dimen/spacing_sm" />
                     </LinearLayout>
 
                     <!-- Days Header -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="32dp"
+                        android:layout_height="@dimen/spacing_xl"
                         android:orientation="horizontal"
                         android:gravity="center">
 
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_d" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_s" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_t" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_q" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_q" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_s" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_s" android:gravity="center" android:textSize="13sp" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_d" android:gravity="center" android:textSize="@dimen/text_size_s" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_s" android:gravity="center" android:textSize="@dimen/text_size_s" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_t" android:gravity="center" android:textSize="@dimen/text_size_s" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_q" android:gravity="center" android:textSize="@dimen/text_size_s" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_q" android:gravity="center" android:textSize="@dimen/text_size_s" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_s" android:gravity="center" android:textSize="@dimen/text_size_s" android:textColor="@color/gray_400" />
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/ui_s" android:gravity="center" android:textSize="@dimen/text_size_s" android:textColor="@color/gray_400" />
                     </LinearLayout>
 
                     <!-- Dynamic Calendar Grid -->
@@ -233,11 +232,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_proximos_eventos"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_size_l"
                 android:textStyle="bold"
                 android:textColor="@color/gray_900"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginStart="@dimen/spacing_m"
+                android:layout_marginBottom="@dimen/spacing_sm" />
 
             <ProgressBar
                 android:id="@+id/progressLoadingAgenda"
@@ -254,48 +253,40 @@
                 android:id="@+id/eventsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="@dimen/spacing_m"
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="false" />
 
             <!-- Error State -->
             <LinearLayout
                 android:id="@+id/errorStateAgenda"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
+                style="@style/Widget.CoParent.State.Container.Content"
                 android:paddingHorizontal="@dimen/spacing_xl"
                 android:paddingTop="@dimen/spacing_l"
-                android:visibility="gone"
                 android:accessibilityLiveRegion="polite"
                 android:contentDescription="@string/cd_error_agenda">
 
                 <ImageView
-                    android:layout_width="@dimen/icon_size_l"
-                    android:layout_height="@dimen/icon_size_l"
+                    style="@style/Widget.CoParent.State.Icon.Error"
                     android:src="@drawable/ic_error_circle"
                     app:tint="@color/error"
                     android:contentDescription="@null"
                     android:importantForAccessibility="no" />
 
                 <TextView
+                    style="@style/TextAppearance.CoParent.State.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_m"
-                    android:text="@string/state_error_title"
-                    android:textColor="@color/on_surface"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:text="@string/state_error_title" />
 
                 <TextView
+                    style="@style/TextAppearance.CoParent.State.Body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_s"
                     android:gravity="center"
-                    android:text="@string/agenda_error_message"
-                    android:textColor="@color/on_surface_variant"
-                    android:textSize="14sp" />
+                    android:text="@string/agenda_error_message" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRetryAgenda"
@@ -309,42 +300,33 @@
             <!-- Empty State -->
             <LinearLayout
                 android:id="@+id/emptyStateAgenda"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:paddingHorizontal="40dp"
-                android:paddingTop="32dp"
-                android:visibility="gone"
+                style="@style/Widget.CoParent.State.Container.Content"
+                android:paddingHorizontal="@dimen/spacing_xl"
+                android:paddingTop="@dimen/spacing_xl"
                 android:accessibilityLiveRegion="polite"
                 android:contentDescription="@string/cd_empty_agenda">
 
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    style="@style/Widget.CoParent.State.Icon.Empty"
                     android:src="@drawable/ic_calendar"
                     app:tint="@color/gray_300"
-                    android:layout_marginBottom="16dp"
                     android:contentDescription="@null"
                     android:importantForAccessibility="no" />
 
                 <TextView
+                    style="@style/TextAppearance.CoParent.State.EmptyTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ui_nenhum_evento_agendado"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/gray_700"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginBottom="@dimen/spacing_xs" />
 
                 <TextView
+                    style="@style/TextAppearance.CoParent.State.EmptyBody"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ui_adicione_um_evento_para_comecar_a_organizar_a"
-                    android:textSize="14sp"
-                    android:textColor="@color/gray_400"
                     android:gravity="center"
-                    android:lineSpacingExtra="2dp" />
+                    android:lineSpacingExtra="@dimen/spacing_xs" />
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

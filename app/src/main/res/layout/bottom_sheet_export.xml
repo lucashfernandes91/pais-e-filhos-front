@@ -5,53 +5,45 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="32dp">
+    android:paddingBottom="@dimen/spacing_xl">
 
     <!-- Handle bar -->
-    <View
-        android:layout_width="40dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/bg_handle_bar" />
+    <View style="@style/Widget.CoParent.Sheet.Handle" />
 
     <!-- Title -->
     <TextView
+        android:id="@+id/tvExportTitle"
+        style="@style/TextAppearance.CoParent.Sheet.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:text="@string/ui_exportar_conversa"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/gray_900" />
+        android:layout_marginHorizontal="@dimen/spacing_l"
+        android:text="@string/ui_exportar_conversa" />
 
     <!-- Subtitle -->
     <TextView
+        style="@style/TextAppearance.CoParent.Sheet.Body"
         android:id="@+id/tvExportInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginHorizontal="@dimen/spacing_l"
+        android:layout_marginTop="@dimen/spacing_xs"
         android:text="@string/ui_gera_um_pdf_com_registro_oficial_de_todas"
-        android:textSize="13sp"
-        android:textColor="@color/gray_500"
-        android:lineSpacingExtra="2dp" />
+        android:lineSpacingExtra="@dimen/stroke_width_emphasis" />
 
     <!-- Info card -->
     <com.google.android.material.card.MaterialCardView
         style="@style/Widget.CoParent.Card.Info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="@dimen/spacing_l"
+        android:layout_marginTop="@dimen/spacing_l"
         >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="@dimen/spacing_m">
 
             <!-- Messages count -->
             <LinearLayout
@@ -59,23 +51,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="@dimen/spacing_s">
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:id="@+id/ivExportIcon"
+                    android:layout_width="@dimen/icon_size_s"
+                    android:layout_height="@dimen/icon_size_s"
                     android:src="@drawable/ic_chat"
                     app:tint="@color/primary_blue"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="@dimen/spacing_s"
                     android:contentDescription="@string/ui_mensagens" />
 
                 <TextView
+                    style="@style/TextAppearance.CoParent.Sheet.Info"
                     android:id="@+id/tvMessageCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/ui_0_mensagens"
-                    android:textSize="13sp"
-                    android:textColor="@color/gray_700" />
+                    android:text="@string/ui_0_mensagens" />
             </LinearLayout>
 
             <!-- Legal badge -->
@@ -86,18 +78,17 @@
                 android:gravity="center_vertical">
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="@dimen/icon_size_s"
+                    android:layout_height="@dimen/icon_size_s"
                     android:src="@drawable/ic_shield"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="@dimen/spacing_s"
                     android:contentDescription="@string/ui_registro" />
 
                 <TextView
+                    style="@style/TextAppearance.CoParent.Sheet.Info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/ui_valido_para_fins_legais"
-                    android:textSize="13sp"
-                    android:textColor="@color/gray_700" />
+                    android:text="@string/ui_valido_para_fins_legais" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -108,14 +99,14 @@
         style="@style/Widget.CoParent.Button.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="@dimen/spacing_l"
+        android:layout_marginTop="@dimen/spacing_l"
         android:text="@string/ui_baixar_pdf"
         app:icon="@drawable/ic_download"
         app:iconGravity="textStart"
         app:iconTint="@color/on_primary"
-        app:iconSize="20dp"
-        app:iconPadding="8dp" />
+        app:iconSize="@dimen/icon_badge_size"
+        app:iconPadding="@dimen/spacing_s" />
 
     <!-- Share button -->
     <com.google.android.material.button.MaterialButton
@@ -123,14 +114,14 @@
         style="@style/Widget.CoParent.Button.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="@dimen/spacing_l"
+        android:layout_marginTop="@dimen/spacing_s"
         android:text="@string/ui_compartilhar"
         app:icon="@drawable/ic_export"
         app:iconGravity="textStart"
         app:iconTint="@color/primary_blue"
-        app:iconSize="20dp"
-        app:iconPadding="8dp" />
+        app:iconSize="@dimen/icon_badge_size"
+        app:iconPadding="@dimen/spacing_s" />
 
     <!-- Progress -->
     <LinearLayout
@@ -139,24 +130,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/spacing_m"
         android:visibility="gone">
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="@dimen/icon_badge_size"
+            android:layout_height="@dimen/icon_badge_size"
             android:indeterminate="true"
             app:indicatorColor="@color/primary_blue"
-            app:indicatorSize="20dp"
-            app:trackThickness="2dp" />
+            app:indicatorSize="@dimen/icon_badge_size"
+            app:trackThickness="@dimen/stroke_width_emphasis" />
 
         <TextView
+            style="@style/TextAppearance.CoParent.Sheet.Body"
             android:id="@+id/tvProgressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="@string/ui_gerando_pdf"
-            android:textSize="13sp"
-            android:textColor="@color/gray_500" />
-    </LinearLayout>
+            android:layout_marginStart="@dimen/spacing_s"
+            android:text="@string/ui_gerando_pdf" />
+</LinearLayout>
 </LinearLayout>

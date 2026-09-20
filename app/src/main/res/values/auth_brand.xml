@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="auth_brand_surface">#EFF6F3</color>
+    <color name="auth_brand_green">#237568</color>
+    <string name="auth_brand_signature">Cuidado que se compartilha.</string>
+    <string name="auth_login_title">Boas-vindas</string>
+    <string name="auth_login_description">Um espaço para organizar a rotina e cuidar de quem importa: seus filhos.</string>
+    <string name="auth_register_description">Vamos por partes. Crie seu espaço para compartilhar os cuidados com seus filhos.</string>
+    <string name="auth_recovery_description">Vamos ajudar você a recuperar o acesso. Informe seu usuário ou e-mail cadastrado.</string>
+    <string name="auth_code_description">Confira seu e-mail e digite o código de 6 dígitos. Se não encontrar, veja também a pasta de spam.</string>
+    <string name="auth_new_password_description">Falta pouco. Escolha uma nova senha para voltar ao seu espaço de cuidado.</string>
+</resources>
