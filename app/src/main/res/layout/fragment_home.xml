@@ -172,8 +172,8 @@
                         android:layout_weight="1"
                         android:text="@string/ui_guarda_atual"
                         android:textSize="@dimen/text_size_xs"
-                        android:textColor="@color/on_primary"
-                        android:alpha="0.8"
+                        android:textColor="@color/on_brand_surface"
+                        android:alpha="1"
                         android:letterSpacing="0.08" />
 
                     <!-- Selo Registro Legal -->
@@ -192,7 +192,7 @@
                             android:layout_width="@dimen/icon_size_xxs"
                             android:layout_height="@dimen/icon_size_xxs"
                             android:src="@drawable/ic_shield"
-                            app:tint="@color/on_primary"
+                            app:tint="@color/on_brand_surface"
                             android:layout_marginEnd="@dimen/spacing_xs"
                             android:contentDescription="@string/ui_registro" />
 
@@ -201,7 +201,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/ui_registro_legal"
                             android:textSize="@dimen/text_size_xs"
-                            android:textColor="@color/on_primary"
+                            android:textColor="@color/on_brand_surface"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
@@ -213,7 +213,7 @@
                     android:text="@string/home_custody_loading"
                     android:textSize="@dimen/text_size_xl"
                     android:textStyle="bold"
-                    android:textColor="@color/on_primary"
+                    android:textColor="@color/on_brand_surface"
                     android:layout_marginTop="@dimen/spacing_s"
                     android:maxLines="2"
                     android:ellipsize="end" />
@@ -222,7 +222,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/stroke_width_thin"
-                    android:background="@color/on_primary"
+                    android:background="@color/on_brand_surface"
                     android:alpha="0.15"
                     android:layout_marginVertical="@dimen/spacing_sm" />
 
@@ -233,8 +233,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/ui_proxima_troca"
                     android:textSize="@dimen/text_size_xs"
-                    android:textColor="@color/on_primary"
-                    android:alpha="0.7"
+                    android:textColor="@color/on_brand_surface"
+                    android:alpha="1"
                     android:letterSpacing="0.08" />
 
                 <LinearLayout
@@ -251,7 +251,7 @@
                     android:text="@string/home_custody_loading_detail"
                     android:textSize="@dimen/text_size_m"
                     android:textStyle="bold"
-                    android:textColor="@color/on_primary"
+                    android:textColor="@color/on_brand_surface"
                     android:maxLines="2"
                     android:ellipsize="end" />
                 </LinearLayout>

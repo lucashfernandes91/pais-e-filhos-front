@@ -90,7 +90,7 @@
     </style>
 
     <style name="Widget.CoParent.Card.Primary" parent="Widget.MaterialComponents.CardView">
-        <item name="cardBackgroundColor">@color/primary_blue</item>
+        <item name="cardBackgroundColor">@color/brand_surface</item>
         <item name="cardCornerRadius">@dimen/corner_radius_xxl</item>
         <item name="cardElevation">@dimen/elevation_low</item>
         <item name="strokeWidth">@dimen/elevation_none</item>

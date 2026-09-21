@@ -1,14 +1,6 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
-}
-
-// Carrega local.properties (gitignored, por dev). Fallback se ausente.
-val localProps = Properties().apply {
-    val f = rootProject.file("local.properties")
-    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
@@ -28,28 +20,20 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Host do backend em dev. Sobrescreva em local.properties:
-        //   dev.host=localhost       (celular físico via adb reverse)
-        //   dev.host=192.168.x.x     (celular na mesma WiFi)
-        // Default = 10.0.2.2 (emulador).
-        val devHost = localProps.getProperty("dev.host", "10.0.2.2")
-        val devPort = localProps.getProperty("dev.port", "8000")
-        buildConfigField("String", "API_BASE_URL", "\"http://$devHost:$devPort/\"")
-        buildConfigField("String", "WS_BASE_URL", "\"ws://$devHost:$devPort/\"")
-        buildConfigField("String", "LEGAL_BASE_URL", "\"https://coparent.app\"")
+        buildConfigField("String", "API_BASE_URL", "\"https://coparent-hml.originstudios.com.br/\"")
+        buildConfigField("String", "WS_BASE_URL", "\"wss://coparent-hml.originstudios.com.br/\"")
+        buildConfigField("String", "LEGAL_BASE_URL", "\"https://coparent-hml.originstudios.com.br\"")
         buildConfigField("boolean", "FIREBASE_MESSAGING_ENABLED", "true")
-        manifestPlaceholders["appLinkHost"] = "coparent.app"
+        manifestPlaceholders["appLinkHost"] = "coparent-hml.originstudios.com.br"
         manifestPlaceholders["firebaseMessagingAutoInitEnabled"] = "true"
         manifestPlaceholders["firebaseAnalyticsCollectionEnabled"] = "true"
     }
 
     buildTypes {
         debug {
-            val mockUsername = localProps.getProperty("dev.username", "pai_demo")
-            val mockPassword = localProps.getProperty("dev.password", "PaisEFilhos!2026")
-            buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "true")
-            buildConfigField("String", "MOCK_USERNAME", "\"$mockUsername\"")
-            buildConfigField("String", "MOCK_PASSWORD", "\"$mockPassword\"")
+            buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "false")
+            buildConfigField("String", "MOCK_USERNAME", "\"\"")
+            buildConfigField("String", "MOCK_PASSWORD", "\"\"")
         }
         release {
             isMinifyEnabled = false

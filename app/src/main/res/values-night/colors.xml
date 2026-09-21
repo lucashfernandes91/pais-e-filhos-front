@@ -1,202 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
-    ╔══════════════════════════════════════════════════════════════╗
-    ║  CoParent Lite — Dark Mode Color System                     ║
-    ║                                                              ║
-    ║  Princípios aplicados:                                       ║
-    ║  1. Superfícies escuras com elevação via luminosidade        ║
-    ║     (Material You: quanto mais elevado, mais claro)          ║
-    ║  2. Cores primárias dessaturadas levemente para reduzir      ║
-    ║     vibração em fundos escuros                               ║
-    ║  3. Contraste mínimo 4.5:1 para texto (WCAG AA)             ║
-    ║  4. Cores de status mais suaves para não agredir no escuro   ║
-    ║  5. Gradação de cinzas INVERTIDA (900=claro, 50=escuro)      ║
-    ╚══════════════════════════════════════════════════════════════╝
-    -->
-
-    <!-- ═══════════════════════════════════════════════════════════
-         PRIMARY COLORS
-         Levemente mais claras que no light mode para manter
-         legibilidade sobre fundos escuros. Azul dessaturado
-         evita vibração óptica (halation) em OLED.
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="primary_blue">#60A5FA</color>         <!-- Blue 400 — mais suave que #2563EB -->
-    <color name="primary_blue_dark">#3B82F6</color>    <!-- Blue 500 — variant para estados pressed -->
-    <color name="primary_blue_light">#93C5FD</color>   <!-- Blue 300 — destaques sutis -->
-
-    <!-- ═══════════════════════════════════════════════════════════
-         BACKGROUNDS & SURFACES
-         Sistema de 3 níveis de elevação via luminosidade:
-         - bg_primary:   base (nível 0) — tela principal
-         - bg_secondary: cards e superfícies (nível 1)
-         - bg_tertiary:  inputs, chips, elementos recuados (nível 2)
-
-         Usando cinzas com leve tom azulado (#1x1x2x) para
-         coerência com a primary blue — evita cinza "morto".
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="bg_primary">#0F1117</color>           <!-- Quase preto, com subtom azul -->
-    <color name="bg_secondary">#1A1C25</color>         <!-- Superfícies elevadas (cards) -->
-    <color name="bg_tertiary">#242731</color>          <!-- Inputs, chips, nested containers -->
-
-    <!-- Semantic content tokens keep foreground separate from legacy surfaces. -->
-    <color name="surface_container">@color/bg_secondary</color>
-    <color name="on_primary">#0F172A</color>
-    <color name="on_error">#0F1117</color>
-    <color name="on_secondary">#07150D</color>
+    <color name="brand_primary">#8CCBC1</color>
+    <color name="brand_primary_pressed">#72B7AD</color>
+    <color name="brand_surface">#29443E</color>
+    <color name="on_brand_surface">#D8EEE6</color>
+    <color name="brand_accent">#533E32</color>
+    <color name="on_brand_accent">#F3D8C6</color>
+    <color name="bg_primary">#122321</color>
+    <color name="bg_secondary">#1C302D</color>
+    <color name="bg_tertiary">#293D38</color>
+    <color name="surface_container">#1C302D</color>
+    <color name="on_primary">#122321</color>
+    <color name="on_error">#122321</color>
+    <color name="on_secondary">#122321</color>
+    <color name="gray_900">#EAF2EF</color>
+    <color name="gray_800">#DBE7E1</color>
+    <color name="gray_700">#C5D5CD</color>
+    <color name="gray_600">#B0C3B9</color>
+    <color name="gray_500">#A6BBB0</color>
+    <color name="gray_400">@color/gray_500</color>
+    <color name="gray_300">#4C6358</color>
+    <color name="gray_200">#354D43</color>
+    <color name="gray_100">#243A32</color>
+    <color name="gray_50">#172B25</color>
+    <color name="success">#92D4AA</color>
+    <color name="warning">#E7C17C</color>
+    <color name="error">#F1A5A5</color>
+    <color name="success_light">#233F2D</color>
+    <color name="warning_light">#453721</color>
+    <color name="error_light">#4F292A</color>
+    <color name="message_received_bg">#293D38</color>
+    <color name="message_received_text">@color/on_surface</color>
+    <color name="custody_parent_a">#ABC0EF</color>
+    <color name="custody_parent_a_light">#233249</color>
+    <color name="custody_parent_a_bg">#304366</color>
+    <color name="custody_parent_b">#D0B8E8</color>
+    <color name="custody_parent_b_light">#372B44</color>
+    <color name="custody_parent_b_bg">#463454</color>
+    <color name="outline">#7E968A</color>
+    <color name="state_disabled">#52695E</color>
+    <color name="state_disabled_bg">#243A32</color>
+    <color name="text_disabled">#7E968A</color>
+    <color name="search_highlight">#F3D8C6</color>
+    <color name="search_highlight_active">#E8BE9F</color>
+    <color name="search_highlight_text">#233532</color>
+    <color name="message_time_sent">#B0CDBF</color>
+    <color name="primary_blue">@color/brand_primary</color>
+    <color name="primary_blue_dark">@color/brand_primary_pressed</color>
+    <color name="primary_blue_light">@color/brand_primary</color>
     <color name="on_background">@color/gray_900</color>
     <color name="on_surface">@color/gray_900</color>
     <color name="on_surface_variant">@color/gray_600</color>
     <color name="icon_default">@color/gray_700</color>
-    <color name="icon_muted">@color/gray_600</color>
-    <color name="icon_info">@color/primary_blue_light</color>
-    <color name="control_selected_bg">@color/event_general_light</color>
+    <color name="icon_muted">@color/gray_500</color>
+    <color name="icon_info">@color/brand_primary</color>
+    <color name="control_selected_bg">@color/brand_surface</color>
     <color name="control_unselected_bg">@color/surface_container</color>
-    <color name="control_track_checked">@color/primary_blue_light</color>
-    <color name="control_track_unchecked">@color/gray_300</color>
+    <color name="control_track_checked">@color/brand_primary</color>
+    <color name="control_track_unchecked">@color/outline</color>
     <color name="badge_active_bg">@color/success_light</color>
-    <color name="badge_info_bg">@color/event_general_light</color>
-    <color name="badge_legal_bg">#40FFFFFF</color>
+    <color name="badge_info_bg">@color/brand_surface</color>
+    <color name="badge_legal_bg">@color/surface_container</color>
     <color name="badge_error_bg">@color/error</color>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         TEXT / GRAY SCALE
-         Escala invertida: gray_900 agora é o texto mais legível
-         (claro sobre escuro). gray_50 é o tom mais escuro.
-
-         Cada valor testado contra bg_primary (#0F1117):
-         - gray_900: #F1F3F9 → contraste 16.2:1 ✓ (títulos)
-         - gray_800: #E2E4EA → contraste 13.8:1 ✓ (body)
-         - gray_700: #C8CAD0 → contraste 10.5:1 ✓ (body alt)
-         - gray_600: #9CA0A9 → contraste  6.8:1 ✓ (secondary)
-         - gray_500: #71757E → contraste  4.1:1 ✓ (captions)
-         - gray_400: #4D5159 → contraste  2.5:1   (decorativo)
-         - gray_300: #363940 → contraste  1.8:1   (borders)
-         - gray_200: #282B33 → contraste  1.5:1   (dividers)
-         - gray_100: #1E2028 → contraste  1.2:1   (subtle bg)
-         - gray_50:  #161820 → contraste  1.1:1   (quase bg)
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="gray_900">#F1F3F9</color>
-    <color name="gray_800">#E2E4EA</color>
-    <color name="gray_700">#C8CAD0</color>
-    <color name="gray_600">#9CA0A9</color>
-    <color name="gray_500">#8B919D</color>
-    <color name="gray_400">#4D5159</color>
-    <color name="gray_300">#363940</color>
-    <color name="gray_200">#282B33</color>
-    <color name="gray_100">#1E2028</color>
-    <color name="gray_50">#161820</color>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         STATUS COLORS
-         Versões mais suaves para dark mode — cores saturadas
-         demais sobre fundo escuro causam fadiga visual.
-         Testadas contra bg_primary para contraste mínimo 4.5:1.
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="success">#4ADE80</color>              <!-- Green 400 — suave, 8.2:1 ✓ -->
-    <color name="warning">#FBBF24</color>              <!-- Amber 400 — legível, 10.1:1 ✓ -->
-    <color name="error">#F87171</color>                <!-- Red 400 — menos agressivo, 5.4:1 ✓ -->
-    <color name="info">#60A5FA</color>                 <!-- Mesmo que primary_blue dark -->
-
-    <!-- ═══════════════════════════════════════════════════════════
-         MESSAGE COLORS (Chat)
-         - Enviadas: azul mais escuro para não cegar no escuro
-         - Recebidas: superfície elevada (nível 2) para distinção
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="message_sent_bg">#1D4ED8</color>      <!-- Blue 700 — mais profundo -->
-    <color name="message_sent_text">#F1F3F9</color>    <!-- Texto claro sobre azul -->
-    <color name="message_received_bg">#242731</color>  <!-- bg_tertiary — distinção sutil -->
-    <color name="message_received_text">#E2E4EA</color><!-- gray_800 — legível -->
-
-    <!-- ═══════════════════════════════════════════════════════════
-         CUSTODY COLORS (Calendar)
-         Versões dessaturadas para dark mode.
-         _light vira tom escuro transparente (fundo dos dias).
-         _bg mantém visibilidade sem agredir.
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="custody_mother">#F472B6</color>       <!-- Pink 400 -->
-    <color name="custody_mother_light">#31162A</color>  <!-- Pink escuro transparente -->
-    <color name="custody_mother_bg">#5C1A3E</color>    <!-- Pink bg profundo -->
-    <color name="custody_father">#60A5FA</color>       <!-- Blue 400 -->
-    <color name="custody_father_light">#141E33</color>  <!-- Blue escuro transparente -->
-    <color name="custody_father_bg">#1E3A5F</color>    <!-- Blue bg profundo -->
-    <color name="custody_parent_a">#93C5FD</color>     <!-- Blue 300 -->
-    <color name="custody_parent_b">#6EE7B7</color>     <!-- Emerald 300 -->
-
-    <!-- ═══════════════════════════════════════════════════════════
-         EVENT DOTS
-         Mais vibrantes no dark para manter visibilidade
-         sobre fundos escuros do calendário.
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="event_dot">#60A5FA</color>            <!-- Blue 400 -->
-    <color name="event_dot_custody">#A78BFA</color>    <!-- Violet 400 -->
-
-    <!-- ═══════════════════════════════════════════════════════════
-         SECONDARY
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="secondary_green">#4ADE80</color>      <!-- Green 400 -->
-    <color name="secondary_green_light">#14291E</color> <!-- Green bg escuro -->
-    <color name="secondary_teal">#2DD4BF</color>       <!-- Teal 400 -->
-
-    <!-- ═══════════════════════════════════════════════════════════
-         BORDERS & DIVIDERS
-         Sutis — apenas o suficiente para separar sem chamar
-         atenção. 0.5px borders com essas cores são quase
-         invisíveis, criando separação elegante.
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="divider">#282B33</color>              <!-- gray_200 dark -->
-    <color name="border">#282B33</color>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         AVATAR BACKGROUNDS
-         Tons escuros com saturação baixa — as iniciais
-         em cor clara se destacam sem criar "caixas brilhantes".
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="avatar_blue">#1E3A5F</color>
-    <color name="avatar_green">#14352A</color>
-    <color name="avatar_orange">#3D2E14</color>
-    <color name="avatar_pink">#3D1A2E</color>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         SEMANTIC SURFACE COLORS
-         Versões dark das cores hardcoded encontradas nos layouts.
-         Substituem #E8F0FE, #3C6BB5, #E6F0FF, #C5D9F8.
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="info_banner_bg">#141E33</color>          <!-- Azul escuro sutil -->
-    <color name="info_banner_text">#93C5FD</color>        <!-- Blue 300 — legível sobre #141E33 -->
-    <color name="send_button_bg">#1E3A5F</color>          <!-- Blue bg profundo -->
-    <color name="message_time_sent">#93C5FD</color>       <!-- Blue 300 — contraste 5.2:1 sobre #1D4ED8 ✓ -->
-    <color name="message_time_received">@color/gray_500</color>
-
-    <!-- Accessibility States (Dark mode variants) -->
-    <color name="state_disabled">#4D5159</color>
-    <color name="state_disabled_bg">#161820</color>
-    <color name="text_disabled">#71757E</color>
-    <color name="error_light">#5C1A1E</color>
-    <color name="success_light">#14291E</color>
-    <color name="warning_light">#3D2E14</color>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         EVENT TYPE COLORS
-         Mesma lógica de custody: cores vivas, fundos escuros.
-         ═══════════════════════════════════════════════════════════ -->
-    <color name="event_mother">#F472B6</color>
-    <color name="event_mother_light">#31162A</color>
-    <color name="event_father">#60A5FA</color>
-    <color name="event_father_light">#141E33</color>
-    <color name="event_general">#60A5FA</color>
-    <color name="event_general_light">#141E33</color>
-
-    <!-- Form feedback banners -->
-    <color name="feedback_loading_bg">#141E33</color>
-    <color name="feedback_loading_text">#93C5FD</color>
-    <color name="feedback_success_bg">#14291E</color>
-    <color name="feedback_success_text">#4ADE80</color>
-    <color name="feedback_error_bg">#5C1A1E</color>
-    <color name="feedback_error_text">#FCA5A5</color>
-    <color name="picker_card_bg">#242731</color>
-    <!-- Busca no chat: ambar translucido sobre bolhas escuras -->
-    <color name="search_highlight">#66FBBF24</color>
-    <color name="search_highlight_active">#A6FBBF24</color>
-    <color name="search_highlight_text">#F1F3F9</color>
+    <color name="info">@color/brand_primary</color>
+    <color name="feedback_loading_bg">@color/brand_surface</color>
+    <color name="feedback_loading_text">@color/on_brand_surface</color>
+    <color name="feedback_success_bg">@color/success_light</color>
+    <color name="feedback_success_text">@color/success</color>
+    <color name="feedback_error_bg">@color/error_light</color>
+    <color name="feedback_error_text">@color/error</color>
+    <color name="warning_text">@color/warning</color>
+    <color name="picker_card_bg">@color/surface_container</color>
+    <color name="message_sent_bg">@color/brand_surface</color>
+    <color name="message_sent_text">@color/on_brand_surface</color>
+    <color name="custody_mother">@color/custody_parent_b</color>
+    <color name="custody_mother_light">@color/custody_parent_b_light</color>
+    <color name="custody_mother_bg">@color/custody_parent_b_bg</color>
+    <color name="custody_father">@color/custody_parent_a</color>
+    <color name="custody_father_light">@color/custody_parent_a_light</color>
+    <color name="custody_father_bg">@color/custody_parent_a_bg</color>
+    <color name="event_dot">@color/brand_primary</color>
+    <color name="event_dot_custody">@color/custody_parent_b</color>
+    <color name="secondary_green">@color/success</color>
+    <color name="secondary_green_light">@color/success_light</color>
+    <color name="secondary_teal">@color/brand_primary</color>
+    <color name="divider">@color/gray_200</color>
+    <color name="border">@color/gray_200</color>
+    <color name="avatar_blue">@color/custody_parent_a_light</color>
+    <color name="avatar_green">@color/brand_surface</color>
+    <color name="avatar_orange">@color/brand_accent</color>
+    <color name="avatar_pink">@color/custody_parent_b_light</color>
+    <color name="info_banner_bg">@color/brand_surface</color>
+    <color name="info_banner_text">@color/on_brand_surface</color>
+    <color name="send_button_bg">@color/brand_surface</color>
+    <color name="message_time_received">@color/gray_600</color>
+    <color name="event_mother">@color/custody_parent_b</color>
+    <color name="event_mother_light">@color/custody_parent_b_light</color>
+    <color name="event_father">@color/custody_parent_a</color>
+    <color name="event_father_light">@color/custody_parent_a_light</color>
+    <color name="event_general">@color/brand_primary</color>
+    <color name="event_general_light">@color/brand_surface</color>
 </resources>

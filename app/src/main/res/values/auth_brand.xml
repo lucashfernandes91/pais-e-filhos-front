@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="auth_brand_surface">#EFF6F3</color>
-    <color name="auth_brand_green">#237568</color>
+    <color name="auth_brand_surface">@color/brand_accent</color>
+    <color name="auth_brand_green">@color/brand_primary</color>
     <string name="auth_brand_signature">Cuidado que se compartilha.</string>
     <string name="auth_login_title">Boas-vindas</string>
     <string name="auth_login_description">Um espaço para organizar a rotina e cuidar de quem importa: seus filhos.</string>
