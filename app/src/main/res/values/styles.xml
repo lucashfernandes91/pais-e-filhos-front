@@ -16,6 +16,7 @@
         <item name="android:forceDarkAllowed">false</item>
         <item name="android:windowSplashScreenBackground">@color/bg_primary</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/bg_primary</item>
+        <item name="android:autofilledHighlight">@drawable/bg_autofill_highlight</item>
         <item name="android:textColorPrimary">@color/on_surface</item>
         <item name="android:textColorSecondary">@color/on_surface_variant</item>
         <item name="android:windowLightStatusBar">true</item>
@@ -153,6 +154,13 @@
         <item name="android:windowAnimationStyle">@style/Animation.AddEventBottomSheet</item>
     </style>
 
+    <style name="ExportBottomSheetDialogTheme" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
     <!-- Fundo igual à tela Agenda (bg_secondary) — usado em novo/editar evento -->
     <style name="AddEventBottomSheetTheme" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AddEventBottomSheetStyle</item>
@@ -195,6 +203,8 @@
     <style name="Widget.CoParent.TextInputLayout.Event" parent="Widget.CoParent.TextInputLayout.Outlined">
         <item name="boxBackgroundColor">@color/input_box_background_color</item>
         <item name="hintEnabled">false</item>
+        <item name="helperTextEnabled">false</item>
+        <item name="helperText">@null</item>
         <item name="errorTextColor">@color/error</item>
     </style>
 

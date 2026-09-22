@@ -59,8 +59,7 @@ class TimelineFragment : Fragment() {
     }
 
     private fun openExportSheet() {
-        val sheet = ExportBottomSheet.newInstance(eventCount, ExportBottomSheet.TYPE_EVENTS)
-        sheet.show(childFragmentManager, "ExportBottomSheet")
+        ExportBottomSheet.show(this, eventCount, ExportBottomSheet.TYPE_EVENTS)
     }
 
     private fun setupRecyclerView() {

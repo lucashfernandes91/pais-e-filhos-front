@@ -9,7 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_primary"
-    android:paddingBottom="@dimen/screen_content_bottom_padding"
+    android:paddingBottom="@dimen/spacing_m"
     android:clipToPadding="false">
 
     <LinearLayout
@@ -27,7 +27,8 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:background="@drawable/bg_info_banner"
-            android:padding="@dimen/spacing_sm"
+            android:paddingHorizontal="@dimen/spacing_m"
+            android:paddingVertical="@dimen/spacing_s"
             android:layout_marginBottom="@dimen/spacing_sm"
             android:visibility="gone">
 
@@ -71,6 +72,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:layout_marginBottom="@dimen/spacing_sm">
 
             <LinearLayout
@@ -103,7 +106,10 @@
                 android:id="@+id/btnNotifications"
                 android:layout_width="@dimen/touch_target_min"
                 android:layout_height="@dimen/touch_target_min"
+                android:layout_marginEnd="@dimen/spacing_xs"
                 android:background="@drawable/bg_notification_button"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:foreground="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
@@ -125,8 +131,8 @@
                     android:minWidth="@dimen/notification_badge_size"
                     android:minHeight="@dimen/notification_badge_size"
                     android:layout_gravity="top|end"
-                    android:layout_marginTop="-2dp"
-                    android:layout_marginEnd="-2dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="2dp"
                     android:paddingStart="3dp"
                     android:paddingEnd="3dp"
                     android:background="@drawable/bg_badge_red"
@@ -142,21 +148,22 @@
             style="@style/Widget.CoParent.Header.Divider"
             android:layout_marginStart="-16dp"
             android:layout_marginEnd="-16dp"
-            android:layout_marginBottom="@dimen/spacing_m" />
+            android:layout_marginBottom="@dimen/spacing_sm" />
 
         <!-- Current Care Card -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.CoParent.Card.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_sm"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="@dimen/spacing_m">
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s">
 
                 <!-- Header com registro legal -->
                 <LinearLayout
@@ -224,7 +231,7 @@
                     android:layout_height="@dimen/stroke_width_thin"
                     android:background="@color/on_primary"
                     android:alpha="0.15"
-                    android:layout_marginVertical="@dimen/spacing_sm" />
+                    android:layout_marginVertical="@dimen/spacing_s" />
 
                 <!-- Seção Próxima Troca -->
                 <TextView
@@ -263,7 +270,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="@dimen/spacing_m">
+            android:layout_marginBottom="@dimen/spacing_sm">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnNewMessage"
@@ -271,7 +278,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="@dimen/spacing_s"
+                android:layout_marginEnd="@dimen/spacing_xs"
                 android:clickable="true"
                 android:focusable="true"
                 android:contentDescription="@string/cd_quick_action_message"
@@ -282,15 +289,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="@dimen/spacing_m"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:paddingVertical="@dimen/spacing_s"
                     android:gravity="start">
 
                     <!-- Ícone de mensagem em azul -->
                     <FrameLayout
-                        android:layout_width="@dimen/touch_target_min"
-                        android:layout_height="@dimen/touch_target_min"
+                        android:layout_width="@dimen/icon_container_size_m"
+                        android:layout_height="@dimen/icon_container_size_m"
                         android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginBottom="@dimen/spacing_sm">
+                        android:layout_marginBottom="@dimen/spacing_s">
 
                         <ImageView
                             android:layout_width="@dimen/icon_size_m"
@@ -330,7 +338,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="@dimen/spacing_s"
+                android:layout_marginStart="@dimen/spacing_xs"
                 android:clickable="true"
                 android:focusable="true"
                 android:contentDescription="@string/cd_quick_action_event"
@@ -341,15 +349,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="@dimen/spacing_m"
+                    android:paddingHorizontal="@dimen/spacing_m"
+                    android:paddingVertical="@dimen/spacing_s"
                     android:gravity="start">
 
                     <!-- Ícone de calendário em azul -->
                     <FrameLayout
-                        android:layout_width="@dimen/touch_target_min"
-                        android:layout_height="@dimen/touch_target_min"
+                        android:layout_width="@dimen/icon_container_size_m"
+                        android:layout_height="@dimen/icon_container_size_m"
                         android:background="@drawable/bg_icon_circle_blue"
-                        android:layout_marginBottom="@dimen/spacing_sm">
+                        android:layout_marginBottom="@dimen/spacing_s">
 
                         <ImageView
                             android:layout_width="@dimen/icon_size_m"
@@ -389,7 +398,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/spacing_sm">
+            android:layout_marginBottom="@dimen/spacing_xs">
 
             <TextView
                 android:layout_width="0dp"
@@ -420,8 +429,7 @@
             android:id="@+id/eventsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="@dimen/spacing_m" />
+            android:orientation="vertical" />
 
         <!-- Skeleton Loading -->
         <include

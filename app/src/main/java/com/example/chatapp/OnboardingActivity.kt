@@ -4,48 +4,42 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
-import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.activity.OnBackPressedCallback
 import com.google.android.material.button.MaterialButton
-import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 
 class OnboardingActivity : AppCompatActivity() {
 
-    private lateinit var icon: ImageView
     private lateinit var title: TextView
     private lateinit var description: TextView
     private lateinit var dotsContainer: LinearLayout
     private lateinit var btnNext: MaterialButton
     private lateinit var btnSkip: TextView
     private lateinit var btnBack: ImageButton
-    private lateinit var bottomActions: LinearLayout
     private var currentPage = 0
 
     data class OnboardingPage(
-        @param:DrawableRes val iconRes: Int,
+        @param:IdRes val previewId: Int,
         @param:StringRes val titleRes: Int,
-        @param:StringRes val descriptionRes: Int,
-        @param:StringRes val secondaryActionRes: Int
+        @param:StringRes val descriptionRes: Int
     )
 
     private val pages = listOf(
         OnboardingPage(
-            R.drawable.ic_onboarding_organization,
+            R.id.previewAgenda,
             R.string.onboarding_organization_title,
-            R.string.onboarding_organization_description,
-            R.string.ui_pular_introducao
+            R.string.onboarding_organization_description
         ),
         OnboardingPage(
-            R.drawable.ic_onboarding_security,
+            R.id.previewConversation,
             R.string.onboarding_security_title,
-            R.string.onboarding_security_description,
-            R.string.onboarding_have_account
+            R.string.onboarding_security_description
         )
     )
 
@@ -72,77 +66,90 @@ class OnboardingActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_onboarding)
 
-        icon = findViewById(R.id.ivIcon)
         title = findViewById(R.id.tvTitle)
         description = findViewById(R.id.tvDescription)
         dotsContainer = findViewById(R.id.dotsContainer)
         btnNext = findViewById(R.id.btnNext)
         btnSkip = findViewById(R.id.btnSkip)
         btnBack = findViewById(R.id.btnBack)
-        bottomActions = findViewById(R.id.bottomActions)
 
-        bottomActions.bringToFront()
-        btnNext.bringToFront()
-        btnSkip.bringToFront()
-
+        prioritizeCopyOnCompactScreens()
         setupDots()
-        setupSystemInsets()
-        updatePage(0)
+        updatePage(savedInstanceState?.getInt("onboarding_page") ?: 0)
 
         btnNext.setOnClickListener {
             goForwardOrComplete()
         }
 
         btnSkip.setOnClickListener {
+            goToRegistration()
+        }
+
+        findViewById<View>(R.id.btnLogin).setOnClickListener {
             completeOnboarding()
         }
 
         btnBack.setOnClickListener {
             updatePage((currentPage - 1).coerceAtLeast(0))
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (currentPage > 0) updatePage(currentPage - 1) else finish()
+            }
+        })
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt("onboarding_page", currentPage)
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun prioritizeCopyOnCompactScreens() {
+        val config = resources.configuration
+        if (config.screenHeightDp >= 680 && config.fontScale <= 1.2f) return
+
+        val content = findViewById<LinearLayout>(R.id.pageContent)
+        val preview = findViewById<View>(R.id.previewContainer)
+        content.removeView(preview)
+        (preview.layoutParams as LinearLayout.LayoutParams).apply {
+            topMargin = resources.getDimensionPixelSize(R.dimen.spacing_l)
+            bottomMargin = 0
+        }
+        content.addView(preview)
     }
 
     private fun goForwardOrComplete() {
         if (currentPage < pages.lastIndex) {
             updatePage(currentPage + 1)
         } else {
-            // "Começar" é para quem chegou agora: vai criar conta.
-            // Quem já tem conta usa o secundário ("Já tenho uma conta").
-            PrefsHelper.setOnboardingComplete(this, true)
-            startActivity(Intent(this, RegisterActivity::class.java))
-            finish()
+            goToRegistration()
         }
     }
 
     private fun updatePage(position: Int) {
         currentPage = position.coerceIn(0, pages.lastIndex)
         val page = pages[currentPage]
-        icon.setImageResource(page.iconRes)
+        pages.forEach {
+            findViewById<View>(it.previewId).visibility =
+                if (it == page) View.VISIBLE else View.GONE
+        }
         title.setText(page.titleRes)
         description.setText(page.descriptionRes)
         updateDots(currentPage)
         btnNext.setText(
             if (currentPage == pages.lastIndex) {
-                R.string.onboarding_start
+                R.string.onboarding_create_account
             } else {
                 R.string.ui_continuar
             }
         )
-        btnSkip.setText(page.secondaryActionRes)
-        btnBack.visibility = if (currentPage == 0) View.GONE else View.VISIBLE
-    }
-
-    private fun setupSystemInsets() {
-        val originalBottomPadding = bottomActions.paddingBottom
-        ViewCompat.setOnApplyWindowInsetsListener(bottomActions) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(
-                view.paddingLeft,
-                view.paddingTop,
-                view.paddingRight,
-                originalBottomPadding + systemBars.bottom
-            )
-            insets
+        dotsContainer.contentDescription =
+            getString(R.string.onboarding_page_position, currentPage + 1, pages.size)
+        btnSkip.visibility = if (currentPage == 0) View.VISIBLE else View.INVISIBLE
+        btnBack.visibility = if (currentPage == 0) View.INVISIBLE else View.VISIBLE
+        findViewById<ScrollView>(R.id.onboardingScroll).post {
+            findViewById<ScrollView>(R.id.onboardingScroll).scrollTo(0, 0)
         }
     }
 
@@ -153,7 +160,7 @@ class OnboardingActivity : AppCompatActivity() {
             val dot = View(this).apply {
                 val size = dp(8)
                 layoutParams = LinearLayout.LayoutParams(size, size).apply {
-                    marginEnd = dp(8)
+                    if (i < pages.lastIndex) marginEnd = dp(8)
                 }
                 background = ContextCompat.getDrawable(
                     this@OnboardingActivity,
@@ -176,6 +183,12 @@ class OnboardingActivity : AppCompatActivity() {
     private fun completeOnboarding() {
         PrefsHelper.setOnboardingComplete(this, true)
         goToLogin()
+    }
+
+    private fun goToRegistration() {
+        PrefsHelper.setOnboardingComplete(this, true)
+        startActivity(Intent(this, RegisterActivity::class.java))
+        finish()
     }
 
     private fun goToLogin() {

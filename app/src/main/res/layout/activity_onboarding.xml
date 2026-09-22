@@ -1,94 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
     android:background="@color/surface_container">
-
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/touch_target_min"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:layout_marginHorizontal="@dimen/entry_content_padding_horizontal">
+        <ImageButton
+            android:id="@+id/btnBack"
+            style="@style/Widget.CoParent.TouchTarget.Icon"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_gravity="start|center_vertical"
+            android:contentDescription="@string/onboarding_back"
+            android:src="@drawable/ic_arrow_back"
+            android:visibility="invisible"
+            app:tint="@color/icon_default" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSkip"
+            style="@style/Widget.CoParent.Button.Text.Compact"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_gravity="end|center_vertical"
+            android:letterSpacing="0"
+            android:text="@string/onboarding_skip" />
+    </FrameLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/entry_content_padding_horizontal"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:layout_marginBottom="@dimen/spacing_m"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_coparent_connection"
+            android:importantForAccessibility="no" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:text="@string/ui_coparent_lite"
+            android:textSize="@dimen/text_size_l"
+            android:textStyle="bold"
+            android:textColor="@color/gray_900" />
+    </LinearLayout>
+    <ScrollView
+        android:id="@+id/onboardingScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:clipToPadding="false">
         <LinearLayout
             android:id="@+id/pageContent"
-            style="@style/Widget.CoParent.Onboarding.PageContent">
-
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/entry_content_padding_horizontal"
+            android:paddingVertical="@dimen/spacing_s">
             <FrameLayout
-                style="@style/Widget.CoParent.Onboarding.Hero">
-
-                <ImageView
-                    android:id="@+id/ivIcon"
-                    android:layout_width="@dimen/onboarding_hero_icon_size"
-                    android:layout_height="@dimen/onboarding_hero_icon_size"
-                    android:layout_gravity="center"
-                    android:contentDescription="@null"
-                    android:importantForAccessibility="no"
-                    android:scaleType="fitCenter" />
-            </FrameLayout>
-
-            <TextView
-                style="@style/TextAppearance.CoParent.Onboarding.Title"
-                android:id="@+id/tvTitle"
+                android:id="@+id/previewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/onboarding_title_description_gap"
-                android:gravity="center"
-                android:lineSpacingExtra="@dimen/stroke_width_emphasis"
-                android:maxLines="1"
-                />
-
+                android:layout_marginBottom="@dimen/spacing_l"
+                android:importantForAccessibility="noHideDescendants">
+                <include
+                    android:id="@+id/previewAgenda"
+                    layout="@layout/view_onboarding_agenda" />
+                <include
+                    android:id="@+id/previewConversation"
+                    layout="@layout/view_onboarding_conversation"
+                    android:visibility="gone" />
+            </FrameLayout>
             <TextView
-                style="@style/TextAppearance.CoParent.Onboarding.Body"
+                android:id="@+id/tvTitle"
+                style="@style/TextAppearance.CoParent.Onboarding.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="@dimen/onboarding_title_description_gap"
+                android:accessibilityHeading="true" />
+            <TextView
                 android:id="@+id/tvDescription"
+                style="@style/TextAppearance.CoParent.Onboarding.Body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:lineSpacingExtra="@dimen/spacing_xs"
+                android:lineSpacingExtra="2dp"
                 android:maxWidth="@dimen/onboarding_page_max_width" />
         </LinearLayout>
-
-        <!-- Bottom area: dots + buttons -->
+    </ScrollView>
+    <LinearLayout
+        android:id="@+id/bottomActions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingHorizontal="@dimen/entry_content_padding_horizontal"
+        android:paddingTop="@dimen/spacing_m"
+        android:paddingBottom="@dimen/spacing_m">
         <LinearLayout
-            android:id="@+id/bottomActions"
-            style="@style/Widget.CoParent.Onboarding.BottomActions">
-
-            <LinearLayout
-                android:id="@+id/dotsContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/onboarding_dots_gap"
-                android:orientation="horizontal" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnNext"
-                style="@style/Widget.CoParent.Button.Primary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:layout_marginBottom="@dimen/spacing_sm"
-                android:text="@string/ui_continuar" />
-
-            <TextView
-                android:id="@+id/btnSkip"
-                style="@style/Widget.CoParent.Onboarding.Skip"
-                android:text="@string/ui_pular_introducao"
-                />
-        </LinearLayout>
+            android:id="@+id/dotsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_m"
+            android:orientation="horizontal"
+            android:importantForAccessibility="yes"
+            android:accessibilityLiveRegion="polite" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNext"
+            style="@style/Widget.CoParent.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/touch_target_min"
+            android:letterSpacing="0"
+            android:text="@string/ui_continuar" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogin"
+            style="@style/Widget.CoParent.Button.Text.Compact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/touch_target_min"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:letterSpacing="0"
+            android:text="@string/onboarding_have_account" />
     </LinearLayout>
-
-    <ImageButton
-        android:id="@+id/btnBack"
-        style="@style/Widget.CoParent.TouchTarget.Icon"
-        android:layout_width="@dimen/touch_target_min"
-        android:layout_height="@dimen/touch_target_min"
-        android:layout_gravity="top|start"
-        android:layout_marginStart="@dimen/entry_content_padding_horizontal"
-        android:layout_marginTop="@dimen/entry_navigation_padding_top"
-        android:contentDescription="@string/onboarding_back"
-        android:src="@drawable/ic_arrow_back"
-        android:visibility="gone"
-        app:tint="@color/icon_default" />
-</FrameLayout>
+</LinearLayout>

@@ -58,7 +58,8 @@
                     <FrameLayout
                         android:layout_width="@dimen/avatar_size_xl"
                         android:layout_height="@dimen/avatar_size_xl"
-                        android:background="@drawable/bg_avatar_user">
+                        android:background="@drawable/bg_avatar_user"
+                        android:clipToOutline="true">
 
                         <ImageView
                             android:id="@+id/ivProfilePhoto"
@@ -292,14 +293,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="@dimen/spacing_m">
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="@dimen/spacing_sm">
+                    android:layout_marginBottom="@dimen/spacing_xs">
 
                     <TextView
                         android:layout_width="0dp"

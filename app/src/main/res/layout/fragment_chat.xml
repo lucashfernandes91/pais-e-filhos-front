@@ -320,6 +320,7 @@
             android:layout_weight="1"
             android:layout_marginEnd="@dimen/spacing_s"
             app:helperTextEnabled="false"
+            app:helperText="@null"
             app:hintEnabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -341,6 +342,7 @@
             style="@style/Widget.CoParent.TouchTarget.Icon.Primary"
             android:layout_width="@dimen/height_action"
             android:layout_height="@dimen/height_action"
+            android:layout_gravity="top"
             android:src="@drawable/ic_send"
             app:tint="@color/on_primary"
             android:contentDescription="@string/cd_send_button"

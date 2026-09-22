@@ -594,7 +594,12 @@ class HomeFragment : Fragment() {
         val innerLayout = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             gravity = android.view.Gravity.CENTER
-            setPadding(dp(20), dp(24), dp(20), dp(24))
+            setPadding(
+                resources.getDimensionPixelSize(R.dimen.spacing_m),
+                resources.getDimensionPixelSize(R.dimen.spacing_s),
+                resources.getDimensionPixelSize(R.dimen.spacing_m),
+                resources.getDimensionPixelSize(R.dimen.spacing_s)
+            )
         }
 
         val tvTitle = TextView(ctx).apply {
@@ -635,7 +640,12 @@ class HomeFragment : Fragment() {
         val content = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             gravity = android.view.Gravity.CENTER
-            setPadding(dp(20), dp(20), dp(20), dp(20))
+            setPadding(
+                resources.getDimensionPixelSize(R.dimen.spacing_m),
+                resources.getDimensionPixelSize(R.dimen.spacing_s),
+                resources.getDimensionPixelSize(R.dimen.spacing_m),
+                resources.getDimensionPixelSize(R.dimen.spacing_s)
+            )
         }
         val title = TextView(ctx).apply {
             setText(R.string.state_error_title)
@@ -649,7 +659,7 @@ class HomeFragment : Fragment() {
             textSize = 13f
             setTextColor(ContextCompat.getColor(ctx, R.color.gray_500))
             gravity = android.view.Gravity.CENTER
-            setPadding(0, dp(8), 0, dp(12))
+            setPadding(0, dp(4), 0, dp(8))
         }
         val retry = com.google.android.material.button.MaterialButton(
             ctx,
@@ -684,7 +694,12 @@ class HomeFragment : Fragment() {
         val row = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = android.view.Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(16), dp(16), dp(16))
+            setPadding(
+                resources.getDimensionPixelSize(R.dimen.spacing_m),
+                resources.getDimensionPixelSize(R.dimen.spacing_s),
+                resources.getDimensionPixelSize(R.dimen.spacing_m),
+                resources.getDimensionPixelSize(R.dimen.spacing_s)
+            )
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -693,7 +708,9 @@ class HomeFragment : Fragment() {
 
         val iconSize = dp(40)
         val iconFrame = android.widget.FrameLayout(ctx).apply {
-            layoutParams = LinearLayout.LayoutParams(iconSize, iconSize).apply { marginEnd = dp(14) }
+            layoutParams = LinearLayout.LayoutParams(iconSize, iconSize).apply {
+                marginEnd = resources.getDimensionPixelSize(R.dimen.spacing_sm)
+            }
             background = ContextCompat.getDrawable(ctx, R.drawable.bg_icon_circle_blue)
         }
 
