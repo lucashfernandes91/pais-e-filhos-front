@@ -15,8 +15,6 @@ class TimelineAdapter(
     private var items: List<TimelineItem> = emptyList()
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
-    private val inputFormatAlt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.US)
     private val ptBr = Locale.forLanguageTag("pt-BR")
     private val dayFormat = SimpleDateFormat("dd", ptBr)
     private val monthFormat = SimpleDateFormat("MMMM", ptBr)
@@ -31,6 +29,7 @@ class TimelineAdapter(
     override fun getItemViewType(position: Int) = when (items[position]) {
         is TimelineItem.MessageItem -> VIEW_TYPE_MESSAGE
         is TimelineItem.EventItem -> VIEW_TYPE_EVENT
+        is TimelineItem.EventChangeItem -> VIEW_TYPE_EVENT_CHANGE
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -40,10 +39,15 @@ class TimelineAdapter(
                     .inflate(R.layout.item_timeline_message, parent, false)
                 MessageViewHolder(view)
             }
-            else -> {
+            VIEW_TYPE_EVENT -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_timeline_event, parent, false)
                 EventViewHolder(view)
+            }
+            else -> {
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_timeline_event_change, parent, false)
+                EventChangeViewHolder(view)
             }
         }
     }
@@ -52,6 +56,7 @@ class TimelineAdapter(
         when (holder) {
             is MessageViewHolder -> holder.bind(items[position] as TimelineItem.MessageItem)
             is EventViewHolder -> holder.bind(items[position] as TimelineItem.EventItem)
+            is EventChangeViewHolder -> holder.bind(items[position] as TimelineItem.EventChangeItem)
         }
     }
 
@@ -59,10 +64,8 @@ class TimelineAdapter(
 
     private fun parseDate(dateStr: String): java.util.Date? {
         return try {
-            inputFormat.parse(dateStr)
-        } catch (e: Exception) {
-            try { inputFormatAlt.parse(dateStr) } catch (e2: Exception) { null }
-        }
+            AppDateTime.parseApi(dateStr)
+        } catch (_: Exception) { null }
     }
 
     private fun formatDateTime(date: Date): String {
@@ -142,9 +145,62 @@ class TimelineAdapter(
         }
     }
 
+    inner class EventChangeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val changeTime: TextView = itemView.findViewById(R.id.changeTime)
+        private val changeTitle: TextView = itemView.findViewById(R.id.changeTitle)
+        private val changeDetails: TextView = itemView.findViewById(R.id.changeDetails)
+
+        fun bind(item: TimelineItem.EventChangeItem) {
+            val change = item.change
+            val context = itemView.context
+            val actor = change.actor_name.replaceFirstChar { it.uppercase() }
+
+            changeTitle.text = when (change.action) {
+                "CREATED" -> context.getString(R.string.timeline_change_created, actor, change.event_title)
+                "DELETED" -> context.getString(R.string.timeline_change_deleted, actor, change.event_title)
+                else -> context.getString(R.string.timeline_change_updated, actor, change.event_title)
+            }
+
+            changeTime.text = parseDate(change.created_at)?.let(::formatDateTime) ?: change.created_at
+            val detail = change.changes.entries.joinToString("\n") { (field, values) ->
+                val label = context.getString(
+                    when (field) {
+                        "title" -> R.string.timeline_change_title
+                        "event_date" -> R.string.timeline_change_start
+                        "event_date_end" -> R.string.timeline_change_end
+                        "event_type" -> R.string.timeline_change_type
+                        else -> R.string.timeline_change_notes
+                    }
+                )
+                "$label: ${displayChangeValue(field, values.before)} → ${displayChangeValue(field, values.after)}"
+            }
+            changeDetails.text = detail
+            changeDetails.visibility = if (detail.isBlank()) View.GONE else View.VISIBLE
+
+            itemView.contentDescription = context.getString(
+                R.string.timeline_change_content_description,
+                changeTitle.text,
+                changeTime.text,
+                detail.ifBlank { context.getString(R.string.timeline_change_empty) }
+            )
+        }
+
+        private fun displayChangeValue(field: String, value: String?): String {
+            if (value.isNullOrBlank()) return "—"
+            if (field == "event_type") {
+                return itemView.context.getString(AppEventType.fromRaw(value).labelRes)
+            }
+            if (field == "event_date" || field == "event_date_end") {
+                return parseDate(value)?.let(::formatDateTime) ?: value
+            }
+            return value
+        }
+    }
+
     companion object {
         private const val VIEW_TYPE_MESSAGE = 0
         private const val VIEW_TYPE_EVENT = 1
+        private const val VIEW_TYPE_EVENT_CHANGE = 2
     }
 
     private class TimelineDiffCallback(
@@ -165,6 +221,8 @@ class TimelineAdapter(
                     oldItem.message.id == newItem.message.id
                 oldItem is TimelineItem.EventItem && newItem is TimelineItem.EventItem ->
                     oldItem.event.id == newItem.event.id
+                oldItem is TimelineItem.EventChangeItem && newItem is TimelineItem.EventChangeItem ->
+                    oldItem.change.id == newItem.change.id
                 else -> false
             }
         }

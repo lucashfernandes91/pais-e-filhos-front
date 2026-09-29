@@ -1,6 +1,5 @@
 package com.example.chatapp
 
-import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.BackgroundColorSpan
@@ -13,34 +12,19 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.paging.PagingDataAdapter
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class MessageAdapter(
     private val currentUsername: String = "current_user",
-    private val onImageClick: (String) -> Unit = {}
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val onImageClick: (String) -> Unit = {},
+    private val onDocumentClick: (String, String) -> Unit = { _, _ -> }
+) : PagingDataAdapter<ChatItem, RecyclerView.ViewHolder>(CHAT_ITEM_DIFF) {
 
-    companion object {
-        private const val VIEW_TYPE_SENT = 0
-        private const val VIEW_TYPE_RECEIVED = 1
-        private const val VIEW_TYPE_DATE_DIVIDER = 2
-        private const val VIEW_TYPE_UNREAD_DIVIDER = 3
-    }
-
-    private var chatItems: List<ChatItem> = emptyList()
     private var searchQuery: String = ""
     private var activeMatchPosition: Int = -1
     private var matchPositions: List<Int> = emptyList()
-
-    fun updateMessages(messages: List<Message>) {
-        val newItems = buildChatItems(messages)
-        val diffResult = DiffUtil.calculateDiff(ChatDiffCallback(chatItems, newItems))
-        chatItems = newItems
-        diffResult.dispatchUpdatesTo(this)
-    }
 
     fun updateSearch(query: String, activePos: Int, matches: List<Int>) {
         val previousQuery = searchQuery
@@ -70,7 +54,7 @@ class MessageAdapter(
             return
         }
 
-        chatItems.forEachIndexed { adapterPosition, item ->
+        snapshot().items.forEachIndexed { adapterPosition, item ->
             if (item is ChatItem.MessageItem && item.originalIndex in impactedOriginalIndexes) {
                 notifyItemChanged(adapterPosition)
             }
@@ -78,13 +62,14 @@ class MessageAdapter(
     }
 
     fun getAdapterPositionForMessage(originalIndex: Int): Int {
-        return chatItems.indexOfFirst { item ->
+        return snapshot().items.indexOfFirst { item ->
             item is ChatItem.MessageItem && item.originalIndex == originalIndex
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (val item = chatItems[position]) {
+        return when (val item = getItem(position)) {
+            null -> VIEW_TYPE_UNREAD_DIVIDER
             is ChatItem.DateDivider -> VIEW_TYPE_DATE_DIVIDER
             is ChatItem.UnreadDivider -> VIEW_TYPE_UNREAD_DIVIDER
             is ChatItem.MessageItem -> {
@@ -113,7 +98,8 @@ class MessageAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (val item = chatItems[position]) {
+        when (val item = getItem(position)) {
+            null -> return
             is ChatItem.MessageItem -> {
                 when (holder) {
                     is SentViewHolder -> holder.bind(item.message, item.originalIndex)
@@ -125,67 +111,12 @@ class MessageAdapter(
         }
     }
 
-    override fun getItemCount(): Int = chatItems.size
-
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         when (holder) {
             is SentViewHolder -> holder.clearAttachment()
             is ReceivedViewHolder -> holder.clearAttachment()
         }
         super.onViewRecycled(holder)
-    }
-
-    private fun buildChatItems(messages: List<Message>): List<ChatItem> {
-        val items = mutableListOf<ChatItem>()
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val displayFormat = SimpleDateFormat("dd 'de' MMMM", Locale.forLanguageTag("pt-BR"))
-        var lastDateStr = ""
-        var unreadInserted = false
-
-        for ((index, msg) in messages.withIndex()) {
-            val msgDateStr = try {
-                val parsed = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-                    .parse(msg.created_at)
-                if (parsed != null) dateFormat.format(parsed) else ""
-            } catch (_: Exception) {
-                ""
-            }
-
-            if (msgDateStr.isNotEmpty() && msgDateStr != lastDateStr) {
-                val label = try {
-                    val parsed = dateFormat.parse(msgDateStr)
-                    if (parsed != null) {
-                        val today = dateFormat.format(Date())
-                        val yesterday = Calendar.getInstance().apply {
-                            add(Calendar.DAY_OF_MONTH, -1)
-                        }.let { dateFormat.format(it.time) }
-                        when (msgDateStr) {
-                            today -> "Hoje"
-                            yesterday -> "Ontem"
-                            else -> displayFormat.format(parsed).replaceFirstChar { it.uppercase() }
-                        }
-                    } else {
-                        msgDateStr
-                    }
-                } catch (_: Exception) {
-                    msgDateStr
-                }
-                items.add(ChatItem.DateDivider(label))
-                lastDateStr = msgDateStr
-            }
-
-            if (!unreadInserted && msg.sender != currentUsername && msg.id > 0) {
-                val isUnread = msg.read_by?.any { it.reader_name == currentUsername } != true
-                if (isUnread) {
-                    items.add(ChatItem.UnreadDivider)
-                    unreadInserted = true
-                }
-            }
-
-            items.add(ChatItem.MessageItem(msg, index))
-        }
-
-        return items
     }
 
     private fun highlightText(
@@ -235,19 +166,11 @@ class MessageAdapter(
 
     private fun formatTime(dateStr: String): String {
         return try {
-            val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
             val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-            val date = parser.parse(dateStr)
+            val date = AppDateTime.parseApi(dateStr)
             if (date != null) formatter.format(date) else dateStr
         } catch (_: Exception) {
-            try {
-                val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
-                val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-                val date = parser.parse(dateStr)
-                if (date != null) formatter.format(date) else dateStr
-            } catch (_: Exception) {
-                dateStr
-            }
+            dateStr
         }
     }
 
@@ -273,10 +196,16 @@ class MessageAdapter(
             ivAttachment?.setOnClickListener(null)
             ivAttachment?.visibility = View.GONE
             layoutDocBadge?.visibility = View.VISIBLE
-            tvDocName?.text = if (message.attachment_type == "pdf") "PDF" else "Documento"
+            val fileName = message.attachment_name?.takeIf { it.isNotBlank() }
+                ?: if (message.attachment_type == "pdf") "documento.pdf" else "Documento"
+            layoutDocBadge?.setOnClickListener {
+                onDocumentClick(message.attachment_url!!, fileName)
+            }
+            tvDocName?.text = fileName
         } else {
             AttachmentImageLoader.clear(ivAttachment)
             ivAttachment?.setOnClickListener(null)
+            layoutDocBadge?.setOnClickListener(null)
             ivAttachment?.visibility = View.GONE
             layoutDocBadge?.visibility = View.GONE
         }
@@ -375,31 +304,37 @@ class MessageAdapter(
 
     class UnreadDividerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    private class ChatDiffCallback(
-        private val oldItems: List<ChatItem>,
-        private val newItems: List<ChatItem>
-    ) : DiffUtil.Callback() {
-
-        override fun getOldListSize(): Int = oldItems.size
-
-        override fun getNewListSize(): Int = newItems.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = oldItems[oldItemPosition]
-            val newItem = newItems[newItemPosition]
-
-            return when {
-                oldItem is ChatItem.MessageItem && newItem is ChatItem.MessageItem ->
-                    oldItem.message.id == newItem.message.id
-                oldItem is ChatItem.DateDivider && newItem is ChatItem.DateDivider ->
-                    oldItem.dateLabel == newItem.dateLabel
-                oldItem is ChatItem.UnreadDivider && newItem is ChatItem.UnreadDivider -> true
-                else -> false
+    companion object {
+        private const val VIEW_TYPE_SENT = 0
+        private const val VIEW_TYPE_RECEIVED = 1
+        private const val VIEW_TYPE_DATE_DIVIDER = 2
+        private const val VIEW_TYPE_UNREAD_DIVIDER = 3
+        private val CHAT_ITEM_DIFF = object : DiffUtil.ItemCallback<ChatItem>() {
+            override fun areItemsTheSame(oldItem: ChatItem, newItem: ChatItem): Boolean {
+                return when {
+                    oldItem is ChatItem.MessageItem && newItem is ChatItem.MessageItem ->
+                        messageKey(oldItem.message) == messageKey(newItem.message)
+                    oldItem is ChatItem.DateDivider && newItem is ChatItem.DateDivider ->
+                        oldItem.dateLabel == newItem.dateLabel
+                    oldItem is ChatItem.UnreadDivider && newItem is ChatItem.UnreadDivider -> true
+                    else -> false
+                }
             }
+
+            override fun areContentsTheSame(oldItem: ChatItem, newItem: ChatItem): Boolean =
+                oldItem == newItem
+
+            private fun messageKey(message: Message): String =
+                message.client_message_id?.takeIf { it.isNotBlank() }
+                    ?: if (message.id > 0) "server:${message.id}" else {
+                        "local:${message.created_at}:${message.content}"
+                    }
         }
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldItems[oldItemPosition] == newItems[newItemPosition]
-        }
+        private fun messageKey(message: Message): String =
+            message.client_message_id?.takeIf { it.isNotBlank() }
+                ?: if (message.id > 0) "server:${message.id}" else {
+                    "local:${message.created_at}:${message.content}"
+                }
     }
 }

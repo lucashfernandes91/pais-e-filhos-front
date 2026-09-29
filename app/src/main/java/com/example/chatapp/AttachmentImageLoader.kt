@@ -29,6 +29,10 @@ object AttachmentImageLoader {
     }
 
     fun load(imageView: ImageView, url: String) {
+        if (url.isBlank()) {
+            clear(imageView)
+            return
+        }
         imageView.setTag(R.id.tag_attachment_image_url, url)
 
         bitmapCache.get(url)?.let { cachedBitmap ->
@@ -79,9 +83,21 @@ object AttachmentImageLoader {
                     return null
                 }
 
-                response.body?.byteStream()?.use { stream ->
-                    BitmapFactory.decodeStream(stream)
-                }?.also { bitmap ->
+                val body = response.body ?: return null
+                val bytes = body.bytes()
+                val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+                if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+
+                val options = BitmapFactory.Options().apply {
+                    inSampleSize = calculateInSampleSize(
+                        bounds.outWidth,
+                        bounds.outHeight,
+                        MAX_DECODED_DIMENSION
+                    )
+                    inPreferredConfig = Bitmap.Config.RGB_565
+                }
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)?.also { bitmap ->
                     bitmapCache.put(url, bitmap)
                 }
             }
@@ -90,8 +106,18 @@ object AttachmentImageLoader {
         }
     }
 
+    private fun calculateInSampleSize(width: Int, height: Int, maxDimension: Int): Int {
+        var sampleSize = 1
+        while (width / sampleSize > maxDimension || height / sampleSize > maxDimension) {
+            sampleSize *= 2
+        }
+        return sampleSize
+    }
+
     private fun maxCacheSizeKb(): Int {
         val maxMemoryKb = (Runtime.getRuntime().maxMemory() / 1024).toInt()
         return (maxMemoryKb / 8).coerceAtLeast(1024)
     }
+
+    private const val MAX_DECODED_DIMENSION = 2048
 }

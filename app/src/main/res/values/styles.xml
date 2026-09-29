@@ -13,10 +13,6 @@
         <item name="android:colorBackground">@color/bg_primary</item>
         <item name="android:windowBackground">@color/bg_primary</item>
         <item name="android:windowDisablePreview">true</item>
-        <item name="android:forceDarkAllowed">false</item>
-        <item name="android:windowSplashScreenBackground">@color/bg_primary</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">@color/bg_primary</item>
-        <item name="android:autofilledHighlight">@drawable/bg_autofill_highlight</item>
         <item name="android:textColorPrimary">@color/on_surface</item>
         <item name="android:textColorSecondary">@color/on_surface_variant</item>
         <item name="android:windowLightStatusBar">true</item>

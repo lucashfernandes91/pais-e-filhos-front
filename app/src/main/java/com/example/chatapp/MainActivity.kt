@@ -13,12 +13,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private val requestNotificationPermissionCode = 100
+    private var lastBadgeUpdateAt = 0L
+    private var badgeUpdateInProgress = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,19 +80,39 @@ class MainActivity : AppCompatActivity() {
         // Load badges
         updateBottomNavBadges(bottomNav)
 
-        // Request notification permission only where Firebase messaging is enabled.
-        if (BuildConfig.FIREBASE_MESSAGING_ENABLED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    requestNotificationPermissionCode
-                )
-            }
+        requestNotificationsPermissionIfNeeded()
+    }
+
+    private fun requestNotificationsPermissionIfNeeded() {
+        if (!BuildConfig.FIREBASE_MESSAGING_ENABLED ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) return
+
+        val request = {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                requestNotificationPermissionCode
+            )
+        }
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        ) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.notifications_permission_title)
+                .setMessage(R.string.notifications_permission_message)
+                .setPositiveButton(R.string.notifications_permission_allow) { _, _ -> request() }
+                .setNegativeButton(R.string.action_cancel, null)
+                .show()
+        } else {
+            request()
         }
     }
 
@@ -140,6 +163,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        if (BuildConfig.FIREBASE_MESSAGING_ENABLED) {
+            // O token pode ter sido obtido antes do login e ter sido ignorado.
+            registerFirebaseToken()
+        }
         updateBottomNavBadges(bottomNav)
         if (showWelcomeIfPending()) return
         resumePendingInvite()
@@ -202,11 +229,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateBottomNavBadges(bottomNav: BottomNavigationView) {
+        val now = android.os.SystemClock.elapsedRealtime()
+        if (badgeUpdateInProgress || now - lastBadgeUpdateAt < 30_000L) return
+        badgeUpdateInProgress = true
+        lastBadgeUpdateAt = now
         val token = PrefsHelper.getAuthToken(this)
-        if (token.isEmpty()) return
+        if (token.isEmpty()) {
+            badgeUpdateInProgress = false
+            return
+        }
 
         val conversationId = PrefsHelper.getConversationId(this)
         val currentUser = PrefsHelper.getUsername(this)
+        if (conversationId <= PrefsHelper.NO_CONVERSATION_ID) {
+            bottomNav.removeBadge(R.id.chatFragment)
+            badgeUpdateInProgress = false
+            return
+        }
 
         lifecycleScope.launch {
             // ─── Chat badge: unread messages ───
@@ -230,6 +269,8 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e(TAG, "Chat badge error: ${e.message}")
                 bottomNav.removeBadge(R.id.chatFragment)
+            } finally {
+                badgeUpdateInProgress = false
             }
         }
     }

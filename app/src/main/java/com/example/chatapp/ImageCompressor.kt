@@ -23,6 +23,9 @@ object ImageCompressor {
 
     /** Retorna os bytes da imagem comprimida, ou null se não foi possível decodificar. */
     suspend fun compress(context: Context, uri: Uri): ByteArray? = withContext(Dispatchers.IO) {
+        var decoded: Bitmap? = null
+        var oriented: Bitmap? = null
+        var resized: Bitmap? = null
         try {
             val resolver = context.contentResolver
 
@@ -34,36 +37,53 @@ object ImageCompressor {
 
             val sampleSize = calculateInSampleSize(bounds.outWidth, bounds.outHeight, MAX_DIMENSION)
             val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
-            var bitmap = resolver.openInputStream(uri)?.use {
+            decoded = resolver.openInputStream(uri)?.use {
                 BitmapFactory.decodeStream(it, null, decodeOptions)
             } ?: return@withContext null
 
-            val largestSide = maxOf(bitmap.width, bitmap.height)
-            if (largestSide > MAX_DIMENSION) {
-                val scale = MAX_DIMENSION.toFloat() / largestSide
-                val scaled = Bitmap.createScaledBitmap(
-                    bitmap, (bitmap.width * scale).toInt(), (bitmap.height * scale).toInt(), true
-                )
-                bitmap.recycle()
-                bitmap = scaled
-            }
-
             val rotationDegrees = resolver.openInputStream(uri)?.use {
                 ExifInterface(it).rotationDegrees
-            } ?: 0
-            if (rotationDegrees != 0) {
-                val matrix = Matrix().apply { postRotate(rotationDegrees.toFloat()) }
-                val rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-                bitmap.recycle()
-                bitmap = rotated
+            } ?: return@withContext null
+            val orientationMatrix = Matrix().apply {
+                if (rotationDegrees != 0) postRotate(rotationDegrees.toFloat())
+            }
+            oriented = Bitmap.createBitmap(
+                decoded!!,
+                0,
+                0,
+                decoded!!.width,
+                decoded!!.height,
+                orientationMatrix,
+                true
+            ).copy(Bitmap.Config.ARGB_8888, false)
+            if (oriented !== decoded) decoded?.recycle()
+            decoded = null
+
+            val largestSide = maxOf(oriented!!.width, oriented!!.height)
+            if (largestSide > MAX_DIMENSION) {
+                val scale = MAX_DIMENSION.toFloat() / largestSide
+                resized = Bitmap.createScaledBitmap(
+                    oriented!!,
+                    (oriented!!.width * scale).toInt(),
+                    (oriented!!.height * scale).toInt(),
+                    true
+                )
+                oriented?.recycle()
+                oriented = resized
+                resized = null
             }
 
             val output = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, output)
-            bitmap.recycle()
+            check(oriented!!.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, output)) {
+                "image_encoding_failed"
+            }
             output.toByteArray()
         } catch (_: Exception) {
             null
+        } finally {
+            resized?.recycle()
+            oriented?.recycle()
+            decoded?.recycle()
         }
     }
 

@@ -49,14 +49,7 @@ object CalendarIntegration {
     }
 
     private fun parseEventDateTime(eventDate: String): Pair<Long, Long> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val dateFormatAlt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-        val date = try {
-            dateFormat.parse(eventDate)
-        } catch (_: Exception) {
-            dateFormatAlt.parse(eventDate)
-        } ?: Date()
+        val date = AppDateTime.parseApi(eventDate) ?: Date()
 
         val calendar = Calendar.getInstance().apply {
             time = date

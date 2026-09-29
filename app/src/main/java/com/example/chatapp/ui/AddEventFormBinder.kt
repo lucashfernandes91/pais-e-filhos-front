@@ -245,7 +245,7 @@ class AddEventFormBinder(
     }
 
     fun validateCustodyRange(start: Calendar, end: Calendar): Boolean {
-        return if (end.before(start)) {
+        return if (!end.after(start)) {
             val message = root.context.getString(R.string.event_error_custody_range)
             setPickerError(endDatePicker, message)
             setPickerError(endTimePicker, message)

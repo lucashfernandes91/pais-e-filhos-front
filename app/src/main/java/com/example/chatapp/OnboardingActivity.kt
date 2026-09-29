@@ -1,8 +1,14 @@
 package com.example.chatapp
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ScrollView
 import android.widget.LinearLayout
@@ -13,6 +19,9 @@ import androidx.activity.OnBackPressedCallback
 import com.google.android.material.button.MaterialButton
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class OnboardingActivity : AppCompatActivity() {
 
@@ -23,6 +32,9 @@ class OnboardingActivity : AppCompatActivity() {
     private lateinit var btnSkip: TextView
     private lateinit var btnBack: ImageButton
     private var currentPage = 0
+    private var swipeStartX = 0f
+    private var swipeStartY = 0f
+    private var isHorizontalSwipe = false
 
     data class OnboardingPage(
         @param:IdRes val previewId: Int,
@@ -73,6 +85,8 @@ class OnboardingActivity : AppCompatActivity() {
         btnSkip = findViewById(R.id.btnSkip)
         btnBack = findViewById(R.id.btnBack)
 
+        setupSwipeNavigation(findViewById(R.id.onboardingScroll))
+        renderAgendaPreview()
         prioritizeCopyOnCompactScreens()
         setupDots()
         updatePage(savedInstanceState?.getInt("onboarding_page") ?: 0)
@@ -117,6 +131,135 @@ class OnboardingActivity : AppCompatActivity() {
             bottomMargin = 0
         }
         content.addView(preview)
+    }
+
+    private fun setupSwipeNavigation(scrollView: ScrollView) {
+        val touchSlop = ViewConfiguration.get(this).scaledTouchSlop
+        val minimumSwipeDistance = dpToPx(72)
+
+        scrollView.setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    swipeStartX = event.x
+                    swipeStartY = event.y
+                    isHorizontalSwipe = false
+                    false
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val horizontalDistance = event.x - swipeStartX
+                    val verticalDistance = event.y - swipeStartY
+                    isHorizontalSwipe = kotlin.math.abs(horizontalDistance) > touchSlop &&
+                        kotlin.math.abs(horizontalDistance) > kotlin.math.abs(verticalDistance)
+                    false
+                }
+                MotionEvent.ACTION_UP -> {
+                    val horizontalDistance = event.x - swipeStartX
+                    if (isHorizontalSwipe && kotlin.math.abs(horizontalDistance) >= minimumSwipeDistance) {
+                        when {
+                            horizontalDistance < 0 && currentPage < pages.lastIndex -> updatePage(currentPage + 1)
+                            horizontalDistance > 0 && currentPage > 0 -> updatePage(currentPage - 1)
+                        }
+                        true
+                    } else {
+                        false
+                    }
+                }
+                else -> {
+                    isHorizontalSwipe = false
+                    false
+                }
+            }
+        }
+    }
+
+    private fun renderAgendaPreview() {
+        val currentUserColor = CalendarColor.DEFAULT_USER
+        val otherParentColor = CalendarColor.DEFAULT_OTHER
+        findViewById<View>(R.id.dotPreviewCurrentUser).backgroundTintList =
+            ColorStateList.valueOf(currentUserColor.dotColor())
+        findViewById<View>(R.id.dotPreviewOtherParent).backgroundTintList =
+            ColorStateList.valueOf(otherParentColor.dotColor())
+
+        val month = Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 1) }
+        findViewById<TextView>(R.id.tvPreviewCalendarMonth).text =
+            SimpleDateFormat("MMMM 'de' yyyy", Locale.forLanguageTag("pt-BR"))
+                .format(month.time).replaceFirstChar { it.uppercase() }
+
+        val grid = findViewById<LinearLayout>(R.id.onboardingCalendarGrid)
+        grid.removeAllViews()
+        val firstCell = month.get(Calendar.DAY_OF_WEEK) - 1
+        val daysInMonth = month.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val rows = (firstCell + daysInMonth + 6) / 7
+        val today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
+        repeat(rows) { row ->
+            val week = LinearLayout(this).apply {
+                layoutParams = LinearLayout.LayoutParams(-1, dpToPx(48))
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER
+            }
+            repeat(7) { column ->
+                val day = row * 7 + column - firstCell + 1
+                val cell = FrameLayout(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(0, dpToPx(48), 1f)
+                }
+                if (day in 1..daysInMonth) {
+                    val custodyColor = if (day in 16..19) otherParentColor else currentUserColor
+                    cell.addView(View(this).apply {
+                        layoutParams = FrameLayout.LayoutParams(dpToPx(32), dpToPx(32)).apply {
+                            gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+                            topMargin = dpToPx(4)
+                        }
+                        background = GradientDrawable().apply {
+                            shape = GradientDrawable.RECTANGLE
+                            cornerRadius = dpToPx(12).toFloat()
+                            setColor(custodyColor.bgColor(this@OnboardingActivity))
+                        }
+                    })
+
+                    if (day == today) {
+                        cell.addView(View(this).apply {
+                            layoutParams = FrameLayout.LayoutParams(dpToPx(23), dpToPx(23)).apply {
+                                gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+                                topMargin = dpToPx(9)
+                            }
+                            background = ContextCompat.getDrawable(
+                                this@OnboardingActivity, R.drawable.bg_today_circle
+                            )
+                        })
+                    }
+
+                    cell.addView(TextView(this).apply {
+                        layoutParams = FrameLayout.LayoutParams(dpToPx(23), dpToPx(23)).apply {
+                            gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+                            topMargin = dpToPx(9)
+                        }
+                        text = day.toString()
+                        gravity = Gravity.CENTER
+                        textSize = 13f
+                        setTextColor(ContextCompat.getColor(
+                            this@OnboardingActivity,
+                            if (day == today) R.color.on_primary else R.color.gray_700
+                        ))
+                        if (day == today) setTypeface(typeface, android.graphics.Typeface.BOLD)
+                    })
+
+                    if (day == 10 || day == 22) {
+                        cell.addView(View(this).apply {
+                            layoutParams = FrameLayout.LayoutParams(dpToPx(5), dpToPx(5)).apply {
+                                gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
+                                bottomMargin = dpToPx(5)
+                            }
+                            background = ContextCompat.getDrawable(
+                                this@OnboardingActivity, R.drawable.bg_event_dot
+                            )
+                        })
+                    }
+                }
+                week.addView(cell)
+            }
+            grid.addView(week)
+        }
     }
 
     private fun goForwardOrComplete() {

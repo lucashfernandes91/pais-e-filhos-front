@@ -2,6 +2,8 @@ package com.example.chatapp
 
 import android.content.Context
 import android.content.SharedPreferences
+import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * Centraliza acesso a SharedPreferences do app.
@@ -27,11 +29,16 @@ object PrefsHelper {
     private const val KEY_EMAIL_NOTIFICATIONS = "pref_email_notifications"
     private const val KEY_EMAIL_BACKUP = "pref_email_backup"
     private const val KEY_NIGHT_MODE = "pref_night_mode"
+    private const val KEY_EVENT_REMINDERS = "pref_event_reminders"
+    private const val KEY_EVENT_REMINDER_IDS = "event_reminder_ids"
     private const val KEY_OTHER_PARENT_NAME = "other_parent_name"
+    private const val KEY_USER_CALENDAR_COLOR = "pref_user_calendar_color"
+    private const val KEY_OTHER_PARENT_CALENDAR_COLOR = "pref_other_parent_calendar_color"
     private const val KEY_CHILDREN_NAMES = "children_names"
     private const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
     private const val KEY_PENDING_INVITE_CODE = "pending_invite_code"
     private const val KEY_WELCOME_PENDING = "welcome_pending"
+    private const val KEY_PENDING_MESSAGES = "pending_messages"
 
     // Legacy keys kept only for one-shot migration; do not use elsewhere.
     private const val LEGACY_KEY_PUSH_NOTIFICATIONS = "push_notifications"
@@ -106,6 +113,7 @@ object PrefsHelper {
     }
 
     fun clearAll(context: Context) {
+        EventReminderScheduler.clearAll(context)
         prefs(context).edit().clear().apply()
     }
 
@@ -154,7 +162,7 @@ object PrefsHelper {
     fun setOnboardingComplete(context: Context, complete: Boolean) {
         prefs(context).edit()
             .putBoolean(KEY_ONBOARDING_COMPLETE, complete)
-            .commit()
+            .apply()
     }
 
     // ── Conversation ─────────────────────────────────────
@@ -220,6 +228,67 @@ object PrefsHelper {
             .apply()
     }
 
+    fun isEventRemindersEnabled(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_EVENT_REMINDERS, true)
+
+    fun setEventRemindersEnabled(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean(KEY_EVENT_REMINDERS, enabled).apply()
+    }
+
+    fun saveEventReminder(context: Context, event: Event) {
+        prefs(context).edit()
+            .putStringSet(
+                "$KEY_EVENT_REMINDER_IDS:${event.id}",
+                setOf(event.title, event.event_date)
+            )
+            .apply()
+    }
+
+    fun removeEventReminder(context: Context, eventId: Int) {
+        prefs(context).edit().remove("$KEY_EVENT_REMINDER_IDS:$eventId").apply()
+    }
+
+    fun getEventReminders(context: Context): Map<Int, Event> =
+        prefs(context).all.mapNotNull { (key, value) ->
+            if (!key.startsWith("$KEY_EVENT_REMINDER_IDS:") || value !is Set<*>) return@mapNotNull null
+            val id = key.substringAfter(':').toIntOrNull() ?: return@mapNotNull null
+            val values = value.filterIsInstance<String>()
+            if (values.size < 2) return@mapNotNull null
+            id to Event(id, NO_CONVERSATION_ID, "", values[0], values[1], null, "", "", "")
+        }.toMap()
+
+    fun markEventReminderShown(context: Context, eventId: Int) {
+        prefs(context).edit().putBoolean("event_reminder_shown:$eventId", true).apply()
+    }
+
+    fun wasEventReminderShown(context: Context, eventId: Int): Boolean =
+        prefs(context).getBoolean("event_reminder_shown:$eventId", false)
+
+    // ── Calendar Color ────────────────────────────────────
+
+    private fun calendarColorKey(context: Context, baseKey: String): String {
+        val username = getUsername(context).trim().lowercase()
+        return "$baseKey:$username"
+    }
+
+    fun getUserCalendarColor(context: Context): String =
+        prefs(context).getString(calendarColorKey(context, KEY_USER_CALENDAR_COLOR), "BLUE") ?: "BLUE"
+
+    fun saveUserCalendarColor(context: Context, colorId: String) {
+        prefs(context).edit()
+            .putString(calendarColorKey(context, KEY_USER_CALENDAR_COLOR), colorId)
+            .apply()
+    }
+
+    fun getOtherParentCalendarColor(context: Context): String =
+        prefs(context).getString(calendarColorKey(context, KEY_OTHER_PARENT_CALENDAR_COLOR), "PINK") ?: "PINK"
+
+    fun saveOtherParentCalendarColor(context: Context, colorId: String) {
+        prefs(context).edit()
+            .putString(calendarColorKey(context, KEY_OTHER_PARENT_CALENDAR_COLOR), colorId)
+            .apply()
+    }
+
     // ── Other Parent ─────────────────────────────────────
 
     fun getOtherParentName(context: Context): String =
@@ -238,5 +307,58 @@ object PrefsHelper {
         prefs(context).edit()
             .putString(KEY_CHILDREN_NAMES, names)
             .apply()
+    }
+
+    data class PendingMessage(
+        val clientMessageId: String,
+        val conversationId: Int,
+        val content: String,
+        val createdAt: String
+    )
+
+    fun getPendingMessages(context: Context): List<PendingMessage> {
+        val raw = prefs(context).getString(KEY_PENDING_MESSAGES, null) ?: return emptyList()
+        val result = mutableListOf<PendingMessage>()
+        runCatching {
+            val array = JSONArray(raw)
+            for (index in 0 until array.length()) {
+                val item = array.optJSONObject(index) ?: continue
+                val id = item.optString("client_message_id")
+                val conversationId = item.optInt("conversation_id", NO_CONVERSATION_ID)
+                val content = item.optString("content")
+                val createdAt = item.optString("created_at")
+                if (id.isNotBlank() && conversationId > NO_CONVERSATION_ID && content.isNotBlank()) {
+                    result += PendingMessage(id, conversationId, content, createdAt)
+                }
+            }
+        }
+        return result
+    }
+
+    fun savePendingMessages(context: Context, messages: List<PendingMessage>) {
+        val array = JSONArray()
+        messages.forEach { message ->
+            array.put(
+                JSONObject()
+                    .put("client_message_id", message.clientMessageId)
+                    .put("conversation_id", message.conversationId)
+                    .put("content", message.content)
+                    .put("created_at", message.createdAt)
+            )
+        }
+        prefs(context).edit()
+            .putString(KEY_PENDING_MESSAGES, array.toString())
+            .apply()
+    }
+
+    @Synchronized
+    fun savePendingMessagesForConversation(
+        context: Context,
+        conversationId: Int,
+        messages: List<PendingMessage>
+    ) {
+        val otherConversationMessages = getPendingMessages(context)
+            .filter { it.conversationId != conversationId }
+        savePendingMessages(context, otherConversationMessages + messages)
     }
 }

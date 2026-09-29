@@ -11,38 +11,36 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/spacing_m"
-        android:paddingTop="@dimen/spacing_m"
-        android:paddingBottom="@dimen/screen_content_bottom_padding">
+        android:paddingBottom="@dimen/spacing_m">
 
         <!-- Page Title -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Widget.CoParent.ScreenHeader.Inset"
             android:text="@string/ui_perfil"
             android:textSize="@dimen/text_size_xl"
             android:textStyle="bold"
-            android:textColor="@color/gray_900"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:textColor="@color/gray_900" />
 
         <View
             style="@style/Widget.CoParent.Header.Divider"
             android:layout_marginStart="-16dp"
             android:layout_marginEnd="-16dp"
-            android:layout_marginBottom="@dimen/spacing_l" />
+            android:layout_marginBottom="@dimen/spacing_sm" />
 
         <!-- User Card — main profile with editable avatar -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.CoParent.Card.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_sm"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="@dimen/spacing_m"
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s"
                 android:gravity="center_vertical">
 
                 <FrameLayout
@@ -135,14 +133,15 @@
             style="@style/Widget.CoParent.Card.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_sm"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="@dimen/spacing_m">
+                android:paddingHorizontal="@dimen/spacing_m"
+                android:paddingVertical="@dimen/spacing_s">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -286,7 +285,7 @@
             style="@style/Widget.CoParent.Card.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_sm"
             >
 
             <LinearLayout
@@ -379,7 +378,7 @@
             style="@style/Widget.CoParent.Card.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_sm"
             >
 
             <LinearLayout
@@ -479,6 +478,51 @@
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/gray_400"
                         android:contentDescription="@string/ui_ir_para" />
+                </LinearLayout>
+
+                <View style="@style/Widget.CoParent.Settings.Divider" />
+
+                <!-- Settings row: Exclusão da conta -->
+                <LinearLayout
+                    android:id="@+id/rowAccountDeletion"
+                    style="@style/Widget.CoParent.Settings.Row">
+
+                    <FrameLayout
+                        style="@style/Widget.CoParent.Settings.IconContainer.Danger">
+
+                        <ImageView
+                            style="@style/Widget.CoParent.Settings.Icon"
+                            android:src="@drawable/ic_delete"
+                            app:tint="@color/error"
+                            android:contentDescription="@string/settings_delete_account" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/TextAppearance.CoParent.SettingsItem.Danger"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_delete_account" />
+
+                        <TextView
+                            style="@style/TextStyle.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_delete_account_description"
+                            android:layout_marginTop="@dimen/spacing_xs" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_badge_size"
+                        android:layout_height="@dimen/icon_badge_size"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/gray_400"
+                        android:contentDescription="@string/settings_delete_account" />
                 </LinearLayout>
 
                 <View style="@style/Widget.CoParent.Settings.Divider" />

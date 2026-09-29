@@ -58,6 +58,9 @@ class SettingsFragment : Fragment() {
         view.findViewById<View>(R.id.btnLegal)?.setOnClickListener {
             openPublicDocument(LegalDocuments.TERMS_URL)
         }
+        view.findViewById<View>(R.id.btnAccountDeletion)?.setOnClickListener {
+            openPublicDocument(LegalDocuments.ACCOUNT_DELETION_URL)
+        }
         view.findViewById<View>(R.id.btnLogout)?.setOnClickListener { logout() }
     }
 

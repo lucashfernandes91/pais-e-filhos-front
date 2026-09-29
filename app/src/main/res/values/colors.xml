@@ -112,6 +112,7 @@
     <color name="error_light">#FEE2E2</color>
     <color name="success_light">#DCFCE7</color>
     <color name="warning_light">#FEF3C7</color>
+    <color name="autofill_highlight">#33F59E0B</color>
 
     <!-- Event Type Colors -->
     <color name="event_mother">#EC4899</color>

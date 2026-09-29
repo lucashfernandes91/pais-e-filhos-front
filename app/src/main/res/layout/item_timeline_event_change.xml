@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/spacing_xs">
+
+    <LinearLayout style="@style/Widget.CoParent.Timeline.Gutter">
+        <View
+            android:layout_width="@dimen/stroke_width_thin"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/divider" />
+
+        <ImageView
+            android:layout_width="@dimen/icon_size_m"
+            android:layout_height="@dimen/icon_size_m"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_edit"
+            app:tint="@color/primary_blue_light" />
+
+        <View
+            android:layout_width="@dimen/stroke_width_thin"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/divider" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/Widget.CoParent.Timeline.Content">
+        <TextView
+            android:id="@+id/changeTime"
+            style="@style/TextAppearance.CoParent.List.Meta.Muted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xs" />
+
+        <TextView
+            android:id="@+id/changeTitle"
+            style="@style/TextAppearance.CoParent.List.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/changeDetails"
+            style="@style/TextAppearance.CoParent.List.Meta.Muted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/spacing_l"
+    android:paddingTop="@dimen/spacing_l"
+    android:paddingEnd="@dimen/spacing_l"
+    android:paddingBottom="@dimen/spacing_xl">
+
+    <TextView
+        android:id="@+id/tvColorPickerTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/gray_900"
+        android:textSize="@dimen/text_size_ml"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:text="@string/agenda_color_picker_hint"
+        android:textColor="@color/gray_600"
+        android:textSize="@dimen/text_size_s" />
+
+    <TextView
+        android:id="@+id/tvColorPickerAvailability"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:text="@string/agenda_color_picker_uniqueness"
+        android:textColor="@color/gray_600"
+        android:textSize="@dimen/text_size_s" />
+
+    <LinearLayout
+        android:id="@+id/colorPickerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/touch_target_min"
+        android:layout_marginTop="@dimen/spacing_l"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" />
+</LinearLayout>

@@ -19,14 +19,7 @@
 
             <!-- Header -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="@dimen/spacing_m"
-                android:paddingTop="@dimen/spacing_m"
-                android:paddingBottom="@dimen/spacing_s"
-                android:gravity="center_vertical"
-                android:background="@color/bg_primary">
+                style="@style/Widget.CoParent.ScreenHeader.Row">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -47,6 +40,11 @@
                         android:id="@+id/tvCurrentMonth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/cd_select_calendar_month"
                         android:textSize="@dimen/text_size_s"
                         android:textColor="@color/gray_500" />
                 </LinearLayout>
@@ -99,13 +97,19 @@
 
                         <!-- Mãe -->
                         <LinearLayout
+                            android:id="@+id/legendOtherParent"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="@dimen/touch_target_min"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:layout_marginEnd="@dimen/spacing_m">
+                            android:layout_marginEnd="@dimen/spacing_s"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/agenda_edit_other_color">
 
                             <View
+                                android:id="@+id/dotLegendOtherParent"
                                 android:layout_width="@dimen/icon_dot_size_m"
                                 android:layout_height="@dimen/icon_dot_size_m"
                                 android:background="@drawable/bg_dot_pink"
@@ -122,13 +126,19 @@
 
                         <!-- Pai -->
                         <LinearLayout
+                            android:id="@+id/legendCurrentUser"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="@dimen/touch_target_min"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:layout_marginEnd="@dimen/spacing_m">
+                            android:layout_marginEnd="@dimen/spacing_s"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/agenda_edit_your_color">
 
                             <View
+                                android:id="@+id/dotLegendCurrentUser"
                                 android:layout_width="@dimen/icon_dot_size_m"
                                 android:layout_height="@dimen/icon_dot_size_m"
                                 android:background="@drawable/bg_dot_blue"
@@ -187,6 +197,11 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            android:minHeight="@dimen/touch_target_min"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/cd_select_calendar_month"
                             android:gravity="center"
                             android:textSize="@dimen/text_size_m"
                             android:textStyle="bold"

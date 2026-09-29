@@ -175,6 +175,7 @@
     <color name="error_light">#5C1A1E</color>
     <color name="success_light">#14291E</color>
     <color name="warning_light">#3D2E14</color>
+    <color name="autofill_highlight">#40FBBF24</color>
 
     <!-- ═══════════════════════════════════════════════════════════
          EVENT TYPE COLORS

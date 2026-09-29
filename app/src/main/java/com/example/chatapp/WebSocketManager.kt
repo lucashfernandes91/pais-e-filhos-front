@@ -1,6 +1,5 @@
 package com.example.chatapp
 
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -11,6 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 enum class WsStatus {
@@ -22,7 +22,8 @@ data class IncomingMessage(
     val content: String,
     val senderId: Int,
     val senderUsername: String,
-    val createdAt: String
+    val createdAt: String,
+    val clientMessageId: String?
 )
 
 class WebSocketManager(
@@ -43,6 +44,7 @@ class WebSocketManager(
 
     private var webSocket: WebSocket? = null
     private var reconnectAttempts = 0
+    private val correlationId = AppTelemetry.newCorrelationId()
     private val maxReconnectAttempts = 5
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -59,25 +61,33 @@ class WebSocketManager(
         }
     }
 
-    fun sendMessage(content: String) {
-        scope.launch {
-            if (webSocket != null) {
-                val json = """{"content":"$content"}"""
-                val sent = webSocket!!.send(json)
-                if (!sent) {
-                    Log.e(TAG, "Failed to send message")
-                    onStatusChanged(WsStatus.ERROR)
-                }
-            } else {
-                Log.w(TAG, "WebSocket not connected")
-                onStatusChanged(WsStatus.DISCONNECTED)
-            }
+    fun sendMessage(content: String, clientMessageId: String): Boolean {
+        val socket = webSocket ?: run {
+            AppTelemetry.warning("websocket_send_not_connected", correlationId)
+            onStatusChanged(WsStatus.DISCONNECTED)
+            return false
         }
+        val sent = socket.send(
+            JSONObject()
+                .put("content", content)
+                .put("client_message_id", clientMessageId)
+                .toString()
+        )
+        if (!sent) {
+            AppTelemetry.error("websocket_send_failed", correlationId)
+            onStatusChanged(WsStatus.ERROR)
+        }
+        return sent
     }
 
     fun sendTyping(isTyping: Boolean) {
         scope.launch {
-            webSocket?.send("""{"type":"typing","is_typing":$isTyping}""")
+            webSocket?.send(
+                JSONObject()
+                    .put("type", "typing")
+                    .put("is_typing", isTyping)
+                    .toString()
+            )
         }
     }
 
@@ -90,7 +100,11 @@ class WebSocketManager(
 
     private fun scheduleReconnect() {
         if (reconnectAttempts >= maxReconnectAttempts) {
-            Log.e(TAG, "Max reconnect attempts reached")
+            AppTelemetry.error(
+                "websocket_reconnect_exhausted",
+                correlationId,
+                attributes = mapOf("attempts" to reconnectAttempts.toString())
+            )
             onStatusChanged(WsStatus.ERROR)
             return
         }
@@ -107,14 +121,13 @@ class WebSocketManager(
 
     private inner class ChatWebSocketListener : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: okhttp3.Response) {
-            Log.d(TAG, "WebSocket connected")
+            AppTelemetry.info("websocket_connected", correlationId)
             reconnectAttempts = 0
             onStatusChanged(WsStatus.CONNECTED)
             onConnected()
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
-            Log.d(TAG, "Message received: $text")
             try {
                 val json = android.util.JsonReader(text.reader())
                 json.beginObject()
@@ -124,6 +137,7 @@ class WebSocketManager(
                 var senderId = 0
                 var senderUsername = ""
                 var createdAt = ""
+                var clientMessageId: String? = null
                 var type = "message"
                 var isTyping = false
 
@@ -135,6 +149,7 @@ class WebSocketManager(
                         "sender_id" -> senderId = json.nextInt()
                         "sender_username" -> senderUsername = json.nextString()
                         "created_at" -> createdAt = json.nextString()
+                        "client_message_id" -> clientMessageId = json.nextString()
                         "is_typing" -> isTyping = json.nextBoolean()
                         else -> json.skipValue()
                     }
@@ -142,29 +157,42 @@ class WebSocketManager(
                 json.endObject()
 
                 if (type == "typing") {
+                    AppTelemetry.debug(TAG, "Typing event received")
                     onTypingReceived(senderUsername, isTyping)
                 } else {
-                    val message = IncomingMessage(messageId, content, senderId, senderUsername, createdAt)
+                    AppTelemetry.info("websocket_message_received", correlationId)
+                    val message = IncomingMessage(
+                        messageId,
+                        content,
+                        senderId,
+                        senderUsername,
+                        createdAt,
+                        clientMessageId
+                    )
                     onMessageReceived(message)
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to parse message", e)
+                AppTelemetry.error("websocket_message_parse_failed", correlationId, e)
             }
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
-            Log.e(TAG, "WebSocket error: ${t.message}", t)
+            AppTelemetry.error("websocket_failure", correlationId, t)
             onStatusChanged(WsStatus.DISCONNECTED)
             scheduleReconnect()
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-            Log.d(TAG, "WebSocket closing: $code $reason")
+            AppTelemetry.debug(TAG, "WebSocket closing: $code")
             webSocket.close(1000, null)
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            Log.d(TAG, "WebSocket closed: $code $reason")
+            AppTelemetry.info(
+                "websocket_closed",
+                correlationId,
+                attributes = mapOf("code" to code.toString())
+            )
             onStatusChanged(WsStatus.DISCONNECTED)
             if (code != 1000 && code != 4001 && code != 4003) {
                 scheduleReconnect()

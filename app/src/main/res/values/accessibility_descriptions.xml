@@ -27,6 +27,9 @@
     <!-- Agenda -->
     <string name="cd_prev_month_button">Ir para o mês anterior</string>
     <string name="cd_next_month_button">Ir para o próximo mês</string>
+    <string name="cd_select_calendar_month">Selecionar mês e ano</string>
+    <string name="cd_previous_year">Ir para o ano anterior</string>
+    <string name="cd_next_year">Ir para o próximo ano</string>
     <string name="cd_calendar_day">%1$d de %2$s. %3$s est&#225; com o filho</string>
     <string name="cd_calendar_event">Evento: %1$s em %2$d de %3$s</string>
     <string name="cd_add_event_button">Agendar novo evento</string>

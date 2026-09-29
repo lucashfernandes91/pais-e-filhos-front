@@ -42,8 +42,18 @@ class TimelineViewModel(
                 error.postValue(null)
 
                 val bearerToken = currentBearerToken() ?: return@launch
-                val messages = RetrofitClient.api.getMessages(bearerToken, conversationId)
-                val events = RetrofitClient.api.getEvents(bearerToken, conversationId)
+                if (conversationId <= PrefsHelper.NO_CONVERSATION_ID) {
+                    currentItems.clear()
+                    items.postValue(emptyList())
+                    return@launch
+                }
+
+                val messages = runCatching { RetrofitClient.api.getMessages(bearerToken, conversationId) }
+                    .getOrElse { emptyList() }
+                val events = runCatching { RetrofitClient.api.getEvents(bearerToken, conversationId) }
+                    .getOrElse { emptyList() }
+                val eventChanges = runCatching { RetrofitClient.api.getEventChanges(bearerToken, conversationId) }
+                    .getOrElse { emptyList() }
 
                 hasMoreMessages = messages.size >= PAGE_SIZE
                 oldestMessageId = messages.minByOrNull { it.id }?.id
@@ -51,6 +61,7 @@ class TimelineViewModel(
                 currentItems.clear()
                 currentItems.addAll(messages.map { TimelineItem.MessageItem(it) })
                 currentItems.addAll(events.map { TimelineItem.EventItem(it) })
+                currentItems.addAll(eventChanges.map { TimelineItem.EventChangeItem(it) })
                 currentItems.sortByDescending { it.getDate() }
 
                 items.postValue(currentItems.toList())
@@ -96,6 +107,10 @@ class TimelineViewModelFactory(
     private val appContext = context.applicationContext
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return TimelineViewModel(appContext, conversationId) as T
+        require(modelClass.isAssignableFrom(TimelineViewModel::class.java)) {
+            "Unsupported ViewModel: ${modelClass.name}"
+        }
+        return modelClass.cast(TimelineViewModel(appContext, conversationId))
+            ?: throw IllegalStateException("Unable to create ${modelClass.name}")
     }
 }

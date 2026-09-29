@@ -34,10 +34,12 @@ class NotificationSettingsFragment : Fragment() {
         val switchPush = view.findViewById<SwitchMaterial>(R.id.switchPush)
         val switchEmail = view.findViewById<SwitchMaterial>(R.id.switchEmailBackup)
         val switchNight = view.findViewById<SwitchMaterial>(R.id.switchNightMode)
+        val switchEventReminders = view.findViewById<SwitchMaterial>(R.id.switchEventReminders)
 
         switchPush.isChecked = PrefsHelper.isPushEnabled(ctx)
         switchEmail.isChecked = PrefsHelper.isEmailBackupEnabled(ctx)
         switchNight.isChecked = PrefsHelper.isNightModeEnabled(ctx)
+        switchEventReminders.isChecked = PrefsHelper.isEventRemindersEnabled(ctx)
 
         view.findViewById<View>(R.id.btnBack).setOnClickListener {
             findNavController().navigateUp()
@@ -56,6 +58,16 @@ class NotificationSettingsFragment : Fragment() {
         switchNight.setOnCheckedChangeListener { _, isChecked ->
             PrefsHelper.setNightModeEnabled(ctx, isChecked)
             toast(if (isChecked) R.string.settings_night_enabled else R.string.settings_night_disabled)
+        }
+
+        switchEventReminders.setOnCheckedChangeListener { _, isChecked ->
+            PrefsHelper.setEventRemindersEnabled(ctx, isChecked)
+            if (isChecked) {
+                com.example.chatapp.EventReminderScheduler.rescheduleStored(ctx)
+            } else {
+                com.example.chatapp.EventReminderScheduler.clearAll(ctx)
+            }
+            toast(if (isChecked) R.string.settings_event_reminders_enabled else R.string.settings_event_reminders_disabled)
         }
     }
 

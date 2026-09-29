@@ -2,283 +2,118 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.CoParent.Card.Outlined"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="0dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="@color/border"
-    app:cardBackgroundColor="@color/bg_primary">
+    android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/spacing_sm">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/spacing_s">
+
+            <View
+                android:id="@+id/dotPreviewOtherParent"
+                android:layout_width="@dimen/icon_dot_size_m"
+                android:layout_height="@dimen/icon_dot_size_m"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                android:background="@drawable/bg_dot_pink" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_s"
+                android:text="@string/onboarding_conversation_name"
+                android:textColor="@color/gray_500"
+                android:textSize="@dimen/text_size_xs" />
+
+            <View
+                android:id="@+id/dotPreviewCurrentUser"
+                android:layout_width="@dimen/icon_dot_size_m"
+                android:layout_height="@dimen/icon_dot_size_m"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                android:background="@drawable/bg_dot_blue" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_s"
+                android:text="@string/agenda_you"
+                android:textColor="@color/gray_500"
+                android:textSize="@dimen/text_size_xs" />
+
+            <View
+                android:layout_width="@dimen/icon_dot_size_m"
+                android:layout_height="@dimen/icon_dot_size_m"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                android:background="@drawable/bg_event_dot" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_evento"
+                android:textColor="@color/gray_500"
+                android:textSize="@dimen/text_size_xs" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/touch_target_min"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_xs">
+
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_calendar"
-                app:tint="@color/primary_blue" />
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:padding="@dimen/spacing_sm"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/gray_700" />
+
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvPreviewCalendarMonth"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/onboarding_preview_week"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:textColor="@color/gray_900"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_weight="1" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/onboarding_example"
-                android:textColor="@color/gray_600"
-                android:textSize="12sp" />
+                android:textSize="@dimen/text_size_m"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:padding="@dimen/spacing_sm"
+                android:src="@drawable/ic_arrow_forward"
+                app:tint="@color/gray_700" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_height="@dimen/spacing_xl"
+            android:gravity="center"
             android:orientation="horizontal">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_day_seg"
-                    android:textSize="11sp"
-                    android:textColor="@color/gray_600" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginHorizontal="1dp"
-                    android:gravity="center"
-                    android:background="@color/avatar_blue"
-                    android:text="14"
-                    android:textColor="@color/gray_900"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_day_ter"
-                    android:textSize="11sp"
-                    android:textColor="@color/gray_600" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginHorizontal="1dp"
-                    android:gravity="center"
-                    android:background="@color/avatar_blue"
-                    android:text="15"
-                    android:textColor="@color/gray_900"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_day_qua"
-                    android:textSize="11sp"
-                    android:textColor="@color/gray_600" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginHorizontal="1dp"
-                    android:gravity="center"
-                    android:background="@color/avatar_blue"
-                    android:text="16"
-                    android:textColor="@color/gray_900"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_day_qui"
-                    android:textSize="11sp"
-                    android:textColor="@color/gray_600" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginHorizontal="1dp"
-                    android:gravity="center"
-                    android:background="@color/avatar_blue"
-                    android:text="17"
-                    android:textColor="@color/gray_900"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_day_sex"
-                    android:textSize="11sp"
-                    android:textColor="@color/gray_600" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginHorizontal="1dp"
-                    android:gravity="center"
-                    android:background="@color/avatar_green"
-                    android:text="18"
-                    android:textColor="@color/gray_900"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_day_sab"
-                    android:textSize="11sp"
-                    android:textColor="@color/gray_600" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginHorizontal="1dp"
-                    android:gravity="center"
-                    android:background="@color/avatar_green"
-                    android:text="19"
-                    android:textColor="@color/gray_900"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_day_dom"
-                    android:textSize="11sp"
-                    android:textColor="@color/gray_600" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginHorizontal="1dp"
-                    android:gravity="center"
-                    android:background="@color/avatar_green"
-                    android:text="20"
-                    android:textColor="@color/gray_900"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/ui_d" android:textColor="@color/gray_400" android:textSize="@dimen/text_size_s" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/ui_s" android:textColor="@color/gray_400" android:textSize="@dimen/text_size_s" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/ui_t" android:textColor="@color/gray_400" android:textSize="@dimen/text_size_s" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/ui_q" android:textColor="@color/gray_400" android:textSize="@dimen/text_size_s" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/ui_q" android:textColor="@color/gray_400" android:textSize="@dimen/text_size_s" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/ui_s" android:textColor="@color/gray_400" android:textSize="@dimen/text_size_s" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/ui_s" android:textColor="@color/gray_400" android:textSize="@dimen/text_size_s" />
         </LinearLayout>
+
         <LinearLayout
+            android:id="@+id/onboardingCalendarGrid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical">
-            <View
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/bg_dot_active"
-                android:backgroundTint="@color/custody_parent_a"
-                android:layout_marginEnd="6dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/onboarding_with_you"
-                android:textColor="@color/gray_900"
-                android:textSize="14sp"
-                android:layout_weight="1" />
-            <View
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/bg_dot_active"
-                android:backgroundTint="@color/custody_parent_b"
-                android:layout_marginEnd="6dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/onboarding_with_alex"
-                android:textColor="@color/gray_900"
-                android:textSize="14sp"
-                android:layout_weight="1" />
-        </LinearLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/border"
-            android:layout_marginVertical="16dp" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-            <View
-                android:layout_width="3dp"
-                android:layout_height="40dp"
-                android:background="@color/secondary_teal"
-                android:layout_marginEnd="12dp" />
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_appointment"
-                    android:textColor="@color/gray_900"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/onboarding_appointment_time"
-                    android:textColor="@color/gray_600"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </LinearLayout>
+            android:orientation="vertical" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
