@@ -90,7 +90,7 @@
     </style>
 
     <style name="Widget.CoParent.Card.Primary" parent="Widget.MaterialComponents.CardView">
-        <item name="cardBackgroundColor">@color/primary_blue</item>
+        <item name="cardBackgroundColor">@color/brand_surface</item>
         <item name="cardCornerRadius">@dimen/corner_radius_xxl</item>
         <item name="cardElevation">@dimen/elevation_low</item>
         <item name="strokeWidth">@dimen/elevation_none</item>
@@ -288,6 +288,10 @@
 
     <style name="Widget.CoParent.Form.TextInputLayout.Spaced" parent="Widget.CoParent.Form.TextInputLayout">
         <item name="android:layout_marginBottom">@dimen/spacing_l</item>
+    </style>
+
+    <style name="Widget.CoParent.Form.TextInputLayout.Register" parent="Widget.CoParent.Form.TextInputLayout">
+        <item name="android:layout_marginBottom">@dimen/spacing_s</item>
     </style>
 
     <style name="Widget.CoParent.Form.TextInputLayout.Event" parent="Widget.CoParent.TextInputLayout.Event">

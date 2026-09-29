@@ -441,8 +441,7 @@ class ChatFragment : Fragment() {
     }
 
     private fun openExportSheet() {
-        val sheet = ExportBottomSheet.newInstance(allMessages.size, ExportBottomSheet.TYPE_MESSAGES)
-        sheet.show(childFragmentManager, "ExportBottomSheet")
+        ExportBottomSheet.show(this, allMessages.size, ExportBottomSheet.TYPE_MESSAGES)
     }
 
     private fun observeViewModel() {

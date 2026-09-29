@@ -101,7 +101,25 @@ class MainActivity : AppCompatActivity() {
             }
 
             val token = task.result
-            Log.d(TAG, "FCM Token obtained: $token")
+            PrefsHelper.saveFcmToken(this, token)
+
+            val authToken = PrefsHelper.getAuthToken(this)
+            if (authToken.isEmpty()) {
+                Log.w(TAG, "No auth token found, skipping FCM token registration")
+                return@addOnCompleteListener
+            }
+
+            lifecycleScope.launch {
+                try {
+                    RetrofitClient.api.registerDeviceToken(
+                        "Bearer $authToken",
+                        mapOf("token" to token)
+                    )
+                    Log.d(TAG, "FCM token registered")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error registering FCM token", e)
+                }
+            }
         }
     }
 

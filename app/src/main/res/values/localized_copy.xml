@@ -48,10 +48,10 @@
     <string name="ui_criar_nova_conta">Criar nova conta</string>
     <string name="ui_continuar">Continuar</string>
     <string name="ui_pular_introducao">Pular introdu&#231;&#227;o</string>
-    <string name="onboarding_organization_title">Organiza&#231;&#227;o compartilhada</string>
-    <string name="onboarding_organization_description">Agenda, conviv&#234;ncia e conversas importantes em um s&#243; lugar, com clareza para ambos os respons&#225;veis.</string>
-    <string name="onboarding_security_title">Comunica&#231;&#227;o segura</string>
-    <string name="onboarding_security_description">Mensagens ficam registradas e n&#227;o podem ser editadas ou apagadas. Mais transpar&#234;ncia para decis&#245;es sobre os filhos.</string>
+    <string name="onboarding_organization_title">A rotina dos filhos, organizada</string>
+    <string name="onboarding_organization_description">Acompanhe os dias de conviv&#234;ncia e os compromissos dos seus filhos em uma agenda compartilhada.</string>
+    <string name="onboarding_security_title">Conversas e combinados registrados</string>
+    <string name="onboarding_security_description">Converse sobre os cuidados dos filhos e consulte o hist&#243;rico quando precisar.</string>
     <string name="onboarding_start">Come&#231;ar</string>
     <string name="onboarding_have_account">J&#225; tenho uma conta</string>
     <string name="onboarding_back">Voltar para a tela anterior</string>

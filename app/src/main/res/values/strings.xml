@@ -80,6 +80,7 @@
     <string name="home_message_to_parent">Para %1$s</string>
     <string name="home_invite_parent">Convidar respons&#225;vel</string>
     <string name="agenda_you">Voc&#234;</string>
+    <string name="agenda_day_care_label">Cuidados: %1$s</string>
     <string name="agenda_no_other_parent">Sem respons&#225;vel</string>
     <string name="chat_error_message">Verifique sua conex&#227;o e tente carregar as mensagens novamente.</string>
     <string name="chat_no_coparent_title">Nenhum respons&#225;vel conectado</string>
