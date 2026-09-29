@@ -82,6 +82,9 @@ class AgendaFragment : Fragment() {
 
     private var custodyDays = mutableMapOf<Int, CalendarColor>()
     private var custodyEventDays = mutableSetOf<Int>()
+    // Calendar data maps — day -> custody owner
+    private enum class CustodyOwner { SELF, OTHER, NONE }
+
     private var genericEventDays = mutableSetOf<Int>()
     private var currentUserHasDeclaredCustody = false
 
@@ -199,6 +202,7 @@ class AgendaFragment : Fragment() {
             .takeIf { it.isNotBlank() }
             ?.replaceFirstChar { it.uppercase() }
             ?: getString(R.string.agenda_no_other_parent)
+        renderCalendar()
     }
 
     private fun setupLegendColorEditing() {
@@ -569,6 +573,8 @@ class AgendaFragment : Fragment() {
         currentUserHasDeclaredCustody = children.any { child ->
             child.isUnderCustodyOf(currentUsername)
         }
+        // Backend ainda não expõe o owner de custódia como campo de domínio dedicado.
+        return if (createdBy == currentUsername) CustodyOwner.SELF else CustodyOwner.OTHER
     }
 
     private fun processGenericEvent(event: Event, year: Int, month: Int) {
@@ -610,6 +616,8 @@ class AgendaFragment : Fragment() {
         val totalCells = firstDayOfWeek - 1 + daysInMonth
         val totalRows = (totalCells + 6) / 7
 
+        // Tamanhos dos marcadores de dia e evento
+        val todayCircleSizeDp = 22
         // Tamanhos dos círculos — menores para que o dot laranja fique abaixo deles
         val todayCircleSizePx = (22f * 1.05f * density).roundToInt()
         val custodyBgWidthDp = 32
@@ -641,6 +649,21 @@ class AgendaFragment : Fragment() {
                     val custodyColor = custodyDays[day]
                     val hasGenericEvent = genericEventDays.contains(day)
                     val hasCustodyEvent = custodyEventDays.contains(day)
+                    val hasCustody = custodyOwner != CustodyOwner.NONE
+                    val dayDate = (displayedCalendar.clone() as Calendar).apply {
+                        set(Calendar.DAY_OF_MONTH, day)
+                    }
+                    val ownerLabel = when (custodyOwner) {
+                        CustodyOwner.SELF -> getString(R.string.agenda_you)
+                        CustodyOwner.OTHER -> tvLegendOtherParent?.text?.toString().orEmpty()
+                        CustodyOwner.NONE -> ""
+                    }
+                    frame.contentDescription = buildList {
+                        add(SimpleDateFormat("dd 'de' MMMM 'de' yyyy", ptBrLocale).format(dayDate.time))
+                        if (hasCustody) add(getString(R.string.agenda_day_care_label, ownerLabel))
+                        if (hasGenericEvent) add(getString(R.string.ui_evento))
+                    }.joinToString(", ")
+                    frame.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
 
                     if (hasGenericEvent || hasCustodyEvent) {
                         frame.isClickable = true
@@ -667,12 +690,41 @@ class AgendaFragment : Fragment() {
                                 shape = GradientDrawable.RECTANGLE
                                 cornerRadius = dp(12).toFloat()
                                 setColor(custodyColor.bgColor(ctx))
+                    if (custodyOwner != CustodyOwner.NONE) {
+                        val bgColor = when (custodyOwner) {
+                            CustodyOwner.OTHER -> R.color.custody_parent_b_bg
+                            CustodyOwner.SELF -> R.color.custody_parent_a_bg
+                            else -> 0
+                        }
+                        if (bgColor != 0) {
+                            val bgView = View(ctx).apply {
+                                layoutParams = FrameLayout.LayoutParams(
+                                    dp(custodyBgWidthDp),
+                                    dp(custodyBgHeightDp)
+                                ).apply {
+                                    // Centralizado horizontalmente, alinhado ao topo da célula
+                                    // com uma margem para não ficar colado na borda
+                                    gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+                                    topMargin = dp(4)
+
+                                }
+                                background = GradientDrawable().apply {
+                                    shape = GradientDrawable.RECTANGLE
+                                    cornerRadius = dp(if (custodyOwner == CustodyOwner.SELF) 4 else 16).toFloat()
+                                    setColor(ContextCompat.getColor(ctx, bgColor))
+                                    val outlineColor = if (custodyOwner == CustodyOwner.SELF) {
+                                        R.color.custody_parent_a
+                                    } else {
+                                        R.color.custody_parent_b
+                                    }
+                                    setStroke(dp(1), ContextCompat.getColor(ctx, outlineColor))
+                                }
                             }
                         }
                         frame.addView(bgView)
                     }
 
-                    // ── Círculo azul "hoje" ────────────────────────────────
+                    // ── Indicador de hoje ────────────────────────────────
                     // Mesmo posicionamento: topo + margem, para manter simetria com custódia
                     if (isToday) {
                         val circle = View(ctx).apply {
@@ -704,6 +756,7 @@ class AgendaFragment : Fragment() {
                             topMargin = dp(9)
                         }
                         text = day.toString()
+                        importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
                         gravity = Gravity.CENTER
                         textSize = 13f
                         setTextColor(ContextCompat.getColor(ctx, textColor))
@@ -713,7 +766,7 @@ class AgendaFragment : Fragment() {
                     }
                     frame.addView(tv)
 
-                    // ── Ponto laranja de evento ────────────────────────────
+                    // ── Indicador de evento ────────────────────────────
                     // Fixado na borda inferior da célula — sempre abaixo do círculo
                     if (hasGenericEvent) {
                         val dot = View(ctx).apply {

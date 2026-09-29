@@ -95,7 +95,7 @@
                         android:gravity="center"
                         android:paddingBottom="@dimen/spacing_s">
 
-                        <!-- Mãe -->
+                        <!-- Outro responsável -->
                         <LinearLayout
                             android:id="@+id/legendOtherParent"
                             android:layout_width="wrap_content"
@@ -116,7 +116,7 @@
                                 android:layout_marginEnd="@dimen/spacing_xs" />
 
                             <TextView
-                                android:id="@+id/tvLegendMother"
+                                android:id="@+id/tvLegendOtherParent"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/agenda_no_other_parent"
@@ -124,7 +124,7 @@
                                 android:textColor="@color/gray_500" />
                         </LinearLayout>
 
-                        <!-- Pai -->
+                        <!-- Você -->
                         <LinearLayout
                             android:id="@+id/legendCurrentUser"
                             android:layout_width="wrap_content"
@@ -145,7 +145,7 @@
                                 android:layout_marginEnd="@dimen/spacing_xs" />
 
                             <TextView
-                                android:id="@+id/tvLegendFather"
+                                android:id="@+id/tvLegendSelf"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/agenda_you"

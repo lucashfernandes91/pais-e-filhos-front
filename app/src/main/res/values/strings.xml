@@ -82,6 +82,7 @@
     <string name="home_message_to_parent">Para %1$s</string>
     <string name="home_invite_parent">Convidar respons&#225;vel</string>
     <string name="agenda_you">Voc&#234;</string>
+    <string name="agenda_day_care_label">Cuidados: %1$s</string>
     <string name="agenda_no_other_parent">Sem respons&#225;vel</string>
     <string name="agenda_edit_your_color">Editar sua cor na agenda</string>
     <string name="agenda_edit_other_color">Editar cor do outro responsável na agenda</string>
