@@ -19,6 +19,7 @@ import org.json.JSONObject
 class AuthInterceptor(private val context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        val correlationId = AppTelemetry.newCorrelationId()
         val originalRequest = chain.request()
         val response = chain.proceed(originalRequest)
 
@@ -33,6 +34,11 @@ class AuthInterceptor(private val context: Context) : Interceptor {
 
         val refreshToken = PrefsHelper.getRefreshToken(context)
         if (refreshToken.isEmpty()) {
+            AppTelemetry.warning(
+                "jwt_refresh_missing",
+                correlationId,
+                attributes = mapOf("status" to response.code.toString())
+            )
             expireLocalSession()
             return response
         }
@@ -55,6 +61,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
 
             when (val refreshResult = performTokenRefresh(chain, refreshToken)) {
                 is RefreshResult.Success -> {
+                    AppTelemetry.info("jwt_refresh_succeeded", correlationId)
                     PrefsHelper.saveAccessToken(context, refreshResult.accessToken)
                     val retryRequest = originalRequest.newBuilder()
                         .header("Authorization", "Bearer ${refreshResult.accessToken}")
@@ -62,8 +69,13 @@ class AuthInterceptor(private val context: Context) : Interceptor {
                     return chain.proceed(retryRequest)
                 }
 
-                RefreshResult.InvalidSession -> expireLocalSession()
-                RefreshResult.RetryableFailure -> Unit
+                RefreshResult.InvalidSession -> {
+                    AppTelemetry.warning("jwt_refresh_invalid_session", correlationId)
+                    expireLocalSession()
+                }
+                RefreshResult.RetryableFailure -> {
+                    AppTelemetry.warning("jwt_refresh_retryable_failure", correlationId)
+                }
             }
             return unauthorizedResponse
         }
@@ -105,7 +117,8 @@ class AuthInterceptor(private val context: Context) : Interceptor {
                 refreshResponse.close()
                 RefreshResult.RetryableFailure
             }
-        } catch (_: Exception) {
+        } catch (error: Exception) {
+            AppTelemetry.warning("jwt_refresh_unavailable", error = error)
             RefreshResult.RetryableFailure
         }
     }
@@ -118,5 +131,9 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         data class Success(val accessToken: String) : RefreshResult()
         object InvalidSession : RefreshResult()
         object RetryableFailure : RefreshResult()
+    }
+
+    companion object {
+        private const val TAG = "AuthInterceptor"
     }
 }

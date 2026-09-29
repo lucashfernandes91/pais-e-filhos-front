@@ -133,6 +133,9 @@ class ProfileFragment : Fragment() {
         view.findViewById<View>(R.id.rowTerms)?.setOnClickListener {
             openPublicDocument(LegalDocuments.TERMS_URL)
         }
+        view.findViewById<View>(R.id.rowAccountDeletion)?.setOnClickListener {
+            openPublicDocument(LegalDocuments.ACCOUNT_DELETION_URL)
+        }
 
         // Logout
         view.findViewById<View>(R.id.rowLogout)?.setOnClickListener {
@@ -192,10 +195,14 @@ class ProfileFragment : Fragment() {
         showChildrenLoading()
         val token = PrefsHelper.getAuthToken(requireContext())
         val conversationId = PrefsHelper.getConversationId(requireContext())
-        android.util.Log.d("ProfileFragment", "loadChildren called: token=${token.take(10)}..., convId=$conversationId")
+        android.util.Log.d("ProfileFragment", "loadChildren called: convId=$conversationId")
         if (token.isEmpty()) {
             android.util.Log.w("ProfileFragment", "loadChildren: token empty, skipping")
             showChildrenError()
+            return
+        }
+        if (conversationId <= PrefsHelper.NO_CONVERSATION_ID) {
+            renderChildren(emptyList())
             return
         }
 
@@ -224,7 +231,8 @@ class ProfileFragment : Fragment() {
 
         // Atualizar subtítulo e prefs com nomes atualizados — só entram os filhos
         // sob guarda (has_custody), já que criador e coparente podem ser responsáveis.
-        val childrenUnderCustody = children.filter { it.has_custody }
+        val username = PrefsHelper.getUsername(requireContext())
+        val childrenUnderCustody = children.filter { it.isUnderCustodyOf(username) }
         if (childrenUnderCustody.isNotEmpty()) {
             val names = childrenUnderCustody.joinToString(", ") { it.name }
             PrefsHelper.saveChildrenNames(requireContext(), names)
@@ -351,7 +359,7 @@ class ProfileFragment : Fragment() {
             textContainer.addView(tvBirth)
         }
 
-        if (child.has_custody) {
+        if (child.isUnderCustodyOf(PrefsHelper.getUsername(ctx))) {
             val tvCustody = TextView(ctx).apply {
                 text = getString(R.string.profile_has_custody)
                 textSize = 12f
@@ -495,6 +503,14 @@ class ProfileFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val conversationId = PrefsHelper.getConversationId(requireContext())
+                if (conversationId <= PrefsHelper.NO_CONVERSATION_ID) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.chat_invite_to_start),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@launch
+                }
                 
                 // Validar entrada
                 if (name.isBlank()) {

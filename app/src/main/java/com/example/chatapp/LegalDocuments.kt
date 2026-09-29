@@ -5,4 +5,5 @@ object LegalDocuments {
     const val PRIVACY_VERSION = "0.1"
     val TERMS_URL = "${BuildConfig.LEGAL_BASE_URL}/terms"
     val PRIVACY_URL = "${BuildConfig.LEGAL_BASE_URL}/privacy"
+    val ACCOUNT_DELETION_URL = "${BuildConfig.LEGAL_BASE_URL}/account-deletion"
 }

@@ -1,5 +1,6 @@
 package com.example.chatapp.ui
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -120,17 +121,15 @@ class ExportBottomSheet private constructor(
                 }
 
                 withContext(Dispatchers.Main) {
+                    if (dialog.isShowing) {
+                        dialog.dismiss()
+                    }
                     if (share) {
                         sharePdfFile(ctx, pdfUri)
                     } else {
-                        tvProgressText.setText(R.string.export_pdf_saved)
                         Toast.makeText(ctx, R.string.export_success, Toast.LENGTH_SHORT).show()
-                        view.postDelayed({
-                            if (dialog.isShowing) dialog.dismiss()
-                        }, 1500)
+                        openPdfFile(ctx, pdfUri)
                     }
-                    btnDownload.isEnabled = true
-                    btnShare.isEnabled = true
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -152,7 +151,7 @@ class ExportBottomSheet private constructor(
             val values = android.content.ContentValues().apply {
                 put(MediaStore.Downloads.DISPLAY_NAME, fileName)
                 put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
-                put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/CoParent")
+                put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
             }
             val uri = ctx.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
                 ?: error("Não foi possível criar o arquivo em Downloads")
@@ -167,10 +166,49 @@ class ExportBottomSheet private constructor(
             uri
         } else {
             val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val coparentDir = File(downloadDir, "CoParent").also { it.mkdirs() }
-            val pdfFile = File(coparentDir, fileName)
+            if (!downloadDir.exists()) {
+                downloadDir.mkdirs()
+            }
+            val pdfFile = File(downloadDir, fileName)
             FileOutputStream(pdfFile).use { output -> input.copyTo(output) }
-            Uri.fromFile(pdfFile)
+            FileProvider.getUriForFile(
+                ctx,
+                "${ctx.packageName}.fileprovider",
+                pdfFile
+            )
+        }
+    }
+
+    private fun openPdfFile(ctx: Context, uri: Uri) {
+        try {
+            val viewUri = if (uri.scheme == "file") {
+                FileProvider.getUriForFile(
+                    ctx,
+                    "${ctx.packageName}.fileprovider",
+                    File(requireNotNull(uri.path))
+                )
+            } else {
+                uri
+            }
+
+            val openIntent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(viewUri, "application/pdf")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            host.startActivity(openIntent)
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(
+                ctx,
+                R.string.export_no_pdf_viewer,
+                Toast.LENGTH_LONG
+            ).show()
+        } catch (e: Exception) {
+            Toast.makeText(
+                ctx,
+                ctx.getString(R.string.export_open_error, e.message.orEmpty()),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

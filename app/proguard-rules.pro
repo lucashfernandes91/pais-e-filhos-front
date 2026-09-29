@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Retrofit/Gson DTOs are populated reflectively from serialized field names.
+-keepattributes RuntimeVisibleAnnotations,RuntimeInvisibleAnnotations,Signature
+-keep class com.example.chatapp.** {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Preserve useful crash line information without exposing source paths.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

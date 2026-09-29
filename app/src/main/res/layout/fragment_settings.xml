@@ -376,6 +376,54 @@
                     style="@style/Widget.CoParent.Settings.Divider"
                     android:layout_marginEnd="@dimen/spacing_m" />
 
+                <!-- Exclusão da conta -->
+                <LinearLayout
+                    android:id="@+id/btnAccountDeletion"
+                    style="@style/Widget.CoParent.Settings.Row">
+
+                    <FrameLayout
+                        style="@style/Widget.CoParent.Settings.IconContainer.Danger">
+
+                        <ImageView
+                            style="@style/Widget.CoParent.Settings.Icon"
+                            android:src="@drawable/ic_delete"
+                            app:tint="@color/error"
+                            android:contentDescription="@string/settings_delete_account" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/TextStyle.Body"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_delete_account"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            style="@style/TextStyle.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_delete_account_description"
+                            android:layout_marginTop="@dimen/spacing_xs" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_badge_size"
+                        android:layout_height="@dimen/icon_badge_size"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/gray_400"
+                        android:contentDescription="@string/settings_delete_account" />
+                </LinearLayout>
+
+                <View
+                    style="@style/Widget.CoParent.Settings.Divider"
+                    android:layout_marginEnd="@dimen/spacing_m" />
+
                 <!-- Ajuda & Suporte -->
                 <LinearLayout
                     android:id="@+id/btnSupport"

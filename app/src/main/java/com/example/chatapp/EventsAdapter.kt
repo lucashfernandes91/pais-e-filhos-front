@@ -37,9 +37,7 @@ class EventsAdapter(
 
         fun bind(event: Event, onDeleteClick: (Event) -> Unit, onEditClick: (Event) -> Unit) {
             val ctx = itemView.context
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-            val dateFormatAlt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val eventDate = parseEventDate(event.event_date, dateFormat, dateFormatAlt)
+            val eventDate = AppDateTime.parseApi(event.event_date)
             val ptBr = Locale.forLanguageTag("pt-BR")
             if (eventDate != null) {
                 tvEventDay.text = SimpleDateFormat("dd", ptBr).format(eventDate)
@@ -56,7 +54,7 @@ class EventsAdapter(
             }
 
             tvEventTitle.text = event.title
-            tvEventTime.text = formatEventSubtitle(event, dateFormat, dateFormatAlt)
+            tvEventTime.text = formatEventSubtitle(event)
 
             btnAddToCalendar.setOnClickListener {
                 CalendarIntegration.addEventToGoogleCalendar(ctx, event)
@@ -72,18 +70,8 @@ class EventsAdapter(
             }
         }
 
-        private fun parseEventDate(
-            value: String,
-            dateFormat: SimpleDateFormat,
-            dateFormatAlt: SimpleDateFormat
-        ): Date? = try {
-            dateFormat.parse(value) ?: dateFormatAlt.parse(value)
-        } catch (_: Exception) {
-            try { dateFormatAlt.parse(value) } catch (_: Exception) { null }
-        }
-
-        private fun formatEventSubtitle(event: Event, dateFormat: SimpleDateFormat, dateFormatAlt: SimpleDateFormat): String {
-            val date = parseEventDate(event.event_date, dateFormat, dateFormatAlt)
+        private fun formatEventSubtitle(event: Event): String {
+            val date = AppDateTime.parseApi(event.event_date)
             if (date == null) return event.notes.ifEmpty { "Dia inteiro" }
             val ptBr = Locale.forLanguageTag("pt-BR")
             val day = SimpleDateFormat("dd", ptBr).format(date)
@@ -93,7 +81,7 @@ class EventsAdapter(
             val dayMonth = "$day de $month"
             val timeOnly = SimpleDateFormat("HH:mm", Locale.getDefault())
             if (AppEventType.fromRaw(event.event_type).isCustody && !event.event_date_end.isNullOrEmpty()) {
-                val endDate = try { dateFormat.parse(event.event_date_end) ?: dateFormatAlt.parse(event.event_date_end) } catch (e: Exception) { null }
+                val endDate = AppDateTime.parseApi(event.event_date_end)
                 if (endDate != null) {
                     val startStr = SimpleDateFormat("dd/MM HH:mm", Locale.forLanguageTag("pt-BR")).format(date)
                     val endStr = SimpleDateFormat("dd/MM HH:mm", Locale.forLanguageTag("pt-BR")).format(endDate)

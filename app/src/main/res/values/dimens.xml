@@ -25,6 +25,7 @@
     <dimen name="height_control_compact">40dp</dimen>
     <dimen name="touch_target_min">48dp</dimen>
     <dimen name="bottom_nav_height">56dp</dimen>
+    <dimen name="screen_header_height">72dp</dimen>
     <dimen name="screen_content_bottom_padding">80dp</dimen>
     <dimen name="button_min_width_action">96dp</dimen>
     <dimen name="list_item_min_height">72dp</dimen>

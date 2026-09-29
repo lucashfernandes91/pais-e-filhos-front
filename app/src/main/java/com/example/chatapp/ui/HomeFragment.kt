@@ -31,10 +31,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 private const val EMAIL_RESEND_COOLDOWN_MS = 30_000L
+private const val HOME_REFRESH_THROTTLE_MS = 30_000L
 
 class HomeFragment : Fragment() {
 
     private var swipeRefresh: SwipeRefreshLayout? = null
+    private var homeLoadInProgress = false
+    private var lastHomeLoadAt = 0L
     private var isResendingEmailVerification = false
     private var emailResendAvailableAt = 0L
     private var emailResendCountdown: CountDownTimer? = null
@@ -99,7 +102,7 @@ class HomeFragment : Fragment() {
         swipeRefresh?.setColorSchemeResources(R.color.primary_blue)
         swipeRefresh?.setOnRefreshListener {
             val currentToken = PrefsHelper.getAuthToken(requireContext())
-            if (currentToken.isNotEmpty()) loadAllData(view, currentToken)
+            if (currentToken.isNotEmpty()) loadAllData(view, currentToken, force = true)
             else swipeRefresh?.isRefreshing = false
         }
 
@@ -138,11 +141,21 @@ class HomeFragment : Fragment() {
         if (token.isNotEmpty()) loadAllData(view, token)
     }
 
-    private fun loadAllData(view: View, token: String) {
+    private fun loadAllData(view: View, token: String, force: Boolean = false) {
+        val now = SystemClock.elapsedRealtime()
+        if (homeLoadInProgress || (!force && now - lastHomeLoadAt < HOME_REFRESH_THROTTLE_MS)) {
+            return
+        }
+        homeLoadInProgress = true
+        lastHomeLoadAt = now
         loadUpcomingEvents(view, token)
         loadUnreadNotificationsCount(view, token)
         loadMessageTarget(view, token)
         loadEmailVerificationStatus(view, token)
+        viewLifecycleOwner.lifecycleScope.launch {
+            kotlinx.coroutines.delay(1_000L)
+            homeLoadInProgress = false
+        }
     }
 
     // ── A3: banner de confirmação de e-mail (soft) ───────
@@ -288,6 +301,13 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val conversationId = PrefsHelper.getConversationId(ctx)
+                if (conversationId <= PrefsHelper.NO_CONVERSATION_ID) {
+                    if (!isAdded || this@HomeFragment.view !== view) return@launch
+                    updateCustodyCard(view, ctx, emptyList(), emptyList(), Date())
+                    container.removeAllViews()
+                    container.addView(createEmptyEventsCard(ctx))
+                    return@launch
+                }
                 val children = RetrofitClient.api.getChildren("Bearer $token", conversationId)
                 val events = RetrofitClient.api.getEvents("Bearer $token", conversationId)
                 val now = Date()
@@ -339,6 +359,7 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val conversationId = PrefsHelper.getConversationId(ctx)
+                if (conversationId <= PrefsHelper.NO_CONVERSATION_ID) return@launch
                 val conversation = RetrofitClient.api.getConversations("Bearer $token")
                     .firstOrNull { it.id == conversationId }
                     ?: return@launch
@@ -406,7 +427,7 @@ class HomeFragment : Fragment() {
 
         val username = PrefsHelper.getUsername(ctx)
         val hasDeclaredCustody = children.any { child ->
-            child.has_custody && child.created_by_name == username
+            child.isUnderCustodyOf(username)
         }
         val custodyEvents = events.filter { AppEventType.fromRaw(it.event_type).isCustody }
 
@@ -498,24 +519,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun parseEventDate(dateStr: String): Date? {
-        val formats = listOf(
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mmX", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        )
-        for (fmt in formats) {
-            try {
-                val result = fmt.parse(dateStr)
-                if (result != null) return result
-            } catch (_: Exception) {}
-        }
-        return null
+        return com.example.chatapp.AppDateTime.parseApi(dateStr)
     }
 
     // ── Event Row (mesmo padrão visual) ─────────────────────
@@ -667,7 +671,10 @@ class HomeFragment : Fragment() {
             com.google.android.material.R.attr.materialButtonOutlinedStyle
         ).apply {
             setText(R.string.action_try_again)
-            setOnClickListener { loadUpcomingEvents(view, token) }
+            setOnClickListener {
+                lastHomeLoadAt = 0L
+                loadAllData(view, token, force = true)
+            }
         }
         content.addView(title)
         content.addView(message)
@@ -696,9 +703,9 @@ class HomeFragment : Fragment() {
             gravity = android.view.Gravity.CENTER_VERTICAL
             setPadding(
                 resources.getDimensionPixelSize(R.dimen.spacing_m),
-                resources.getDimensionPixelSize(R.dimen.spacing_s),
+                resources.getDimensionPixelSize(R.dimen.spacing_s) + dp(15),
                 resources.getDimensionPixelSize(R.dimen.spacing_m),
-                resources.getDimensionPixelSize(R.dimen.spacing_s)
+                resources.getDimensionPixelSize(R.dimen.spacing_s) + dp(15)
             )
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,

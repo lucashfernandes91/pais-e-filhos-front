@@ -281,18 +281,21 @@ class LoginActivity : AppCompatActivity() {
     private suspend fun loadConversationData(token: String): Boolean {
         return try {
             val conversations = RetrofitClient.api.getConversations("Bearer $token")
-            val conv = conversations.firstOrNull() ?: return false
+            val conv = conversations.firstOrNull()
+            if (conv == null) {
+                // A conta pode existir antes de o usuário aceitar um convite.
+                PrefsHelper.saveConversationId(this, PrefsHelper.NO_CONVERSATION_ID)
+                PrefsHelper.saveOtherParentName(this, "")
+                PrefsHelper.saveChildrenNames(this, "")
+                return true
+            }
             PrefsHelper.saveConversationId(this, conv.id)
 
             val otherParent = conv.participants.firstOrNull { !it.is_me }
-            if (otherParent != null) {
-                PrefsHelper.saveOtherParentName(this, otherParent.username)
-            }
+            PrefsHelper.saveOtherParentName(this, otherParent?.username.orEmpty())
 
-            if (conv.children.isNotEmpty()) {
-                val childrenNames = conv.children.joinToString(", ") { it.name }
-                PrefsHelper.saveChildrenNames(this, childrenNames)
-            }
+            val childrenNames = conv.children.joinToString(", ") { it.name }
+            PrefsHelper.saveChildrenNames(this, childrenNames)
             true
         } catch (_: Exception) {
             false

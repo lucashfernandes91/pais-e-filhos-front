@@ -116,8 +116,9 @@ class ChildDetailFragment : Fragment() {
         tvInitial.visibility = View.VISIBLE
         loadChildPhoto(ivPhoto, tvInitial, currentChild.photo_url)
 
+        val hasCustody = currentChild.isUnderCustodyOf(PrefsHelper.getUsername(requireContext()))
         view.findViewById<LinearLayout>(R.id.badgeCustody).visibility =
-            if (currentChild.has_custody) View.VISIBLE else View.GONE
+            if (hasCustody) View.VISIBLE else View.GONE
     }
 
     private fun loadChildPhoto(ivPhoto: ImageView, tvInitial: TextView, photoUrl: String?) {
@@ -128,6 +129,11 @@ class ChildDetailFragment : Fragment() {
                 tvInitial.visibility = View.GONE
             }
         }
+    }
+
+    override fun onDestroyView() {
+        view?.findViewById<ImageView>(R.id.ivChildPhoto)?.let(RemoteImageLoader::clear)
+        super.onDestroyView()
     }
 
     private fun showLocalPhoto(view: View, uri: Uri) {
@@ -197,10 +203,11 @@ class ChildDetailFragment : Fragment() {
 
     private fun bindInfoRows(view: View, currentChild: Child) {
         val notInformed = getString(R.string.child_not_informed)
+        val hasCustody = currentChild.isUnderCustodyOf(PrefsHelper.getUsername(requireContext()))
         view.findViewById<TextView>(R.id.tvBirthDate).text =
             currentChild.birth_date?.takeIf { it.isNotBlank() }?.let(::formatBirthDate) ?: notInformed
         view.findViewById<TextView>(R.id.tvCustodyValue).setText(
-            if (currentChild.has_custody) {
+            if (hasCustody) {
                 R.string.child_custody_with_you
             } else {
                 R.string.child_custody_not_with_you

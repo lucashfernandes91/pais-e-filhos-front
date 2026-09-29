@@ -19,6 +19,9 @@ data class Child(
     @SerializedName("has_custody")
     val has_custody: Boolean = false,
 
+    @SerializedName("custody_holder_name")
+    val custody_holder_name: String? = null,
+
     @SerializedName("conversation")
     val conversation: Int,
 
@@ -27,4 +30,10 @@ data class Child(
 
     @SerializedName("created_at")
     val created_at: String? = null
-) : Serializable
+) : Serializable {
+    fun isUnderCustodyOf(username: String): Boolean =
+        has_custody &&
+            (custody_holder_name ?: created_by_name)
+                ?.trim()
+                ?.equals(username.trim(), ignoreCase = true) == true
+}

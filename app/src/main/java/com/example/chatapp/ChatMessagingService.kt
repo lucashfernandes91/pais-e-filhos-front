@@ -5,9 +5,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -27,7 +27,7 @@ class ChatMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d(TAG, "New FCM token received")
+        AppTelemetry.info("fcm_token_received")
         sendTokenToBackend(token)
     }
 
@@ -36,18 +36,20 @@ class ChatMessagingService : FirebaseMessagingService() {
 
         // Check user preferences before showing notification
         if (!shouldShowNotification()) {
-            Log.d(TAG, "Notification suppressed by user preferences")
+            AppTelemetry.debug(TAG, "Notification suppressed by user preferences")
             return
         }
 
-        if (remoteMessage.data["notification_type"] == MESSAGE_NOTIFICATION_TYPE) {
-            showMessageNotification()
+        val data = remoteMessage.data
+        val notificationType = data["notification_type"]
+        if (notificationType == MESSAGE_NOTIFICATION_TYPE) {
+            showMessageNotification(data["message_id"])
             return
         }
 
-        val title = remoteMessage.notification?.title ?: return
-        val body = remoteMessage.notification?.body.orEmpty()
-        showNotification(title, body)
+        val title = data["title"] ?: remoteMessage.notification?.title ?: "CoParent"
+        val body = data["body"] ?: remoteMessage.notification?.body.orEmpty()
+        showNotification(title, body, notificationId = data["notification_id"]?.hashCode())
     }
 
     /**
@@ -57,6 +59,11 @@ class ChatMessagingService : FirebaseMessagingService() {
      */
     private fun shouldShowNotification(): Boolean {
         if (!PrefsHelper.isPushEnabled(this)) return false
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) return false
 
         if (PrefsHelper.isNightModeEnabled(this)) {
             val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
@@ -67,7 +74,8 @@ class ChatMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendTokenToBackend(token: String) {
-        Log.d(TAG, "Sending FCM token to backend")
+        val correlationId = AppTelemetry.newCorrelationId()
+        AppTelemetry.info("fcm_token_registration_started", correlationId)
 
         // Salva token localmente via PrefsHelper
         PrefsHelper.saveFcmToken(this, token)
@@ -75,7 +83,7 @@ class ChatMessagingService : FirebaseMessagingService() {
         // Pega auth token
         val authToken = PrefsHelper.getAuthToken(this)
         if (authToken.isEmpty()) {
-            Log.w(TAG, "No auth token found, skipping backend registration")
+            AppTelemetry.warning("fcm_token_registration_skipped", correlationId)
             return
         }
 
@@ -86,23 +94,30 @@ class ChatMessagingService : FirebaseMessagingService() {
                     "Bearer $authToken",
                     mapOf("token" to token)
                 )
-                Log.d(TAG, "Token registered: $response")
+                AppTelemetry.info("fcm_token_registration_succeeded", correlationId)
             } catch (e: Exception) {
-                Log.e(TAG, "Error registering token: ${e.message}")
+                AppTelemetry.error("fcm_token_registration_failed", correlationId, e)
             }
         }
     }
 
-    private fun showMessageNotification() {
+    private fun showMessageNotification(messageId: String?) {
         showNotification(
             title = MESSAGE_NOTIFICATION_TITLE,
             body = MESSAGE_NOTIFICATION_BODY,
-            lockScreenTitle = LOCK_SCREEN_NOTIFICATION_TITLE
+            lockScreenTitle = LOCK_SCREEN_NOTIFICATION_TITLE,
+            notificationId = messageId?.hashCode()
         )
     }
 
-    private fun showNotification(title: String, body: String, lockScreenTitle: String? = null) {
-        val notificationId = System.currentTimeMillis().toInt()
+    private fun showNotification(
+        title: String,
+        body: String,
+        lockScreenTitle: String? = null,
+        notificationId: Int? = null
+    ) {
+        if (!shouldShowNotification()) return
+        val stableNotificationId = notificationId ?: "$title:$body".hashCode()
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -130,7 +145,7 @@ class ChatMessagingService : FirebaseMessagingService() {
 
         val pendingIntent = PendingIntent.getActivity(
             this,
-            notificationId,
+            stableNotificationId,
             deepLinkIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -158,8 +173,8 @@ class ChatMessagingService : FirebaseMessagingService() {
 
         val notification = notificationBuilder.build()
 
-        notificationManager.notify(notificationId, notification)
-        Log.d(TAG, "Notification shown: $notificationId")
+        notificationManager.notify(stableNotificationId, notification)
+        AppTelemetry.info("fcm_notification_shown")
     }
 
     override fun onDestroy() {
@@ -169,7 +184,7 @@ class ChatMessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "ChatMessagingService"
-        private const val CHANNEL_ID = "chat_notifications"
+        private const val CHANNEL_ID = CoParentApplication.FCM_CHANNEL_ID
         private const val MESSAGE_NOTIFICATION_TYPE = "message"
         private const val MESSAGE_NOTIFICATION_TITLE = "Nova mensagem"
         private const val MESSAGE_NOTIFICATION_BODY = "Você recebeu uma nova mensagem."

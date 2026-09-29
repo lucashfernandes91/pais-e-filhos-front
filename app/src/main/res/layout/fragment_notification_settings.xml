@@ -103,6 +103,60 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.CoParent.Card.Surface"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_sm">
+
+                <LinearLayout
+                    style="@style/Widget.CoParent.List.Row">
+
+                    <FrameLayout
+                        android:layout_width="@dimen/avatar_size_m"
+                        android:layout_height="@dimen/avatar_size_m"
+                        android:background="@drawable/bg_icon_circle_blue"
+                        android:layout_marginEnd="@dimen/spacing_sm">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_badge_size"
+                            android:layout_height="@dimen/icon_badge_size"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_calendar"
+                            app:tint="@color/primary_blue"
+                            android:contentDescription="@string/settings_event_reminders_title" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="@dimen/spacing_sm">
+
+                        <TextView
+                            style="@style/TextAppearance.CoParent.List.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_event_reminders_title" />
+
+                        <TextView
+                            style="@style/TextAppearance.CoParent.List.Meta"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_event_reminders_description"
+                            android:layout_marginTop="@dimen/spacing_xs" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchEventReminders"
+                        style="@style/Widget.CoParent.Switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Card: Email de backup -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.CoParent.Card.Surface"

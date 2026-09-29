@@ -104,7 +104,7 @@ class EditChildFragment : Fragment() {
             etBirth.setText(formatDateForDisplay(bd))
         }
 
-        cbCustody.isChecked = c.has_custody
+        cbCustody.isChecked = c.isUnderCustodyOf(PrefsHelper.getUsername(requireContext()))
     }
 
     private fun setupPhotoPicker(view: View, c: Child) {
@@ -131,6 +131,11 @@ class EditChildFragment : Fragment() {
                 view.findViewById<TextView>(R.id.tvChildInitial)?.visibility = View.GONE
             }
         }
+    }
+
+    override fun onDestroyView() {
+        view?.findViewById<ImageView>(R.id.ivChildPhoto)?.let(RemoteImageLoader::clear)
+        super.onDestroyView()
     }
 
     private fun showBitmapPhoto(view: View, bitmap: Bitmap) {
@@ -222,6 +227,23 @@ class EditChildFragment : Fragment() {
                     hasCustody.toString().toRequestBody(textType),
                     photoPart
                 )
+
+                if (
+                    hasCustody &&
+                    updated.custody_holder_name?.trim()?.equals(
+                        PrefsHelper.getUsername(requireContext()).trim(),
+                        ignoreCase = true
+                    ) != true
+                ) {
+                    Toast.makeText(
+                        requireContext(),
+                        R.string.child_custody_server_update_required,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    btnSave.isEnabled = true
+                    btnSave.setText(R.string.action_save_changes)
+                    return@launch
+                }
 
                 Toast.makeText(requireContext(), getString(R.string.child_update_success), Toast.LENGTH_SHORT).show()
 

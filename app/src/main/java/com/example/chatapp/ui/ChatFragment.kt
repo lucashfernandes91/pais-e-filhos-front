@@ -1,9 +1,13 @@
 package com.example.chatapp.ui
 
 import android.content.Context
+import android.content.ContentValues
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.os.Bundle
-import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -14,6 +18,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,10 +26,19 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.paging.insertSeparators
+import androidx.paging.map
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.ChatViewModel
 import com.example.chatapp.ChatViewModelFactory
+import com.example.chatapp.AppDateTime
+import com.example.chatapp.AttachmentPolicy
+import com.example.chatapp.ChatItem
+import com.example.chatapp.ChatPagingItemMapper
 import com.example.chatapp.ImageViewerActivity
 import com.example.chatapp.Message
 import com.example.chatapp.MessageAdapter
@@ -35,22 +49,29 @@ import com.example.chatapp.WsStatus
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import java.util.Locale
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class ChatFragment : Fragment() {
-
-    companion object {
-        // Posições do topo que disparam o carregamento da página anterior.
-        private const val LOAD_OLDER_THRESHOLD = 3
-    }
 
     private lateinit var viewModel: ChatViewModel
     private lateinit var messagesRecyclerView: RecyclerView
     private lateinit var messageInput: TextInputEditText
     private lateinit var sendButton: ImageButton
     private lateinit var attachButton: ImageButton
+    private lateinit var attachmentPreview: View
+    private lateinit var attachmentDetails: TextView
+    private lateinit var attachmentCancelButton: ImageButton
+    private lateinit var attachmentProgress: ProgressBar
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var tvChatName: TextView
     private lateinit var tvAvatarInitial: TextView
@@ -73,21 +94,33 @@ class ChatFragment : Fragment() {
     private var allMessages = listOf<Message>()
 
     private var pendingAttachmentUri: Uri? = null
+    private var pendingAttachmentInfo: com.example.chatapp.AttachmentInfo? = null
     private var typingStopJob: Job? = null
     private var isLocalTyping = false
+    private var initialChatScrollDone = false
 
     private val filePickerLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
+        ActivityResultContracts.OpenDocument()
     ) { uri ->
         if (uri != null) {
-            pendingAttachmentUri = uri
-            val fileName = getFileName(uri)
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.chat_attachment_selected_toast, fileName),
-                Toast.LENGTH_SHORT
-            ).show()
-            messageInput.hint = getString(R.string.chat_attachment_selected_hint, fileName)
+            val result = AttachmentPolicy.inspect(requireContext(), uri)
+            result.onSuccess { info ->
+                pendingAttachmentUri = uri
+                pendingAttachmentInfo = info
+                renderAttachmentPreview(info)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.chat_attachment_selected_toast, info.fileName),
+                    Toast.LENGTH_SHORT
+                ).show()
+                messageInput.hint = getString(R.string.chat_attachment_selected_hint, info.fileName)
+            }.onFailure { error ->
+                val message = when (error.message) {
+                    "file_too_large" -> R.string.chat_attachment_too_large
+                    else -> R.string.chat_attachment_unsupported
+                }
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -117,6 +150,10 @@ class ChatFragment : Fragment() {
         messageInput = view.findViewById(R.id.messageInput)
         sendButton = view.findViewById(R.id.sendButton)
         attachButton = view.findViewById(R.id.btnAttach)
+        attachmentPreview = view.findViewById(R.id.attachmentPreview)
+        attachmentDetails = view.findViewById(R.id.attachmentDetails)
+        attachmentCancelButton = view.findViewById(R.id.btnAttachmentCancel)
+        attachmentProgress = view.findViewById(R.id.attachmentProgress)
         tvChatName = view.findViewById(R.id.tvChatName)
         tvAvatarInitial = view.findViewById(R.id.tvAvatarInitial)
         tvChatStatus = view.findViewById(R.id.tvChatStatus)
@@ -183,6 +220,8 @@ class ChatFragment : Fragment() {
         tvChatStatus.setText(R.string.chat_invite_coparent_status)
         tvChatStatus.setTextColor(requireColor(R.color.gray_500))
         pendingAttachmentUri = null
+        pendingAttachmentInfo = null
+        attachmentPreview.visibility = View.GONE
         messageInput.text?.clear()
         setComposerAvailable(false)
         view?.findViewById<TextView>(R.id.tvEmptyChatTitle)?.setText(R.string.chat_no_coparent_title)
@@ -241,9 +280,13 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        messageAdapter = MessageAdapter(currentUsername) { imageUrl ->
-            ImageViewerActivity.start(requireContext(), imageUrl)
-        }
+        messageAdapter = MessageAdapter(
+            currentUsername,
+            onImageClick = { imageUrl ->
+                ImageViewerActivity.start(requireContext(), imageUrl)
+            },
+            onDocumentClick = ::downloadDocument
+        )
         messagesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context).apply {
                 stackFromEnd = true
@@ -252,26 +295,95 @@ class ChatFragment : Fragment() {
             adapter = messageAdapter
             setHasFixedSize(false)
         }
-
-        messagesRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy >= 0) return
-                val lm = recyclerView.layoutManager as? LinearLayoutManager ?: return
-                if (lm.findFirstVisibleItemPosition() <= LOAD_OLDER_THRESHOLD) {
-                    viewModel.loadOlderMessages()
+        messageAdapter.addLoadStateListener { state ->
+            if (
+                !initialChatScrollDone &&
+                state.refresh is LoadState.NotLoading &&
+                messageAdapter.itemCount > 0
+            ) {
+                initialChatScrollDone = true
+                messagesRecyclerView.post {
+                    messagesRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
                 }
             }
-        })
+        }
+
+    }
+
+    private fun downloadDocument(url: String, attachmentName: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val fileName = attachmentName.substringAfterLast('/').substringBefore('?')
+                    .takeIf { it.isNotBlank() }
+                    ?.let { if (it.endsWith(".pdf", ignoreCase = true)) it else "$it.pdf" }
+                    ?: "documento.pdf"
+
+                val savedUri = withContext(Dispatchers.IO) {
+                    val token = PrefsHelper.getAuthToken(requireContext())
+                    val responseBody = RetrofitClient.api.downloadAttachment("Bearer $token", url)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        val values = ContentValues().apply {
+                            put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                            put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
+                            put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                        }
+                        val resolver = requireContext().contentResolver
+                        val uri = resolver.insert(
+                            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                            values
+                        ) ?: error("download_destination_unavailable")
+                        try {
+                            resolver.openOutputStream(uri)?.use { output ->
+                                responseBody.byteStream().use { input -> input.copyTo(output) }
+                            } ?: error("download_destination_unavailable")
+                            uri
+                        } catch (error: Exception) {
+                            resolver.delete(uri, null, null)
+                            throw error
+                        } finally {
+                            responseBody.close()
+                        }
+                    } else {
+                        val directory = Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DOWNLOADS
+                        )
+                        if (!directory.exists() && !directory.mkdirs()) {
+                            error("download_destination_unavailable")
+                        }
+                        FileOutputStream(File(directory, fileName)).use { output ->
+                            responseBody.byteStream().use { input -> input.copyTo(output) }
+                        }
+                        responseBody.close()
+                        androidx.core.content.FileProvider.getUriForFile(
+                            requireContext(),
+                            "${requireContext().packageName}.fileprovider",
+                            File(directory, fileName)
+                        )
+                    }
+                }
+                Toast.makeText(requireContext(), R.string.chat_attachment_downloaded, Toast.LENGTH_SHORT).show()
+                startActivity(
+                    Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(savedUri, "application/pdf")
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                )
+            } catch (_: Exception) {
+                Toast.makeText(requireContext(), R.string.chat_attachment_download_error, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setupSendButton() {
         sendButton.setOnClickListener {
+            if (viewModel.attachmentUploadInProgress.value == true) return@setOnClickListener
             val text = messageInput.text.toString().trim()
+            if (text.length > AttachmentPolicy.MAX_MESSAGE_LENGTH) {
+                Toast.makeText(requireContext(), R.string.chat_message_too_long, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             if (pendingAttachmentUri != null) {
                 viewModel.sendMessageWithAttachment(text, pendingAttachmentUri!!, requireContext())
-                messageInput.text?.clear()
-                resetComposerHint()
-                pendingAttachmentUri = null
                 stopLocalTyping()
             } else if (text.isNotEmpty()) {
                 viewModel.sendMessage(text)
@@ -281,22 +393,35 @@ class ChatFragment : Fragment() {
         }
 
         attachButton.setOnClickListener {
-            filePickerLauncher.launch("*/*")
+            filePickerLauncher.launch(arrayOf("image/jpeg", "image/png", "image/webp", "application/pdf"))
         }
+        attachmentCancelButton.setOnClickListener { clearPendingAttachment() }
     }
 
-    private fun getFileName(uri: Uri): String {
-        var name = getString(R.string.chat_attachment_fallback_name)
-        try {
-            requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (cursor.moveToFirst() && nameIndex >= 0) {
-                    name = cursor.getString(nameIndex)
-                }
-            }
-        } catch (_: Exception) {
+    private fun renderAttachmentPreview(info: com.example.chatapp.AttachmentInfo) {
+        attachmentDetails.text = getString(
+            R.string.chat_attachment_details,
+            info.fileName,
+            info.mimeType,
+            formatAttachmentSize(info.sizeBytes)
+        )
+        attachmentPreview.visibility = View.VISIBLE
+    }
+
+    private fun clearPendingAttachment() {
+        pendingAttachmentUri = null
+        pendingAttachmentInfo = null
+        attachmentPreview.visibility = View.GONE
+        resetComposerHint()
+    }
+
+    private fun formatAttachmentSize(sizeBytes: Long): String {
+        if (sizeBytes < 0) return getString(R.string.chat_attachment_size_unknown)
+        return if (sizeBytes < 1024 * 1024) {
+            getString(R.string.chat_attachment_size_kb, (sizeBytes / 1024.0).toInt().coerceAtLeast(1))
+        } else {
+            getString(R.string.chat_attachment_size_mb, sizeBytes / (1024.0 * 1024.0))
         }
-        return name
     }
 
     private fun resetComposerHint() {
@@ -445,11 +570,30 @@ class ChatFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.pagedMessages.collectLatest { pagingData ->
+                    val messageItems = pagingData.map { entity ->
+                        val message = entity.toMessage()
+                        ChatItem.MessageItem(message, allMessages.indexOfFirst {
+                            messageKey(it) == messageKey(message)
+                        })
+                    }
+                    val withDates = messageItems.insertSeparators { before, after ->
+                        ChatPagingItemMapper.dateSeparator(before, after)
+                    }
+                    messageAdapter.submitData(
+                        withDates.insertSeparators { before, after ->
+                            ChatPagingItemMapper.unreadSeparator(currentUsername, before, after)
+                        }
+                    )
+                }
+            }
+        }
+
         viewModel.messages.observe(viewLifecycleOwner) { messages ->
             allMessages = messages
-            messageAdapter.updateMessages(messages)
-
-            markUnreadMessagesAsRead(messages)
+            messageAdapter.refresh()
 
             errorState.visibility = View.GONE
             if (messages.isEmpty()) {
@@ -458,42 +602,11 @@ class ChatFragment : Fragment() {
             } else {
                 messagesRecyclerView.visibility = View.VISIBLE
                 emptyState.visibility = View.GONE
-                messagesRecyclerView.post {
-                    val lastAdapterPosition = messageAdapter.itemCount - 1
-                    if (lastAdapterPosition >= 0) {
-                        messagesRecyclerView.smoothScrollToPosition(lastAdapterPosition)
-                        android.util.Log.d("ChatFragment", "scrollToPosition: $lastAdapterPosition")
-                    }
-                }
             }
 
             if (isSearchActive && searchInput.text?.isNotBlank() == true) {
                 performSearch(searchInput.text.toString())
             }
-        }
-
-        // Histórico paginado: prepend sem rolar para o fim, ancorando a
-        // mensagem que estava no topo na mesma posição visual.
-        viewModel.olderMessages.observe(viewLifecycleOwner) { event ->
-            if (event == null) return@observe
-
-            val lm = messagesRecyclerView.layoutManager as? LinearLayoutManager
-            val previousTopPosition = messageAdapter.getAdapterPositionForMessage(0)
-            val anchorOffset = lm?.findViewByPosition(previousTopPosition)?.top ?: 0
-
-            allMessages = event.messages
-            messageAdapter.updateMessages(event.messages)
-
-            val newAnchorPosition =
-                messageAdapter.getAdapterPositionForMessage(event.prependedCount)
-            if (newAnchorPosition >= 0) {
-                lm?.scrollToPositionWithOffset(newAnchorPosition, anchorOffset)
-            }
-
-            if (isSearchActive && searchInput.text?.isNotBlank() == true) {
-                performSearch(searchInput.text.toString())
-            }
-            viewModel.consumeOlderMessages()
         }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
@@ -515,7 +628,28 @@ class ChatFragment : Fragment() {
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            setSendEnabled(hasOtherParent && !isLoading)
+            val uploading = viewModel.attachmentUploadInProgress.value == true
+            setSendEnabled(hasOtherParent && !isLoading && !uploading)
+            attachButton.isEnabled = hasOtherParent && !isLoading && !uploading
+            attachmentCancelButton.isEnabled = !isLoading && !uploading
+        }
+        viewModel.attachmentUploadInProgress.observe(viewLifecycleOwner) { uploading ->
+            val loading = viewModel.isLoading.value == true
+            setSendEnabled(hasOtherParent && !loading && !uploading)
+            attachButton.isEnabled = hasOtherParent && !loading && !uploading
+            attachmentCancelButton.isEnabled = !loading && !uploading
+        }
+        viewModel.attachmentUploadProgress.observe(viewLifecycleOwner) { progress ->
+            attachmentProgress.visibility = if (progress == null) View.GONE else View.VISIBLE
+            if (progress != null) attachmentProgress.progress = progress
+        }
+        viewModel.attachmentUploadSucceeded.observe(viewLifecycleOwner) { succeeded ->
+            if (succeeded == true) {
+                messageInput.text?.clear()
+                clearPendingAttachment()
+                stopLocalTyping()
+                viewModel.consumeAttachmentUploadSuccess()
+            }
         }
 
         viewModel.typingUser.observe(viewLifecycleOwner) { username ->
@@ -556,6 +690,69 @@ class ChatFragment : Fragment() {
         })
     }
 
+    private fun createDateSeparator(
+        before: ChatItem?,
+        after: ChatItem?
+    ): ChatItem? {
+        val afterMessage = (after as? ChatItem.MessageItem)?.message ?: return null
+        val beforeMessage = (before as? ChatItem.MessageItem)?.message
+        if (before == null || messageDateKey(beforeMessage) != messageDateKey(afterMessage)) {
+            return ChatItem.DateDivider(formatDateLabel(afterMessage))
+        }
+        return null
+    }
+
+    private fun createUnreadSeparator(
+        before: ChatItem?,
+        after: ChatItem?
+    ): ChatItem? {
+        val afterMessage = (after as? ChatItem.MessageItem)?.message ?: return null
+        val afterUnread = afterMessage.sender != currentUsername &&
+            afterMessage.id > 0 &&
+            afterMessage.read_by?.any { it.reader_name == currentUsername } != true
+        val beforeMessage = (before as? ChatItem.MessageItem)?.message
+        val beforeUnread = beforeMessage?.let {
+            it.sender != currentUsername &&
+                it.id > 0 &&
+                it.read_by?.any { read -> read.reader_name == currentUsername } != true
+        } == true
+        return if (afterUnread && !beforeUnread) ChatItem.UnreadDivider else null
+    }
+
+    private fun messageDateKey(message: Message?): String =
+        message?.let {
+            AppDateTime.parseApi(it.created_at)?.let { date ->
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
+            }.orEmpty()
+        }.orEmpty()
+
+    private fun formatDateLabel(message: Message): String {
+        val key = messageDateKey(message)
+        if (key.isEmpty()) return message.created_at
+        return try {
+            val parsed = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(key)
+                ?: return key
+            val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            val yesterday = Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_MONTH, -1)
+            }.let { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it.time) }
+            when (key) {
+                today -> "Hoje"
+                yesterday -> "Ontem"
+                else -> SimpleDateFormat("dd 'de' MMMM", Locale.forLanguageTag("pt-BR"))
+                    .format(parsed).replaceFirstChar { it.uppercase() }
+            }
+        } catch (_: Exception) {
+            key
+        }
+    }
+
+    private fun messageKey(message: Message): String =
+        message.client_message_id?.takeIf { it.isNotBlank() }
+            ?: if (message.id > 0) "server:${message.id}" else {
+                "local:${message.created_at}:${message.content}"
+            }
+
     override fun onDestroyView() {
         stopLocalTyping()
         super.onDestroyView()
@@ -567,16 +764,8 @@ class ChatFragment : Fragment() {
         }
     }
 
-    private fun markUnreadMessagesAsRead(messages: List<Message>) {
-        val token = PrefsHelper.getAuthToken(requireContext())
-        if (token.isEmpty()) return
-
-        val unread = messages.filter { msg ->
-            msg.sender != currentUsername &&
-                msg.read_by?.any { it.reader_name == currentUsername } != true
-        }
-
-        if (unread.isEmpty()) return
+    /*
+        return
 
         viewLifecycleOwner.lifecycleScope.launch {
             unread.forEach { msg ->
@@ -587,6 +776,8 @@ class ChatFragment : Fragment() {
             }
         }
     }
+
+        */
 
     private fun stopLocalTyping() {
         typingStopJob?.cancel()

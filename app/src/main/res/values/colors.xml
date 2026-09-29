@@ -94,6 +94,28 @@
     <color name="info_banner_text">@color/on_brand_surface</color>
     <color name="send_button_bg">@color/brand_surface</color>
     <color name="message_time_received">@color/gray_600</color>
+
+    <!-- Busca no chat: fundo do trecho encontrado (par dark em values-night) -->
+    <color name="search_highlight">#FDE68A</color>
+    <color name="search_highlight_active">#FBBF24</color>
+    <color name="search_highlight_text">#111827</color>
+
+    <!-- Accessibility States (WCAG AA contrast tested) -->
+    <color name="state_disabled">#B8BCC4</color>
+    <color name="state_disabled_bg">#F9FAFB</color>
+    <color name="text_disabled">#9CA3AF</color>
+    <color name="error_light">#FEE2E2</color>
+    <color name="success_light">#DCFCE7</color>
+    <color name="warning_light">#FEF3C7</color>
+    <color name="autofill_highlight">#33F59E0B</color>
+
+    <!-- Event Type Colors -->
+    <color name="event_mother">#EC4899</color>
+    <color name="event_mother_light">#FDF2F8</color>
+    <color name="event_father">#3B82F6</color>
+    <color name="event_father_light">#EFF6FF</color>
+    <color name="event_general">#2563EB</color>
+    <color name="event_general_light">#DBEAFE</color>
     <color name="event_mother">@color/custody_parent_b</color>
     <color name="event_mother_light">@color/custody_parent_b_light</color>
     <color name="event_father">@color/custody_parent_a</color>

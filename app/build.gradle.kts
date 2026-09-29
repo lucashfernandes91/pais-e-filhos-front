@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -40,7 +42,11 @@ android {
             manifestPlaceholders["appLinkHost"] = "coparent-hml.originstudios.com.br"
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
+            buildConfigField("String", "WS_BASE_URL", "\"$releaseWsBaseUrl\"")
+            buildConfigField("String", "LEGAL_BASE_URL", "\"$releaseLegalBaseUrl\"")
             buildConfigField("boolean", "MOCK_LOGIN_ENABLED", "false")
             buildConfigField("String", "MOCK_USERNAME", "\"\"")
             buildConfigField("String", "MOCK_PASSWORD", "\"\"")
@@ -54,6 +60,8 @@ android {
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-hml"
             isDebuggable = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             signingConfig = signingConfigs.getByName("debug")
 
             buildConfigField("String", "API_BASE_URL", "\"https://coparent-hml.originstudios.com.br/\"")
@@ -103,6 +111,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
 
     implementation("androidx.recyclerview:recyclerview:1.3.1")
+    implementation("androidx.room:room-runtime:2.8.3")
+    implementation("androidx.room:room-ktx:2.8.3")
+    implementation("androidx.room:room-paging:2.8.3")
+    implementation("androidx.paging:paging-runtime-ktx:3.2.1")
+    ksp("androidx.room:room-compiler:2.8.3")
 
     // Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
@@ -118,4 +131,5 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:34.14.1"))
     implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-crashlytics")
 }

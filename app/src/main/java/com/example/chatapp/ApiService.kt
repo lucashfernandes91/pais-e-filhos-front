@@ -18,10 +18,10 @@ interface ApiService {
         @Body body: Map<String, Any>
     )
 
-    @POST("api/messages/{messageId}/read/")
-    suspend fun markMessageAsRead(
+    @POST("api/messages/mark-all-read/")
+    suspend fun markConversationMessagesAsRead(
         @Header("Authorization") token: String,
-        @Path("messageId") messageId: Int
+        @Body body: Map<String, Int>
     ): Map<String, Any>
 
     @POST("api/events/")
@@ -42,12 +42,18 @@ interface ApiService {
         @Path("eventId") eventId: Int
     ): Map<String, Any>
 
-    @PUT("api/events/{eventId}/update/")
+    @PATCH("api/events/{eventId}/update/")
     suspend fun updateEvent(
         @Header("Authorization") token: String,
         @Path("eventId") eventId: Int,
         @Body body: Map<String, Any?>
     ): Event
+
+    @GET("api/event-changes/{conversationId}/")
+    suspend fun getEventChanges(
+        @Header("Authorization") token: String,
+        @Path("conversationId") conversationId: Int
+    ): List<EventChange>
 
     @POST("api/device-token/")
     suspend fun registerDeviceToken(
@@ -226,6 +232,13 @@ interface ApiService {
         @Part("content") content: okhttp3.RequestBody,
         @Part attachment: okhttp3.MultipartBody.Part?
     ): Message
+
+    @Streaming
+    @GET
+    suspend fun downloadAttachment(
+        @Header("Authorization") token: String,
+        @Url url: String
+    ): okhttp3.ResponseBody
 }
 
 /**

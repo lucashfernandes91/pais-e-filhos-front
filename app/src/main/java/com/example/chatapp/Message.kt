@@ -8,5 +8,7 @@ data class Message(
     val conversation: Int,
     val read_by: List<MessageRead>? = null,
     val attachment_url: String? = null,
-    val attachment_type: String? = null
+    val attachment_type: String? = null,
+    val attachment_name: String? = null,
+    val client_message_id: String? = null
 )

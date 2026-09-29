@@ -25,7 +25,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:max="3" android:progress="1"
             android:importantForAccessibility="no"
-            android:layout_marginBottom="@dimen/spacing_m" />
+            android:layout_marginBottom="@dimen/spacing_s" />
 
         <LinearLayout android:id="@+id/registerPersonalStep" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:orientation="vertical">
@@ -313,6 +313,7 @@
             android:indeterminate="true"
             android:indeterminateTint="@color/primary_blue"
             android:alpha="0"
+            android:visibility="gone"
             android:importantForAccessibility="no" />
 
         <TextView

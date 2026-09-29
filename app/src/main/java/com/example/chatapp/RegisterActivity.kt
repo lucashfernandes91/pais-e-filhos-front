@@ -252,8 +252,26 @@ class RegisterActivity : AppCompatActivity() {
         }
         val checks = if (currentStep == 0) {
             listOf(
-                ValidationTarget(etFirstName, validateNameField(etFirstName, tilFirstName, R.string.register_first_name_required), 0),
-                ValidationTarget(etLastName, validateNameField(etLastName, tilLastName, R.string.register_last_name_required), 0),
+                ValidationTarget(
+                    etFirstName,
+                    validateNameField(
+                        etFirstName,
+                        tilFirstName,
+                        R.string.register_first_name_required,
+                        R.string.register_first_name_min_length
+                    ),
+                    0
+                ),
+                ValidationTarget(
+                    etLastName,
+                    validateNameField(
+                        etLastName,
+                        tilLastName,
+                        R.string.register_last_name_required,
+                        R.string.register_last_name_min_length
+                    ),
+                    0
+                ),
                 ValidationTarget(etBirthDate, validateBirthDateField(), 0),
             )
         } else {
@@ -317,7 +335,12 @@ class RegisterActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 hideFormError()
                 if (tilFirstName.isErrorEnabled || !s.isNullOrBlank()) {
-                    validateNameField(etFirstName, tilFirstName, R.string.register_first_name_required)
+                    validateNameField(
+                        etFirstName,
+                        tilFirstName,
+                        R.string.register_first_name_required,
+                        R.string.register_first_name_min_length
+                    )
                 }
             }
         })
@@ -325,7 +348,12 @@ class RegisterActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 hideFormError()
                 if (tilLastName.isErrorEnabled || !s.isNullOrBlank()) {
-                    validateNameField(etLastName, tilLastName, R.string.register_last_name_required)
+                    validateNameField(
+                        etLastName,
+                        tilLastName,
+                        R.string.register_last_name_required,
+                        R.string.register_last_name_min_length
+                    )
                 }
             }
         })
@@ -349,10 +377,20 @@ class RegisterActivity : AppCompatActivity() {
         })
 
         etFirstName.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) validateNameField(etFirstName, tilFirstName, R.string.register_first_name_required)
+            if (!hasFocus) validateNameField(
+                etFirstName,
+                tilFirstName,
+                R.string.register_first_name_required,
+                R.string.register_first_name_min_length
+            )
         }
         etLastName.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) validateNameField(etLastName, tilLastName, R.string.register_last_name_required)
+            if (!hasFocus) validateNameField(
+                etLastName,
+                tilLastName,
+                R.string.register_last_name_required,
+                R.string.register_last_name_min_length
+            )
         }
 
         // Username: validate on blur
@@ -378,8 +416,6 @@ class RegisterActivity : AppCompatActivity() {
             ).apply {
                 setTitle(R.string.register_birth_date_dialog_title)
                 datePicker.maxDate = latestAllowed.timeInMillis
-                datePicker.calendarViewShown = true
-                datePicker.spinnersShown = false
             }.show()
         }
 
@@ -512,14 +548,23 @@ class RegisterActivity : AppCompatActivity() {
     private fun validateNameField(
         field: TextInputEditText,
         layout: TextInputLayout,
-        errorMessage: Int
+        requiredMessage: Int,
+        minLengthMessage: Int
     ): Boolean {
-        return if (field.text.toString().trim().isEmpty()) {
-            setError(layout, getString(errorMessage))
-            false
-        } else {
-            setValid(layout)
-            true
+        val text = field.text.toString().trim()
+        return when {
+            text.isEmpty() -> {
+                setError(layout, getString(requiredMessage))
+                false
+            }
+            text.count(Char::isLetter) < 2 -> {
+                setError(layout, getString(minLengthMessage))
+                false
+            }
+            else -> {
+                setValid(layout)
+                true
+            }
         }
     }
 
@@ -587,8 +632,18 @@ class RegisterActivity : AppCompatActivity() {
     private fun attemptRegister() {
         if (isSubmitting) return
         hideFormError()
-        val firstNameOk = validateNameField(etFirstName, tilFirstName, R.string.register_first_name_required)
-        val lastNameOk = validateNameField(etLastName, tilLastName, R.string.register_last_name_required)
+        val firstNameOk = validateNameField(
+            etFirstName,
+            tilFirstName,
+            R.string.register_first_name_required,
+            R.string.register_first_name_min_length
+        )
+        val lastNameOk = validateNameField(
+            etLastName,
+            tilLastName,
+            R.string.register_last_name_required,
+            R.string.register_last_name_min_length
+        )
         val usernameOk = validateUsernameField()
         val birthDateOk = validateBirthDateField()
         val emailOk = validateEmailField()
@@ -779,9 +834,16 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun setRegisterLoading(loading: Boolean) {
+        registerProgressIndicator.animate().cancel()
+        if (loading) {
+            registerProgressIndicator.visibility = View.VISIBLE
+        }
         registerProgressIndicator.animate()
             .alpha(if (loading) 1f else 0f)
             .setDuration(resources.getInteger(R.integer.motion_duration_short).toLong())
+            .withEndAction {
+                if (!loading) registerProgressIndicator.visibility = View.GONE
+            }
             .start()
     }
 

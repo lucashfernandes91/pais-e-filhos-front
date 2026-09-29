@@ -8,7 +8,11 @@
     >
 
     <LinearLayout
-        style="@style/Widget.CoParent.List.Row">
+        style="@style/Widget.CoParent.List.Row"
+        android:paddingStart="@dimen/spacing_m"
+        android:paddingTop="@dimen/spacing_s"
+        android:paddingEnd="@dimen/spacing_m"
+        android:paddingBottom="@dimen/spacing_s">
 
         <!-- Date badge -->
         <FrameLayout

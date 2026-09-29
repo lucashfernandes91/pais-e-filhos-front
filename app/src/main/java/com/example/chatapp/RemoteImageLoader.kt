@@ -31,9 +31,18 @@ object RemoteImageLoader {
         url: String,
         onLoaded: (() -> Unit)? = null
     ) {
+        if (url.isBlank()) {
+            clear(imageView)
+            return
+        }
+        imageView.setTag(R.id.tag_remote_image_url, url)
+        imageView.setImageDrawable(null)
+
         bitmapCache.get(url)?.let { cachedBitmap ->
-            imageView.setImageBitmap(cachedBitmap)
-            onLoaded?.invoke()
+            if (imageView.getTag(R.id.tag_remote_image_url) == url) {
+                imageView.setImageBitmap(cachedBitmap)
+                onLoaded?.invoke()
+            }
             return
         }
 
@@ -41,12 +50,23 @@ object RemoteImageLoader {
         val token = PrefsHelper.getAuthToken(imageView.context)
 
         imageLoaderScope.launch {
-            val bitmap = fetchBitmap(url, token) ?: return@launch
+            val bitmap = fetchBitmap(url, token)
             withContext(Dispatchers.Main) {
+                if (imageView.getTag(R.id.tag_remote_image_url) != url) return@withContext
+                if (bitmap == null) {
+                    imageView.setImageDrawable(null)
+                    return@withContext
+                }
                 imageView.setImageBitmap(bitmap)
                 onLoaded?.invoke()
             }
         }
+    }
+
+    fun clear(imageView: ImageView?) {
+        imageView ?: return
+        imageView.setTag(R.id.tag_remote_image_url, null)
+        imageView.setImageDrawable(null)
     }
 
     private fun fetchBitmap(url: String, token: String): Bitmap? {
@@ -57,9 +77,21 @@ object RemoteImageLoader {
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) return null
 
-                response.body?.byteStream()?.use { stream ->
-                    BitmapFactory.decodeStream(stream)
-                }?.also { bitmap ->
+                val body = response.body ?: return null
+                val bytes = body.bytes()
+                val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+                if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+
+                val options = BitmapFactory.Options().apply {
+                    inSampleSize = calculateInSampleSize(
+                        bounds.outWidth,
+                        bounds.outHeight,
+                        MAX_DECODED_DIMENSION
+                    )
+                    inPreferredConfig = Bitmap.Config.RGB_565
+                }
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)?.also { bitmap ->
                     bitmapCache.put(url, bitmap)
                 }
             }
@@ -68,8 +100,18 @@ object RemoteImageLoader {
         }
     }
 
+    private fun calculateInSampleSize(width: Int, height: Int, maxDimension: Int): Int {
+        var sampleSize = 1
+        while (width / sampleSize > maxDimension || height / sampleSize > maxDimension) {
+            sampleSize *= 2
+        }
+        return sampleSize
+    }
+
     private fun maxCacheSizeKb(): Int {
         val maxMemoryKb = (Runtime.getRuntime().maxMemory() / 1024).toInt()
         return (maxMemoryKb / 8).coerceAtLeast(1024)
     }
+
+    private const val MAX_DECODED_DIMENSION = 2048
 }

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
     <application
         android:name=".CoParentApplication"
@@ -22,6 +23,9 @@
         <meta-data
             android:name="firebase_analytics_collection_enabled"
             android:value="${firebaseAnalyticsCollectionEnabled}" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/fcm_default_notification_channel_id" />
         <activity
             android:name=".OnboardingActivity"
             android:exported="true"
@@ -81,7 +85,7 @@
             android:windowSoftInputMode="stateUnspecified|adjustResize">
             <!-- Link compartilhado: https://dominio-do-ambiente/convite/CODIGO.
                  autoVerify exige assetlinks.json publicado no domínio (pendente A5). -->
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -123,6 +127,18 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".EventReminderReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".EventReminderBootReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"
