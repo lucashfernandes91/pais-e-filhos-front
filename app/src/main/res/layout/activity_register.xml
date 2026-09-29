@@ -52,7 +52,7 @@
                     android:labelFor="@id/etRegFirstName" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.CoParent.Form.TextInputLayout">
+                    style="@style/Widget.CoParent.Form.TextInputLayout.Register">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etRegFirstName"
@@ -80,7 +80,7 @@
                     android:labelFor="@id/etRegLastName" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.CoParent.Form.TextInputLayout">
+                    style="@style/Widget.CoParent.Form.TextInputLayout.Register">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etRegLastName"
@@ -103,7 +103,7 @@
             android:labelFor="@id/etRegBirthDate" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.Form.TextInputLayout"
+            style="@style/Widget.CoParent.Form.TextInputLayout.Register"
             app:helperText="@string/register_birth_date_helper">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -131,7 +131,7 @@
             android:labelFor="@id/etRegUsername" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.Form.TextInputLayout">
+            style="@style/Widget.CoParent.Form.TextInputLayout.Register">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etRegUsername"
@@ -153,7 +153,7 @@
             android:labelFor="@id/etRegEmail" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.Form.TextInputLayout">
+            style="@style/Widget.CoParent.Form.TextInputLayout.Register">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etRegEmail"
@@ -175,7 +175,7 @@
             android:labelFor="@id/etRegPassword" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.Form.TextInputLayout"
+            style="@style/Widget.CoParent.Form.TextInputLayout.Register"
             app:endIconMode="password_toggle"
             >
 
@@ -199,7 +199,7 @@
             android:labelFor="@id/etRegPasswordConfirm" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.CoParent.Form.TextInputLayout.Spaced"
+            style="@style/Widget.CoParent.Form.TextInputLayout.Register"
             app:endIconMode="password_toggle"
             >
 
@@ -301,7 +301,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_criar_conta"
-            android:layout_marginBottom="@dimen/spacing_m" />
+            android:layout_marginBottom="@dimen/spacing_s" />
 
         <ProgressBar
             android:id="@+id/registerProgressIndicator"
@@ -309,7 +309,7 @@
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:layout_marginTop="0dp"
-            android:layout_marginBottom="@dimen/spacing_m"
+            android:layout_marginBottom="0dp"
             android:indeterminate="true"
             android:indeterminateTint="@color/primary_blue"
             android:alpha="0"

@@ -8,12 +8,16 @@
 
     <LinearLayout
         style="@style/Widget.CoParent.Form.Content.Compact"
-        android:background="@color/bg_secondary">
+        android:background="@color/bg_secondary"
+        android:paddingStart="@dimen/spacing_m"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingEnd="@dimen/spacing_m"
+        android:paddingBottom="@dimen/spacing_m">
 
         <!-- Header -->
         <LinearLayout
             style="@style/Widget.CoParent.Form.Header.Row"
-            android:layout_marginBottom="@dimen/spacing_m">
+            android:layout_marginBottom="@dimen/spacing_s">
 
             <ImageButton
                 android:id="@+id/btnBack"
@@ -44,7 +48,7 @@
             style="@style/Widget.CoParent.TextInputLayout.Event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_m">
+            android:layout_marginBottom="@dimen/spacing_sm">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEventTitle"
@@ -61,7 +65,7 @@
             android:id="@+id/layoutDateTimeSingle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_sm"
             android:orientation="horizontal">
 
             <FrameLayout
@@ -102,7 +106,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            android:layout_marginBottom="@dimen/spacing_m">
+            android:layout_marginBottom="@dimen/spacing_sm">
 
             <TextView
                 style="@style/TextAppearance.CoParent.Form.SectionLabel.Emphasis"
@@ -152,7 +156,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            android:layout_marginBottom="@dimen/spacing_m">
+            android:layout_marginBottom="@dimen/spacing_sm">
 
             <TextView
                 style="@style/TextAppearance.CoParent.Form.SectionLabel.Emphasis"
@@ -206,9 +210,9 @@
             android:id="@+id/chipGroupType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_m"
+            android:layout_marginBottom="@dimen/spacing_sm"
             app:chipSpacingHorizontal="@dimen/spacing_s"
-            app:chipSpacingVertical="@dimen/spacing_s"
+            app:chipSpacingVertical="@dimen/spacing_xs"
             app:selectionRequired="true"
             app:singleSelection="true">
 
@@ -252,7 +256,7 @@
             style="@style/Widget.CoParent.TextInputLayout.Event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_m">
+            android:layout_marginBottom="@dimen/spacing_sm">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEventNotes"
@@ -262,7 +266,7 @@
                 android:gravity="top"
                 android:hint="@string/event_placeholder_notes"
                 android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
-                android:minLines="3" />
+                android:minLines="2" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Feedback: loading / success / error -->
@@ -303,7 +307,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ui_salvar_evento"
-            android:layout_marginBottom="@dimen/spacing_s" />
+            android:layout_marginBottom="@dimen/spacing_xs" />
 
         <!-- Footer -->
         <TextView

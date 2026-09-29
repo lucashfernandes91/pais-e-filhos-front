@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_skip">Pular</string>
+    <string name="onboarding_create_account">Criar minha conta</string>
+    <string name="onboarding_page_position">Tela %1$d de %2$d</string>
+    <string name="onboarding_example">Exemplo</string>
+    <string name="onboarding_preview_week">Sua semana</string>
+    <string name="onboarding_day_seg">SEG</string>
+    <string name="onboarding_day_ter">TER</string>
+    <string name="onboarding_day_qua">QUA</string>
+    <string name="onboarding_day_qui">QUI</string>
+    <string name="onboarding_day_sex">SEX</string>
+    <string name="onboarding_day_sab">S&#193;B</string>
+    <string name="onboarding_day_dom">DOM</string>
+    <string name="onboarding_with_you">Com voc&#234;</string>
+    <string name="onboarding_with_alex">Com Alex</string>
+    <string name="onboarding_appointment">Consulta da Sofia</string>
+    <string name="onboarding_appointment_time">Quarta, 16 &#183; 15h</string>
+    <string name="onboarding_conversation_name">Alex</string>
+    <string name="onboarding_conversation_date">Quarta, 16 de setembro</string>
+    <string name="onboarding_message_received">A consulta da Sofia est&#225; marcada para as 15h.</string>
+    <string name="onboarding_message_sent">Combinado, vou acompanh&#225;-la. Depois te conto como foi.</string>
+</resources>

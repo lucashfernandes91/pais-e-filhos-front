@@ -27,7 +27,7 @@ class ChatMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d(TAG, "New FCM token: $token")
+        Log.d(TAG, "New FCM token received")
         sendTokenToBackend(token)
     }
 
@@ -67,7 +67,7 @@ class ChatMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendTokenToBackend(token: String) {
-        Log.d(TAG, "Sending token to backend: $token")
+        Log.d(TAG, "Sending FCM token to backend")
 
         // Salva token localmente via PrefsHelper
         PrefsHelper.saveFcmToken(this, token)

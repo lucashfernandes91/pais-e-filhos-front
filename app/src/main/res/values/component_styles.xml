@@ -290,6 +290,10 @@
         <item name="android:layout_marginBottom">@dimen/spacing_l</item>
     </style>
 
+    <style name="Widget.CoParent.Form.TextInputLayout.Register" parent="Widget.CoParent.Form.TextInputLayout">
+        <item name="android:layout_marginBottom">@dimen/spacing_s</item>
+    </style>
+
     <style name="Widget.CoParent.Form.TextInputLayout.Event" parent="Widget.CoParent.TextInputLayout.Event">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

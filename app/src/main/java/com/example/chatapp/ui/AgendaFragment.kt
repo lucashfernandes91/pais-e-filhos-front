@@ -38,6 +38,7 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 class AgendaFragment : Fragment() {
 
@@ -364,6 +365,8 @@ class AgendaFragment : Fragment() {
 
         // Tamanhos dos marcadores de dia e evento
         val todayCircleSizeDp = 22
+        // Tamanhos dos círculos — menores para que o dot laranja fique abaixo deles
+        val todayCircleSizePx = (22f * 1.05f * density).roundToInt()
         val custodyBgWidthDp = 32
         val custodyBgHeightDp = 32
         val dotSizeDp    = 5
@@ -459,8 +462,8 @@ class AgendaFragment : Fragment() {
                     if (isToday) {
                         val circle = View(ctx).apply {
                             layoutParams = FrameLayout.LayoutParams(
-                                dp(todayCircleSizeDp),
-                                dp(todayCircleSizeDp)
+                                todayCircleSizePx,
+                                todayCircleSizePx
                             ).apply {
                                 gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
                                 topMargin = dp(9)
@@ -479,8 +482,8 @@ class AgendaFragment : Fragment() {
 
                     val tv = TextView(ctx).apply {
                         layoutParams = FrameLayout.LayoutParams(
-                            dp(todayCircleSizeDp),
-                            dp(todayCircleSizeDp)
+                            todayCircleSizePx,
+                            todayCircleSizePx
                         ).apply {
                             gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
                             topMargin = dp(9)
